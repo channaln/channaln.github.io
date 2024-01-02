@@ -1,10 +1,10 @@
-title: Cat /var/log/LifeLogs
+title: /LifeLogs
 markdown: kramdown
 
 # for atom feed
 author:
-  name: Sharad Raj Singh Maurya
-  email: dev_sharad@outlook.com
+  name: Channa Sandaruwan
+  email: sandaruwanchanna61@gmail.com
 
 plugins:
   - jemoji
