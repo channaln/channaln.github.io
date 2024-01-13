@@ -17,7 +17,7 @@ So I think you are ready to see some Ansible actions. You might need to open you
 <br>
 **_PS : In the below first, I was trying to divide and explain each task but if you just need to dive into the complete task scroll down folks._**
 
-#### Task 01: 
+#### TASK 01: 
 #### CHECK VIRTUAL MACHINE ALREADY EXISTS
 ---
 >Just imagine that now you are creating a new virtual machine. The first thing you are doing is providing a name. Let's say we provide that name using an Ansible variable called _"vmware_name"_.
@@ -43,6 +43,9 @@ So I think you are ready to see some Ansible actions. You might need to open you
   
 ```
 {% endraw %}
+
+#### TASK 02: 
+#### Creating the Virtual Machine
 
 >TAnsible steps in like your trusty assistant, replicating the manual creation process but with the magic of automation. All you have to do is swap out the values you want with the variables
 
