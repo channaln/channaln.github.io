@@ -47,11 +47,12 @@ So I think you are ready to see some Ansible actions. You might need to open you
 #### TASK 02: 
 #### Creating the Virtual Machine
 
->TAnsible steps in like your trusty assistant, replicating the manual creation process but with the magic of automation. All you have to do is swap out the values you want with the variables
+>Ansible steps in like your trusty assistant, replicating the manual creation process but with the magic of automation. All you have to do is swap out the values you want with the variables :)
 
 {% raw %}
 ```yml
 ---
+# This is for picking the IP using DHCP, but if you need to use static IPs, remove all the tasks under the networks: and replase the commented part.
 - name: Creating VM 
   community.vmware.vmware_guest:
     hostname: '{{ lookup("env", "VMWARE_HOST") }}' 
@@ -81,6 +82,16 @@ So I think you are ready to see some Ansible actions. You might need to open you
         start_connected: true
         wait_for_customization: true
         wait_for_ip_address: true
+    #For Static Networks 
+    # networks: 
+    #   - name: "{{ vmware_networks_name }}"
+    #     type: static
+    #     start_connected: true
+    #     wait_for_customization: true
+    #     wait_for_ip_address: true
+    #     ip: "{{ vmware_ip }}"
+    #     netmask: 255.255.255.0
+    #     gateway: "{{vmware_gateway}}"
     customization: 
       domain: "{{ domain }}"
       hostname: "{{ hostname }}"
