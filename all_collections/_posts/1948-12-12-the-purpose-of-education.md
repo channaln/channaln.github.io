@@ -53,6 +53,7 @@ So I think you are ready to see some Ansible actions. You might need to open you
 ```yml
 ---
 # This is for picking the IP using DHCP, but if you need to use static IPs, remove all the tasks under the networks: and replase the commented part.
+# No matter windows or Linux for both OS support this way
 - name: Creating VM 
   community.vmware.vmware_guest:
     hostname: '{{ lookup("env", "VMWARE_HOST") }}' 
@@ -101,6 +102,16 @@ So I think you are ready to see some Ansible actions. You might need to open you
   
 ```
 {% endraw %}
+
+>The task this code block does is simple, but it might be an issue, especially with Windows VMs. After you provisioned a Windows VM,
+
+- If Windows Administrator Account seems to be reset (you can see if you put a password to Administrator, it will be removed)
+- If win_ping failed
+
+>The reason behind this, folks, is our friendly neighborhood Sysprep, short for "System Preparation."
+
+> If you need to fix this, you can follow mostly two different approaches.
+> You can remove the OS customization (remove networks and customization) subtask when providing a VM, or you can just replace the administrator password and winrm configurations.
 
 
 
