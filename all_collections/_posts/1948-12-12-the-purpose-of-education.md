@@ -25,6 +25,7 @@ So I think you are ready to see some Ansible actions. You might need to open you
 
 {% raw %}
 ```yml
+---
 # You can use this way on both the Aansible Automation Platform and in terminal.
 # If this needs to work, you have to first execute below commands with your VCenter credentials.
 # export VMWARE_HOST=replace.your_vcenter_name.com export VMWARE_USER=administrator@your_vcenter_name.com export VMWARE_PASSWORD=replase_with_your_user_password 
