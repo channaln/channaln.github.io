@@ -24,7 +24,7 @@ So I think you are ready to see some Ansible actions. You might need to open you
 ``` yml
 - name: Gather one specific VM's information
   community.vmware.vmware_vm_info:
-    hostname: '{{ lookup("env", "VMWARE_HOST") }}' 
+    hostname: "'{{ lookup("env", "VMWARE_HOST") }}' "
     username: '{{ lookup("env", "VMWARE_USER") }}'
     password: '{{ lookup("env", "VMWARE_PASSWORD") }}'
     validate_certs: false
