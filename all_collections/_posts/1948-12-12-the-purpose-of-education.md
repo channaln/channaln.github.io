@@ -10,7 +10,7 @@ There are a bunch of resources available for creating VMs in VMware environments
 
 
 ![VM Provissioning Image](https://lucid.app/publicSegments/view/fa98b297-95df-4611-8ddb-fddd46eb8a81/image.png)
-_Folks please consider this is not a technical diagram this is just a diagram I have created to explain my point of view_ 
+`_Folks please consider this is not a technical diagram this is just a diagram I have created to explain my point of view_` 
 
 So I think you are ready to see some Ansible actions. You might need to open your VSCode. 
 <br>
