@@ -44,7 +44,50 @@ So I think you are ready to see some Ansible actions. You might need to open you
 ```
 {% endraw %}
 
->If you guys don't have an idea about what "_lookup_" is, it's just that a function is used to retrieve values from external sources, and it's being employed to fetch values from environment variables. Specifically, it's used to obtain the values of three environment variables: VMWARE_HOST, VMWARE_USER, and VMWARE_PASSWORD.
+>TAnsible steps in like your trusty assistant, replicating the manual creation process but with the magic of automation. All you have to do is swap out the values you want with the variables
+
+{% raw %}
+```yml
+---
+- name: Creating VM 
+  community.vmware.vmware_guest:
+    hostname: '{{ lookup("env", "VMWARE_HOST") }}' 
+    username: '{{ lookup("env", "VMWARE_USER") }}'
+    password: '{{ lookup("env", "VMWARE_PASSWORD") }}'
+    datacenter: "{{ vmware_datacenter }}" 
+    cluster: "{{ vmware_cluster }}"
+    datastore: "{{ vmware_datastore }}"
+    validate_certs: false
+    folder: "{{ vmware_folder }}"
+    name: "{{ vmware_name }}"
+    state: poweredon
+    template: "{{ vmware_template }}"
+    disk: 
+      - size_gb: "{{ vmware_disk_size_gb | int }}"
+        type: "{{ vmware_disk_type | string }}"
+        datastore: "{{ vmware_datastore }}"
+    hardware: 
+      memory_mb: "{{ vmware_memory_mb | int }}"
+      num_cpus: "{{ vmware_number_of_cpus }}"
+      num_cpu_cores_per_socket: "{{ vmware_number_cpu_cores_per_socket }}"
+      hotadd_cpu: true
+      hotremove_cpu: true
+      hotadd_memory: false
+    networks: 
+      - name: "{{ vmware_networks_name }}"
+        start_connected: true
+        wait_for_customization: true
+        wait_for_ip_address: true
+    customization: 
+      domain: "{{ domain }}"
+      hostname: "{{ hostname }}"
+      dns_servers: "{{ dns_servers }}"   
+  delegate_to: localhost
+  register: host_created
+  
+```
+{% endraw %}
+
 
 
 
