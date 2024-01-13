@@ -25,6 +25,10 @@ So I think you are ready to see some Ansible actions. You might need to open you
 
 {% raw %}
 ```yml
+# You can use this way on both the Aansible Automation Platform and in terminal.
+# If this needs to work, you have to first execute below commands with your VCenter credentials.
+# export VMWARE_HOST=replace.your_vcenter_name.com export VMWARE_USER=administrator@your_vcenter_name.com export VMWARE_PASSWORD=replase_with_your_user_password 
+# If you don't know what this is, I have simply explained it after the task.  
 - name: Gather one specific VM's information
   community.vmware.vmware_vm_info:
     hostname: '{{ lookup("env", "VMWARE_HOST") }}'
@@ -34,7 +38,11 @@ So I think you are ready to see some Ansible actions. You might need to open you
     vm_name: "{{ vmware_name }}"
   delegate_to: localhost
   register: vm_facts
+  
 ```
 {% endraw %}
+
+>If you guys don't have an idea about what "_lookup_" is, it's just that a function is used to retrieve values from external sources, and it's being employed to fetch values from environment variables. Specifically, it's used to obtain the values of three environment variables: VMWARE_HOST, VMWARE_USER, and VMWARE_PASSWORD.
+
 
 
