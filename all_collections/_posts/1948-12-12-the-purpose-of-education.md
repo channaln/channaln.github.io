@@ -21,7 +21,8 @@ So I think you are ready to see some Ansible actions. You might need to open you
 >Just imagine that now you are creating a new virtual machine. The first thing you are doing is providing a name. Let's say we provide that name using an Ansible variable called _"vmware_name"_.
 >This will search for that given name in the VSphere. and store the outputs in the "_vm_facts" variable. ya It's that simple.
 
-```
+```yml
+---
 - name: Gather one specific VM's information
   community.vmware.vmware_vm_info:
     hostname: '{{ lookup("env", "VMWARE_HOST") }}'
