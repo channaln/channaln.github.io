@@ -103,7 +103,8 @@ So I think you are ready to see some Ansible actions. You might need to open you
 ```
 {% endraw %}
 
->The task this code block does is simple, but it might be an issue, especially with Windows VMs. After you provisioned a Windows VM,
+> The task this code block does is simple, but it might be an issue, especially with Windows VMs. 
+> **After you provisioned a Windows VM,**
 
 - If Windows Administrator Account seems to be reset (you can see if you put a password to Administrator, it will be removed)
 - If win_ping failed
