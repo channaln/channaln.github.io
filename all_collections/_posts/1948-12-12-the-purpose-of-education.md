@@ -33,5 +33,5 @@ So I think you are ready to see some Ansible actions. You might need to open you
   delegate_to: localhost
   register: vm_facts
 ```
----
+
 
