@@ -30,7 +30,6 @@ So I think you are ready to see some Ansible actions. You might need to open you
     vm_name: "{{ vmware_name }}"
   delegate_to: localhost
   register: vm_facts
-
 ```
 
 
