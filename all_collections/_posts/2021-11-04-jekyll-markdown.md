@@ -17,7 +17,7 @@ There should be whitespace between paragraphs. We recommend including a README, 
 
 Images can be clicked to enlarge :)
 
-![Dummy Image 1](https://picsum.photos/1366/768)
+![Dummy Image 1](https://lucid.app/publicSegments/view/01e8d6a7-df24-4303-b503-7aa63667fc8e/image.png)
 ![Dummy Image 2](https://picsum.photos/1200/400)
 
 # Header 1
