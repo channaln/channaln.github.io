@@ -16,10 +16,10 @@ So I think you are ready to see some Ansible actions. You might need to open you
  **_PS : In the below first, I was trying to divide and explain each task but if you just need to dive into the complete task scroll down folks._**
 
 #### Header 4
-> Just imagine that now you are creating a new virtual machine. The first thing you are doing is providing a name. Let's say we provide that name using an Ansible variable called _" vmware_name "_.
-> This will search for that given name in the VSphere. and store the outputs in the "_vm_facts" variable. ya It's that simple.
+>Just imagine that now you are creating a new virtual machine. The first thing you are doing is providing a name. Let's say we provide that name using an Ansible variable called _" vmware_name "_.
+>This will search for that given name in the VSphere. and store the outputs in the "_vm_facts" variable. ya It's that simple.
 
-```
+```YML
 - name: Gather one specific VM's information
   community.vmware.vmware_vm_info:
     hostname: '{{ lookup("env", "VMWARE_HOST") }}' 
