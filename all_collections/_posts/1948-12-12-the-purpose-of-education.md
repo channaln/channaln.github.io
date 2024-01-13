@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Ansible Role for Provisioning Virtual Machines in VMware VSphere
-date: 2024.01.013 10:18:00
+date: 2021-11-04
 categories: [Ansible]
 ---
 
