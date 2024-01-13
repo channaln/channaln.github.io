@@ -25,11 +25,11 @@ So I think you are ready to see some Ansible actions. You might need to open you
 ---
 - name: Gather one specific VM's information
   community.vmware.vmware_vm_info:
-    hostname: '{{ lookup("env", "VMWARE_HOST") }}'
-    username: '{{ lookup("env", "VMWARE_USER") }}'
-    password: '{{ lookup("env", "VMWARE_PASSWORD") }}'
+    hostname: {{ lookup("env", "VMWARE_HOST") }}
+    username: {{ lookup("env", "VMWARE_USER") }}
+    password: {{ lookup("env", "VMWARE_PASSWORD") }}
     validate_certs: false
-    vm_name: "{{ vmware_name }}"
+    vm_name: {{ vmware_name }}
   delegate_to: localhost
   register: vm_facts
 ```
