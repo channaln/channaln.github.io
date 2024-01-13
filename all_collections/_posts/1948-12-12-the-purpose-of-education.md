@@ -19,7 +19,7 @@ In the below first, I was trying to divide and explain each task but if you just
 > This will search for that given name in the VSphere. and store the outputs in the "vm_facts" variable. ya It's that simple.
 
 ```yml
-- name: Gather one specific VM
+- name: Gather one specific VM's information
   community.vmware.vmware_vm_info:
     hostname: '{{ lookup("env", "VMWARE_HOST") }}' 
     username: '{{ lookup("env", "VMWARE_USER") }}'
