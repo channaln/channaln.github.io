@@ -114,6 +114,9 @@ So I think you are ready to see some Ansible actions. You might need to open you
 > If you need to fix this, you can follow mostly two different approaches.
 > You can remove the OS customization (remove networks and customization) subtask when providing a VM, or you can just replace the administrator password and winrm configurations.
 
+> To fix this issue, use the below scenario. And if you need to learn exactly what sysprep is and how it will affect you, read this post, and it will make sense to you.
+> [Ansible Sysprep running issue](./another-page.html).
+
 
 
 
