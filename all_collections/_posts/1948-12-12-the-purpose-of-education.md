@@ -23,6 +23,7 @@ So I think you are ready to see some Ansible actions. You might need to open you
 >
 ---
 ```yml
+{% raw %}
 - name: Gather one specific VM's information
   community.vmware.vmware_vm_info:
     hostname: '{{ lookup("env", "VMWARE_HOST") }}'
@@ -32,6 +33,7 @@ So I think you are ready to see some Ansible actions. You might need to open you
     vm_name: "{{ vmware_name }}"
   delegate_to: localhost
   register: vm_facts
+{% endraw %}
 ```
 ---
 
