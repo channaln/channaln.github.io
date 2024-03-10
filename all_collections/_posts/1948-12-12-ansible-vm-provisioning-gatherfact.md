@@ -115,3 +115,7 @@ So I think you are ready to see some Ansible actions. You might need to open you
 ```
 {% endraw %}
 
+#### Reference
+Check out the official OpenShift documentation for more information.
+https://docs.ansible.com/ansible/latest/collections/community/vmware/index.html
+https://docs.ansible.com/ansible/latest/collections/community/vmware/vmware_guest_module.html
