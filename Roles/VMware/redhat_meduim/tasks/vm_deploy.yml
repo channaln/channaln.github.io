@@ -1,0 +1,93 @@
+---
+- name: Gather VM facts
+  community.vmware.vmware_vm_info:
+    hostname: '{{ lookup("env", "VMWARE_HOST") }}' 
+    username: '{{ lookup("env", "VMWARE_USER") }}'
+    password: '{{ lookup("env", "VMWARE_PASSWORD") }}'
+    validate_certs: false
+  delegate_to: localhost
+  register: vm_facts
+
+- block:
+  - name: Check if VM with the same name or IP exists
+    set_fact:
+      vm_with_given_name_exists: "{{ item.guest_name == vmware_name }}"
+      vm_with_given_ip_exists: "{{ item.ip_address == vmware_ip }}"
+    loop: "{{ vm_facts.virtual_machines | default([]) }}"
+    when: item.guest_name == vmware_name or item.ip_address == vmware_ip
+    no_log: true
+
+  - name: Fail if VM with the same name or IP exists
+    debug:
+      msg: |
+        {% if not vmware_name or not vmware_ip %}
+        You did not declare the VM name or IP.
+        {% elif vm_with_given_name_exists and vm_with_given_ip_exists %}
+        The VM you are trying to create is already created with the SAME IP AND NAME ---> IP=[{{ vmware_ip }}] VM Name=[{{ vmware_name }}]
+        {% elif vm_with_given_ip_exists %}
+        The IP address assigned to another VM check the IP Address ---> IP=[{{ vmware_ip }}] 
+        {% elif vm_with_given_name_exists %}
+        The VM name assigned to another VM check the VM Name (___WORNING: THIS PERTICULER VM MIGHT BE POWED OF CHECK THE IP___) ---> VM Name=[{{ vmware_name }}]
+        
+        {% endif %}
+
+  rescue:
+    - block:
+        - name: creating the VM if provided info are Correct and there is no existing vm 
+          community.vmware.vmware_guest:
+            hostname: '{{ lookup("env", "VMWARE_HOST") }}' 
+            username: '{{ lookup("env", "VMWARE_USER") }}'
+            password: '{{ lookup("env", "VMWARE_PASSWORD") }}'
+            datacenter: "{{ vmware_datacenter }}" 
+            cluster: "{{ vmware_cluster }}"
+            datastore: "{{ vmware_datastore }}"
+            validate_certs: false
+            folder: "{{ vmware_folder }}"
+            name: "{{ vmware_name }}"
+            state: poweredon
+            template: "{{ vmware_template }}"
+            disk: 
+              - size_gb: "{{ vmware_disk_size_gb | int }}"
+                type: "{{ vmware_disk_type | string }}"
+                datastore: "{{ vmware_datastore }}"
+            hardware: 
+              memory_mb: "{{ vmware_memory_mb | int }}"
+              num_cpus: "{{ vmware_number_of_cpus }}"
+              num_cpu_cores_per_socket: "{{ vmware_number_cpu_cores_per_socket }}"
+              hotadd_cpu: true
+              hotremove_cpu: true
+              hotadd_memory: false
+            networks: 
+              - name: "{{ vmware_networks_name }}"
+                start_connected: true
+                ip: "{{ vmware_ip }}"
+                netmask: "{{ vmware_netmask }}"
+                gateway: "{{ vmware_gateway }}"
+                type: "{{ vmware_ip_type }}"
+                wait_for_customization: true
+                wait_for_ip_address: true
+            customization: 
+              domain: "{{ domain }}"
+              hostname: "{{ hostname }}"
+              dns_servers: "{{ dns_servers }}"
+          delegate_to: localhost
+          register: host_created
+          when: vmware_ip and vmware_name 
+          
+        - name: add hosts at ansible inventory
+          include_tasks: add_hosts.yml
+
+        - name: Wait for host
+          wait_for:
+            host: "{{ vmware_ip }}"
+            port: 22
+          delay: 30
+
+        - name: Pause for 1 min to build app cache
+          ansible.builtin.pause:
+            minutes: 1
+
+  always:
+    - fail:
+        msg: " TASK ENDING "
+      when: host_created is undefined

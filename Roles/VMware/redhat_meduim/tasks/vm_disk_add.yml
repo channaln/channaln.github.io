@@ -1,0 +1,85 @@
+---
+####################################################################################
+# Playbook to provision virtual machine in VMWare cluster
+- name: Add new VM disk to a server
+  hosts: localhost
+  gather_facts: false
+
+####################################################################################
+# Impor the required Ansible collections
+####################################################################################
+# Install the community.general collection
+# ansible-galaxy collection install community.general -p ./collections 
+# ansible-galaxy collection install community.vmware -p ./collections 
+  collections:
+    - community.vmware
+    - community.general
+#####################################################################################
+#  vars:
+#    vcenter_hostname: "vcenter.kuwaitnet.lab"
+#    vcenter_username: "administrator@kuwaitnet.lab"
+#    vcenter_password: "Esd@1qaz2wsx"
+#    vmware_datacenter: "kn-datacenter"
+#    vmware_datastore: "datastore_02"
+#    vm_name: "sample-vm"
+#    vm_disk_szie: "2"
+#    vm_disk_type: "thin"
+####################################################################################
+  tasks:
+  - name: Gather disk info from virtual machine using name
+    community.vmware.vmware_guest_disk_info:
+      hostname: "{{ vcenter_hostname }}" 
+      username: "{{ vcenter_username }}" 
+      password: "{{ vcenter_password }}" 
+#      hostname: '{{ lookup("env", "VMWARE_HOST") }}' 
+#      username: '{{ lookup("env", "VMWARE_USER") }}'
+#      password: '{{ lookup("env", "VMWARE_PASSWORD") }}'
+      datacenter: "{{vmware_datacenter}}"
+      validate_certs: false
+      name: "{{vm_name}}"
+    delegate_to: localhost
+    register: disk_info
+
+  - name: Set the query to get the scsi controller and unit number
+    set_fact:              
+      query_unit_number: "[*].value.unit_number"
+      query_scsi_controller: "[*].value.controller_bus_number"
+
+  - name: Set exsiting scsi controller and unit numbers 
+    set_fact:
+      unit_number: 
+        "{{disk_info.guest_disk_info | dict2items | json_query(query_unit_number) | length}}"
+      scsi_controller: 
+        "{{disk_info.guest_disk_info | dict2items | json_query(query_scsi_controller) | int}}"
+
+  - name: Print the scsi controller and unit number
+    ansible.builtin.debug: 
+      msg: "{{unit_number, scsi_controller}}"
+
+  - name: add disk to vm
+    vmware_guest_disk:
+      hostname: "{{ vcenter_hostname }}" 
+      username: "{{ vcenter_username }}" 
+      password: "{{ vcenter_password }}" 
+#      hostname: '{{ lookup("env", "VMWARE_HOST") }}' 
+#      username: '{{ lookup("env", "VMWARE_USER") }}'
+#      password: '{{ lookup("env", "VMWARE_PASSWORD") }}'
+      datacenter: "{{ vmware_datacenter }}"
+      validate_certs: false
+      name: "{{ vm_name }}"
+      disk:
+        - size_gb: "{{vm_disk_szie}}"
+          type: "{{vm_disk_type}}"
+          datastore: "{{ vmware_datastore }}"
+          state: present
+          scsi_controller: "{{ scsi_controller }}"
+          unit_number: "{{unit_number | int + 1}}"
+          scsi_type: "paravirtual"
+          disk_mode: "persistent"
+    register: vm_disk 
+
+  - name: Print the added disk information
+    ansible.builtin.debug: 
+      msg: "{{ vm_disk.disk_changes }}"  
+
+

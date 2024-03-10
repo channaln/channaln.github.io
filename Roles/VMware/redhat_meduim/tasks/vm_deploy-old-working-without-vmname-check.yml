@@ -1,0 +1,51 @@
+---
+- name: Deploy a virtual machine on VMware
+  community.vmware.vmware_guest:
+    hostname: '{{ lookup("env", "VMWARE_HOST") }}' 
+    username: '{{ lookup("env", "VMWARE_USER") }}'
+    password: '{{ lookup("env", "VMWARE_PASSWORD") }}'
+    datacenter: "{{ vmware_datacenter }}" 
+    cluster: "{{ vmware_cluster }}"
+    datastore: "{{ vmware_datastore }}"
+    validate_certs: false
+    folder: "{{ vmware_folder }}"
+    name: "{{ vmware_name }}"
+    state: poweredon
+    template: "{{ vmware_template }}"
+    disk: 
+      - size_gb: "{{ vmware_disk_size_gb | int }}"
+        type: "{{ vmware_disk_type | string }}"
+        datastore: "{{ vmware_datastore }}"
+    hardware: 
+      memory_mb: "{{ vmware_memory_mb | int }}"
+      num_cpus: "{{ vmware_number_of_cpus }}"
+      num_cpu_cores_per_socket: "{{ vmware_number_cpu_cores_per_socket }}"
+      hotadd_cpu: true
+      hotremove_cpu: true
+      hotadd_memory: false
+    networks: 
+      - name: "{{ vmware_networks_name }}"
+        start_connected: true
+        ip: "{{ vmware_ip }}"
+        netmask: "{{ vmware_netmask }}"
+        gateway: "{{ vmware_gateway }}"
+        type: "{{ vmware_ip_type }}"
+        wait_for_customization: true
+        wait_for_ip_address: true
+    customization: 
+        domain: "{{ domain }}"
+        hostname: "{{ hostname }}"
+        dns_servers: "{{ dns_servers }}"
+  delegate_to: localhost
+  register: host_created
+
+- name: add hosts at ansible inventory
+  include_tasks: add_hosts.yml
+
+- name: Wait for host
+  wait_for:
+    host: "{{ vmware_ip }}"
+    port: 22
+  delay: 30
+
+

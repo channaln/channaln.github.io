@@ -1,0 +1,10 @@
+---
+- name: Check the VM
+  ansible.builtin.import_tasks: check_vmname.yml
+  tags:
+    - vm_check
+
+- name: Deploy Multiple VMs
+  ansible.builtin.import_tasks: vm_deploy.yml
+  tags:
+    - vm_deploy
