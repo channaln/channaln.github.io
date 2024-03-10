@@ -1,6 +1,0 @@
----
-- name: add hosts in inventory
-  add_host:
-    hostname: "{{ vmware_name }}"
-    ansible_host: "{{ vmware_ip }}"
-
