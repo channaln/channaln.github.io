@@ -116,6 +116,9 @@ So I think you are ready to see some Ansible actions. You might need to open you
 {% endraw %}
 
 #### Reference
+[Click here to get complte role](https://github.com/channaln/website-roles/tree/main/VMware/redhat_virtual_machine).
+
+#### Reference
 Check out the official OpenShift documentation for more information.
-https://docs.ansible.com/ansible/latest/collections/community/vmware/index.html
-https://docs.ansible.com/ansible/latest/collections/community/vmware/vmware_guest_module.html
+- _italic_ https://docs.ansible.com/ansible/latest/collections/community/vmware/index.html
+- _italic_ https://docs.ansible.com/ansible/latest/collections/community/vmware/vmware_guest_module.html
