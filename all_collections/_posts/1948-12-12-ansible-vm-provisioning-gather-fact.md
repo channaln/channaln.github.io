@@ -118,7 +118,7 @@ So I think you are ready to see some Ansible actions. You might need to open you
 ---
 #### Complete Ansible Role
 - [Click here to get complte role - First Method](https://github.com/channaln/website-roles/tree/main/VMware/redhat_virtual_machine-%20First_Method).
-- [Click here to get complte role - First Method](https://github.com/channaln/website-roles/tree/main/VMware/redhat_virtual_machine-%20Second_Method).
+- [Click here to get complte role - Second Method](https://github.com/channaln/website-roles/tree/main/VMware/redhat_virtual_machine-%20Second_Method).
 
 ---
 #### Reference
