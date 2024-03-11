@@ -115,8 +115,46 @@ So I think you are ready to see some Ansible actions. You might need to open you
 ```
 {% endraw %}
 
+#### The Conditional part
+In Ansible, block and rescue are used together to handle errors or failures that might occur during the execution of multiple tasks. Here's a simple explanation:
+
+**Block**: A block in Ansible is a way to group multiple tasks together. This grouping allows you to apply certain operations, like error handling, to a set of tasks as a single unit. Tasks within a block are executed sequentially
+
+**Rescue**: The rescue section is used within a block to specify tasks that should be executed if any task within the block fails. It's like a fallback plan in case something goes wrong within the block. Tasks in the rescue section are executed only if one or more tasks in the associated block fail
+
+> In the following example, the task checks for the availability of a specific virtual machine name in the VCenter. If the name is found, the task fails and prints "Virtual Machine Name found." Conversely, if the name is not found, it prints "Virtual Machine will create."
+
+{% raw %}
+```yml
 ---
-#### Complete Ansible Role
+# You can use this way on both the Aansible Automation Platform and in terminal.
+# If this needs to work inside of the terminal, you have to first execute below commands with your VCenter credentialsor use can replase varibales with the values.
+# export VMWARE_HOST=replace.your_vcenter_name.com export VMWARE_USER=administrator@your_vcenter_name.com export VMWARE_PASSWORD=replase_with_your_user_password 
+- block:
+    - name: Gather all available VMs info
+      community.vmware.vmware_vm_info:
+        hostname: '{{ lookup("env", "VMWARE_HOST") }}'
+        username: '{{ lookup("env", "VMWARE_USER") }}'
+        password: '{{ lookup("env", "VMWARE_PASSWORD") }}'
+        validate_certs: false
+      delegate_to: localhost
+      register: vm_facts
+
+    - fail:
+        msg: "Virtual Machine Name found"
+      when: vm_name_to_check in vm_facts.virtual_machines | map(attribute='name') | list
+
+  rescue:
+    - debug:
+        msg: "Virtual Machine will create" 
+
+```
+{% endraw %}
+
+---
+#### Complete Ansible Roles
+> The information provided in this post aims to enhance your understanding of the following comprehensive roles. It is anticipated that these resources will significantly facilitate your work, offering a streamlined approach to your tasks.
+
 - [Click here to get complte role - First Method](https://github.com/channaln/website-roles/tree/main/VMware/redhat_virtual_machine-%20First_Method).
 - [Click here to get complte role - Second Method](https://github.com/channaln/website-roles/tree/main/VMware/redhat_virtual_machine-%20Second_Method).
 
