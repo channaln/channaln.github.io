@@ -5,12 +5,13 @@ date: 2021-11-04
 categories: [Ansible]
 
 ---
-There are a bunch of resources available for creating VMs in VMware environments. The thing is that if we create a VM in production-ready environments, let's say, different. When we are creating a VM by hand in a production-ready environment, there are a few things we usually do that are not directly related to the task of creating the VM. Ok, let me explain. 
-    See the below flowchart. This is the most commonly used approach (not 100% complete) when we are creating VMs in production environments.
+#### Overview
+In this blog post, you'll discover improved and streamlined roles designed to automate Virtual Machine Provisioning using templates in VMware with Ansible. Covering essential aspects like Virtual Machine setup, hardware configuration, network establishment, and basic OS customization, this resource also includes conditional checks to confirm the existence of Virtual Machines in the VCenter both before and after creation. Additionally, each task is thoroughly explained with practical examples, offering a user-friendly guide to simplify your workflow.
 
+Furthermore, when dealing with Windows environments, additional considerations arise, such as Sysprep and WinRM configurations. In this context, it's crucial to understand why these elements warrant attention and their significance in the provisioning process. Sysprep ensures the integrity and security of Windows installations by preparing them for duplication or customization, while WinRM configurations facilitate remote management and automation tasks, enhancing operational efficiency. Exploring these topics elucidates their importance in achieving smooth and reliable automation workflows within Windows environments.We will go deeper when comes to the relevant sections.
+
+#### Flowchart of the example Scenario 
 ![VM Provissioning Image](https://lucid.app/publicSegments/view/fa98b297-95df-4611-8ddb-fddd46eb8a81/image.png)
-`Folks please consider this is not a technical diagram this is just a
- diagram I have created to explain my point of view_` 
 
 So I think you are ready to see some Ansible actions. You might need to open your VSCode. 
 <br>

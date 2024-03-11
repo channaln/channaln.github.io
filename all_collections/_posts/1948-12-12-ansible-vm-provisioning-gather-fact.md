@@ -115,6 +115,7 @@ So I think you are ready to see some Ansible actions. You might need to open you
 ```
 {% endraw %}
 
+---
 #### The Conditional part
 In Ansible, block and rescue are used together to handle errors or failures that might occur during the execution of multiple tasks. Here's a simple explanation:
 
