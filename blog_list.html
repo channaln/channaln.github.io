@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blog Posts - Chanan Sandaruwan</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #000;
+      color: #f8f9fa;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .content-wrapper {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2rem;
+      border: 1px solid #666;
+      border-radius: 1rem;
+      background-color: #111;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+    }
+    .search-box {
+      background-color: #222;
+      border: 1px solid #555;
+      color: #fff;
+      padding: 0.6rem 1rem;
+    }
+    .search-box:focus {
+      box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.15);
+    }
+    .blog-list .list-group-item {
+      background: linear-gradient(90deg, #1a1a1a, #2a2a2a);
+      border: 1px solid #333;
+      border-radius: 0.6rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+    }
+    .blog-list a {
+      text-decoration: none;
+      color: #ffffff;
+      font-weight: 500;
+      display: block;
+      padding: 1rem;
+    }
+    .blog-list .list-group-item:hover {
+      background-color: #333;
+      transform: scale(1.01);
+    }
+    .blog-list a:hover {
+      color: #e0e0e0;
+    }
+    h1 {
+      font-size: 2.4rem;
+      letter-spacing: 1px;
+      color: #fff;
+    }
+    .text-muted {
+      color: #bbb !important;
+    }
+    footer {
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="content-wrapper">
+    <div class="mb-4">
+      <h1 class="text-uppercase"><i class="fas fa-blog"></i> Blog Posts</h1>
+      <p class="text-muted">Explore my latest technical articles, tutorials, and DevOps insights.</p>
+    </div>
+
+    <input type="text" class="form-control search-box mb-4" id="searchInput" placeholder="Search blog titles...">
+
+    <ul class="list-group blog-list" id="blogList">
+      <li class="list-group-item">
+        <a href="blog/cluster_vs_proxy.html">
+          <i class="fas fa-server me-2"></i> MOD_PROXY_BALANCER vs MOD_CLUSTER: Which One Should You Use?
+        </a>
+      </li>
+      <li class="list-group-item">
+        <a href="blog/tomcat_upgrade.html">
+          <i class="fas fa-network-wired me-2"></i> Upgrading Apache Tomcat: A Practical Guide
+        </a>
+      </li>
+      <!-- <li class="list-group-item">
+        <a href="blog/ci_cd_pipeline_minikube.html">
+          <i class="fas fa-code-branch me-2"></i> Building a CI/CD Pipeline on Minikube (GitHub → Docker → K8s)
+        </a>
+      </li> 
+      Add more posts here -->
+    </ul>
+
+    <footer class="mt-5 pt-3 border-top text-muted small text-center">
+      &copy; 2025 Chanan Sandaruwan | Designed for professionals
+    </footer>
+  </div>
+
+  <script>
+    const searchInput = document.getElementById("searchInput");
+    const blogList = document.getElementById("blogList");
+
+    searchInput.addEventListener("input", function () {
+      const filter = this.value.toLowerCase();
+      const items = blogList.getElementsByTagName("li");
+
+      Array.from(items).forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(filter) ? "" : "none";
+      });
+    });
+  </script>
+</body>
+</html>
