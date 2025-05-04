@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <!-- Open Graph meta tags for LinkedIn / Facebook / others -->
+  <meta property="og:title" content="MOD_PROXY_BALANCER vs MOD_CLUSTER - Which One Should You Use?" />
+  <meta property="og:description" content="A technical comparison between Apache mod_proxy_balancer and mod_cluster for JBoss/WildFly clustering." />
+  <meta property="og:image" content="https://channaln.github.io/images/post/cluster_vs_proxy.png" />
+  <meta property="og:url" content="https://channaln.github.io/blog/cluster_vs_proxy.html" />
+  <meta property="og:type" content="article" />
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MOD_PROXY_BALANCER VS MOD_CLUSTER</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+    .content-wrapper {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2rem;
+      border: 2px solid #444;
+      border-radius: 1rem;
+      background-color: #1a1a1a;
+    }
+    .table-dark thead th {
+      background-color: #1f1f1f;
+    }
+    pre {
+      background-color: #1a1a1a;
+      color: #00ffcc;
+      padding: 1rem;
+      border-radius: 0.5rem;
+    }
+    .meta-info {
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="content-wrapper">
+    <div class="meta-info mb-3">
+      <div><strong>Date:</strong> May 4, 2025</div>
+      <div><strong>Product:</strong> Apache Tomcat  </div>
+    </div>
+
+    <h1 class="mb-4 text-uppercase">Upgrading Apache Tomcat: A Practical Guide</h1>
+    <div class="text-center my-4">
+      <img src="../images/post/tomcat_upgrade.png" alt="Cluster vs Proxy" class="img-fluid" style="max-width: 500px; height: auto;">
+    </div>
+
+  <p>Upgrading Apache Tomcat is essential to maintain security, performance, and compatibility with the latest Java specifications. This guide provides a comprehensive overview of the upgrade process, highlighting key considerations and steps to ensure a smooth transition.</p>
+
+  <hr class="my-5">
+
+  <h2>🆙 Major vs. Minor Upgrades</h2>
+  <p><strong>Major upgrades</strong> (e.g., from 9.0 to 10.0) can introduce significant changes including configuration structures and Java package names. <strong>Minor upgrades</strong> (e.g., from 9.0.65 to 9.0.85) mostly include bug fixes and small enhancements.</p>
+
+  <hr class="my-5">
+
+  <h2>⚠️ Key Considerations for Major Upgrades</h2>
+  <ul>
+    <li><strong>Always read the migration guide</strong> of the target Tomcat version before upgrading.</li>
+    <li><strong>Do not copy old configuration files directly</strong>. Use the new default configs and migrate customizations manually.</li>
+    <li><strong>Ensure the correct Java version</strong> is installed. For example, Tomcat 10.1 requires Java 11+.</li>
+    <li><strong>Back up your current installation</strong> including logs, conf directory, webapps, and custom scripts before performing the upgrade.</li>
+    <li><strong>Test in a staging environment</strong> before applying the upgrade to production.</li>
+  </ul>
+
+  <hr class="my-5">
+
+  <h2>🔧 Migrating Configuration Files</h2>
+  <p>Probably the most important configuration file you will have to migrate is your <code>conf/server.xml</code> file.</p>
+  <p>To quickly identify changes made in your environment, compare the stock and customized versions using <code>diff</code>:</p>
+  <pre><code>$ diff /path/to/stock/tomcat/conf/server.xml /path/to/your/tomcat/conf/server.xml</code></pre>
+  <p>This will show the exact differences made in your setup, which you can then adapt into the new version’s configuration file.</p>
+
+  <h4 class="mt-4">📁 Other Important Files to Review</h4>
+  <p>You may also want to migrate or adapt the following configuration files:</p>
+  <ul>
+    <li>conf/web.xml</li>
+    <li>conf/context.xml</li>
+    <li>conf/tomcat-users.xml</li>
+    <li>conf/logging.properties</li>
+    <li>bin/setenv.sh (if it exists)</li>
+    <li>conf/catalina.properties</li>
+    <li>conf/catalina.policy</li>
+    <li>conf/jaspic-providers.xml</li>
+  </ul>
+  <p>Use <code>diff</code> as shown above to identify and adapt any customizations made to these files.</p>
+
+  <hr class="my-5">
+
+  <h2>🧭 Recommended Upgrade Workflow</h2>
+  <pre><code>
+  ┌───────────────────────────────┐
+  │     Backup Existing Setup     │
+  └────────────┬──────────────────┘
+               │
+               ▼
+  ┌───────────────────────────────┐
+  │  Download New Tomcat Version  │
+  └────────────┬──────────────────┘
+               │
+               ▼
+  ┌───────────────────────────────┐
+  │  Compare & Migrate Configs    │
+  └────────────┬──────────────────┘
+               │
+               ▼
+  ┌───────────────────────────────┐
+  │   Validate Dependencies (JDK) │
+  └────────────┬──────────────────┘
+               │
+               ▼
+  ┌───────────────────────────────┐
+  │      Test in Staging          │
+  └────────────┬──────────────────┘
+               │
+               ▼
+  ┌───────────────────────────────┐
+  │   Deploy to Production Safely │
+  └───────────────────────────────┘
+  </code></pre>
+
+  <hr class="my-5">
+
+  <h2>📊 Example Feature Comparison Table</h2>
+  <table class="table table-bordered table-dark table-striped">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>Tomcat 9.0</th>
+        <th>Tomcat 10.0</th>
+        <th>Tomcat 10.1</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Java Requirement</td>
+        <td>Java 8</td>
+        <td>Java 8</td>
+        <td>Java 11+</td>
+      </tr>
+      <tr>
+        <td>Servlet API</td>
+        <td>4.0</td>
+        <td>5.0</td>
+        <td>6.0</td>
+      </tr>
+      <tr>
+        <td>Package Namespace</td>
+        <td>javax.*</td>
+        <td>jakarta.*</td>
+        <td>jakarta.*</td>
+      </tr>
+      <tr>
+        <td>HTTP/2 Support</td>
+        <td>Yes</td>
+        <td>Yes</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td>BIO Connector</td>
+        <td>Removed</td>
+        <td>N/A</td>
+        <td>N/A</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr class="my-5">
+
+  <h2>🖥️ Example Command</h2>
+  <pre><code># Start the new Tomcat instance
+$CATALINA_HOME/bin/startup.sh</code></pre>
+
+  <hr class="my-5">
+
+  <h2>✅ Final Thoughts</h2>
+  <p>Upgrading Apache Tomcat is not just about replacing binaries — it's about understanding your customizations and validating compatibility. Always start with a fresh installation, identify the deltas using <code>diff</code>, and apply only what’s necessary to the new configuration files.</p>
+  <p>Follow the upgrade workflow, test thoroughly, and avoid copying entire directories blindly. This ensures a secure and stable deployment aligned with Tomcat's best practices.</p>
+
+  <footer class="mt-5 pt-3 border-top text-muted small text-center">
+    &copy; 2025 Channa Sandaruwan | Designed for professionals
+  </footer>
+
+</body>
+</html>
