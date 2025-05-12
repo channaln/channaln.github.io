@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <!-- Open Graph meta tags -->
+  <meta property="og:title" content="JBoss EAP 7.4 Domain Mode Setup Guide" />
+  <meta property="og:description" content="A complete production-grade guide to configure JBoss EAP 7.4 in Domain Mode with clustering and validation." />
+  <meta property="og:image" content="https://channaln.github.io/images/post/jboss_domain.png" />
+  <meta property="og:url" content="https://channaln.github.io/blog/jboss_domain_setup.html" />
+  <meta property="og:type" content="article" />
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JBoss EAP 7.4 Domain Mode Setup Guide</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+    .content-wrapper {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2rem;
+      border: 2px solid #444;
+      border-radius: 1rem;
+      background-color: #1a1a1a;
+    }
+    .table-dark thead th {
+      background-color: #1f1f1f;
+    }
+    pre {
+      background-color: #1a1a1a;
+      color: #00ffcc;
+      padding: 1rem;
+      border-radius: 0.5rem;
+    }
+    .meta-info {
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <div class="content-wrapper">
+    <div class="meta-info mb-3">
+      <div><strong>Date:</strong> May 2025</div>
+      <div><strong>Product:</strong> JBoss EAP 7.4</div>
+    </div>
+
+    <h1 class="mb-4 text-uppercase">⚙️ JBoss EAP 7.4 Domain Mode Setup Guide (Production-Grade)</h1>
+
+    <p>This guide walks through the step-by-step setup of JBoss EAP 7.4 in Domain Mode with a two-server architecture, clustering, TCP Ping setup, and validation at every step.</p>
+
+    <hr class="my-5">
+
+    <h2>📄 Project Overview</h2>
+    <table class="table table-bordered table-dark table-striped">
+      <thead><tr><th>Server</th><th>Role</th><th>Hostname</th><th>IP</th></tr></thead>
+      <tbody>
+        <tr><td>Server 1</td><td>Domain Controller</td><td>jboss-master</td><td>192.168.100.10</td></tr>
+        <tr><td>Server 2</td><td>Host Controller (slave)</td><td>jboss-slave</td><td>192.168.100.11</td></tr>
+      </tbody>
+    </table>
+
+    <hr class="my-5">
+
+    <h2>📁 Configuration File Flow (Numerical Order)</h2>
+    <pre><code>Step 1 → host-master.xml     (Defines the Domain Controller behavior)
+Step 2 → domain.xml          (Defines server groups, profiles, bindings)
+Step 3 → host-slave.xml      (Defines which servers run on slave)
+Step 4 → domain.xml profiles (Defines profile-specific behavior like clustering, JGroups, Infinispan)</code></pre>
+
+    <h2 class="mt-5">🧠 Architecture Diagram: Configuration File Role in Domain Behavior</h2>
+    <pre><code>                  ┌────────────────────────────┐
+                  │      host-master.xml       │
+                  │   - Declares DC (<local/>) │
+                  │   - Binds management port  │
+                  └────────────┬───────────────┘
+                               │
+                               ▼
+                  ┌────────────────────────────┐
+                  │        domain.xml           │
+                  │   - Profiles: ha/full-ha    │
+                  │   - Server groups           │
+                  │   - Socket bindings         │
+                  └────────────┬───────────────┘
+                               │ Shared across domain
+    ┌──────────────────────────┴─────────────────────────┐
+    ▼                                                    ▼
+┌──────────────────────┐                          ┌──────────────────────┐
+│     host-slave.xml   │                          │   host-slave2.xml    │
+│  - Connects to DC    │                          │  - Connects to DC    │
+│  - Declares servers  │                          │  - Declares servers  │
+└──────────────────────┘                          └──────────────────────┘</code></pre>
+
+    <hr class="my-5">
+
+    <h2>✅ Configuration Steps with Validation</h2>
+    <h4>1. <code>host-master.xml</code></h4>
+    <p><strong>Path:</strong> <code>/opt/jboss-eap-7.4/domain/configuration/host-master.xml</code></p>
+    <pre><code>&lt;host name="master" xmlns="urn:jboss:domain:13.0"&gt;
+  &lt;management&gt;
+    &lt;management-interfaces&gt;
+      &lt;http-interface security-realm="ManagementRealm"&gt;
+        &lt;socket-binding host="0.0.0.0" port="9990"/&gt;
+      &lt;/http-interface&gt;
+    &lt;/management-interfaces&gt;
+  &lt;/management&gt;
+  &lt;domain-controller&gt;
+    &lt;local/&gt;
+  &lt;/domain-controller&gt;
+&lt;/host&gt;</code></pre>
+    <p><strong>Command:</strong></p>
+    <pre><code>cd /opt/jboss-eap-7.4/bin
+domain.sh --host-config=host-master.xml</code></pre>
+
+    <h4>2. <code>domain.xml</code></h4>
+    <pre><code>&lt;domain xmlns="urn:jboss:domain:13.0" name="jboss-domain"&gt;
+  &lt;profiles&gt;
+    &lt;profile name="full-ha"/&gt;
+    &lt;profile name="ha"/&gt;
+  &lt;/profiles&gt;
+  &lt;server-groups&gt;
+    &lt;server-group name="acme-servers" profile="full-ha"&gt;
+      &lt;socket-binding-group ref="full-ha-sockets"/&gt;
+    &lt;/server-group&gt;
+    &lt;server-group name="apex-servers" profile="ha"&gt;
+      &lt;socket-binding-group ref="ha-sockets"/&gt;
+    &lt;/server-group&gt;
+  &lt;/server-groups&gt;
+  &lt;socket-binding-groups&gt;
+    &lt;socket-binding-group name="full-ha-sockets" default-interface="public"/&gt;
+    &lt;socket-binding-group name="ha-sockets" default-interface="public"/&gt;
+  &lt;/socket-binding-groups&gt;
+&lt;/domain&gt;</code></pre>
+
+    <h4>3. <code>host-slave.xml</code></h4>
+    <pre><code>&lt;host name="slave" xmlns="urn:jboss:domain:13.0"&gt;
+  &lt;domain-controller&gt;
+    &lt;remote host="192.168.100.10" port="9999" security-realm="ManagementRealm"/&gt;
+  &lt;/domain-controller&gt;
+  &lt;management&gt;
+    &lt;management-interfaces&gt;
+      &lt;http-interface security-realm="ManagementRealm"&gt;
+        &lt;socket-binding host="0.0.0.0" port="9990"/&gt;
+      &lt;/http-interface&gt;
+    &lt;/management-interfaces&gt;
+  &lt;/management&gt;
+  &lt;servers&gt;
+    &lt;server name="server-one" group="acme-servers" auto-start="true" socket-binding-port-offset="0"/&gt;
+    &lt;server name="server-two" group="acme-servers" auto-start="true" socket-binding-port-offset="100"/&gt;
+    &lt;server name="server-three" group="apex-servers" auto-start="true" socket-binding-port-offset="200"/&gt;
+    &lt;server name="server-four" group="apex-servers" auto-start="true" socket-binding-port-offset="300"/&gt;
+  &lt;/servers&gt;
+&lt;/host&gt;</code></pre>
+
+    <h4>4. JGroups (Clustering)</h4>
+    <p>Configured directly under the <code>&lt;profile&gt;</code> section of <code>domain.xml</code>:</p>
+    <pre><code>&lt;stack name="tcp"&gt;
+  &lt;transport type="TCP" socket-binding="jgroups-tcp"/&gt;
+  &lt;protocol type="TCPPING"&gt;
+    &lt;property name="initial_hosts"&gt;192.168.100.10[7600],192.168.100.11[7600]&lt;/property&gt;
+    &lt;property name="port_range"&gt;10&lt;/property&gt;
+  &lt;/protocol&gt;
+  &lt;protocol type="FD_SOCK"/&gt;
+  &lt;protocol type="FD"/&gt;
+  &lt;protocol type="VERIFY_SUSPECT"/&gt;
+  &lt;protocol type="pbcast.NAKACK2"/&gt;
+  &lt;protocol type="UNICAST3"/&gt;
+  &lt;protocol type="pbcast.STABLE"/&gt;
+  &lt;protocol type="pbcast.GMS"/&gt;
+  &lt;protocol type="FRAG2"/&gt;
+&lt;/stack&gt;</code></pre>
+
+    <h4 class="mt-5">✅ CLI Test</h4>
+    <pre><code>jboss-cli.bat --connect --controller=192.168.100.10:9990
+/host=master:read-resource</code></pre>
+
+    <h4 class="mt-4">📊 Final Summary</h4>
+    <table class="table table-dark table-bordered">
+      <thead><tr><th>Task</th><th>Verified</th></tr></thead>
+      <tbody>
+        <tr><td>host-master.xml starts DC</td><td>✅</td></tr>
+        <tr><td>domain.xml defines groups</td><td>✅</td></tr>
+        <tr><td>host-slave.xml connects to DC</td><td>✅</td></tr>
+        <tr><td>4 servers correctly assigned</td><td>✅</td></tr>
+        <tr><td>Port offsets unique</td><td>✅</td></tr>
+        <tr><td>TCP Ping clustering works</td><td>✅</td></tr>
+        <tr><td>CLI access via controller IP works</td><td>✅</td></tr>
+      </tbody>
+    </table>
+
+    <footer class="mt-5 pt-3 border-top text-muted small text-center">
+      &copy; 2025 Channa Sandaruwan | Designed for professionals
+    </footer>
+  </div>
+</body>
+</html>
