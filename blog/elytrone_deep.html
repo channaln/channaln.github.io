@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html data-bs-theme="dark" lang="en">
+<head>
+<meta property="og:title" content="Authentication Mechanisms in JBoss Elytron" />
+<meta property="og:description" content="Deep dive into how Elytron handles authentication types in JBoss EAP – covering SSL, SASL, and management security contexts." />
+<meta property="og:image" content="https://channaln.github.io/images/post/jboss_elytron_auth.png" />
+<meta property="og:url" content="https://channaln.github.io/blog/jboss_elytron_auth.html" />
+<meta property="og:type" content="article" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Authentication Mechanisms in JBoss Elytron</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<style>
+  body {
+    background-color: #121212;
+    color: #e0e0e0;
+  }
+  .content-wrapper {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    border: 2px solid #444;
+    border-radius: 1rem;
+    background-color: #1a1a1a;
+  }
+  .table-dark thead th {
+    background-color: #1f1f1f;
+  }
+  table th, table td {
+    vertical-align: middle !important;
+    text-align: left;
+    white-space: nowrap;
+  }
+  table th {
+    width: 30%;
+  }
+  pre {
+    background-color: #1a1a1a;
+    color: #00ffcc;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    white-space: pre-wrap;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  .meta-info {
+    font-size: 0.9rem;
+    color: #aaa;
+  }
+</style>
+</head>
+<body>
+<div class="content-wrapper">
+<div class="meta-info mb-3">
+<div><strong>Date:</strong> May 28, 2025</div>
+<div><strong>Product:</strong> JBoss EAP / Elytron</div>
+</div>
+<h1 class="mb-4 text-uppercase">Authentication Mechanisms in JBoss Elytron</h1>
+<p>This post explores how <code>Elytron</code> secures <strong>JBoss EAP</strong> using TLS, SASL, HTTP authentication, and trust relationships across management interfaces and domain communication.</p>
+<hr class="my-5"/>
+<h2>📊 Elytron Authentication Flow – Deep Dive</h2>
+<pre><code>
+                          +-------------------------+
+                          |       Elytron Core      |
+                          |  (Security Subsystem)   |
+                          +-----------+-------------+
+                                      |
+                                      ▼
+                          +-------------------------+
+                          |     Security Domain     |◄────────────────┐
+                          |  (Combines Realms +     |                 │
+                          |   Auth Mechanisms)      |                 │
+                          +-----------+-------------+                 │
+                                      |                               │
+              +-----------------------+------------------------+      │
+              |                                                |      │
+              ▼                                                ▼      │
+  +---------------------+                        +--------------------------+
+  |   Security Realms   |                        | Authentication Mechanisms|
+  +---------+-----------+                        +-------------+------------+
+            |                                              ┌──▼──┐
+            |                                              │HTTP │ BASIC / FORM
+            |                                              └─────┘
+  ┌─────────┴────────────┐                       ┌─────────▼────────────┐
+  | Properties / LDAP    |                       |  SASL: DIGEST, SCRAM  |
+  | JDBC / Keystore      |                       |  EXTERNAL / JWT       |
+  └──────────────────────┘                       └───────────────────────┘
+
+                                      |
+                                      ▼
+                          +-------------------------+
+                          |  server-ssl-context      | ← TLS Config: cipher, protocol
+                          |  → Uses key-manager      |
+                          |  → May require client-auth|
+                          +-------------------------+
+                                      |
+                                      ▼
+  ┌───────────────────────────── Management Access ─────────────────────────────┐
+  |                                                                             |
+  |  +------------------+       +-----------------------+                       |
+  |  | Management Realm |◄──────| mgmt-interfaces (CLI) |                       |
+  |  +------------------+       +-----------------------+                       |
+  |          ▲                             ▲                                    |
+  |          |                             |                                    |
+  |   Users from realm               ssl-context=httpsSSC                       |
+  └───────────────────────────────-─────────────────────────────────────────────┘
+
+  ┌───────────────────────────── Application Access ─────────────────────────────┐
+  |                                                                              |
+  |  +------------------+        +----------------------------+                  |
+  |  | ApplicationRealm |◄───────| http-authentication-factory|                  |
+  |  +------------------+        +----------------------------+                  |
+  |          ▲                              ▲                                    |
+  |          |                              |                                    |
+  |   JDBC / LDAP / Token Realm       Mechanisms: BASIC, FORM, SCRAM             |
+  └──────────────────────────────────--──────────────────────────────────────────┘
+</code></pre>
+<p class="mt-4">
+This enhanced diagram shows the interaction between Elytron components: how <strong>realms</strong> provide identity, how <strong>authentication mechanisms</strong> (like HTTP BASIC or SASL SCRAM) are applied via <code>authentication-factories</code>, and how <code>ssl-context</code> plays a central role for TLS-secured management or application endpoints.
+</p>
+<hr class="my-5"/>
+<h2>🔐 Authentication Types Explained</h2>
+<h4>🧩 SSL/TLS-Based Authentication</h4>
+<ul>
+  <li><strong>1-Way SSL</strong>: Slave verifies master's identity using a truststore.</li>
+  <li><strong>2-Way SSL</strong>: Mutual trust with keypairs and CA-signed certificates.</li>
+  <li><strong>EXTERNAL</strong>: Uses client cert identity (SASL or TLS-based).</li>
+</ul>
+<h4>🔑 Username/Password Authentication</h4>
+<ul>
+  <li><strong>BASIC</strong>: Base64 over HTTP headers.</li>
+  <li><strong>FORM</strong>: Credential login via form submission.</li>
+  <li><strong>DIGEST-MD5</strong>: SASL with hashed auth exchange.</li>
+  <li><strong>SCRAM-SHA-512</strong>: Modern salted credential hashing.</li>
+</ul>
+<h4>🪪 Token-Based Authentication</h4>
+<ul>
+  <li><strong>JWT</strong>: OAuth2-compatible bearer token validation (Token Realm).</li>
+</ul>
+<h4>📜 Certificate-Based Authentication</h4>
+<ul>
+  <li><strong>CLIENT-CERT</strong>: Used in TLS client auth + mapped via Elytron trust.</li>
+</ul>
+<hr class="my-5"/>
+<h2>📋 Authentication Mechanism Summary Table</h2>
+<div class="table-responsive">
+<table class="table table-bordered table-dark table-striped">
+  <thead>
+    <tr>
+      <th>Use Case</th>
+      <th>Mechanism</th>
+      <th>Backed By</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Admin Console / CLI</td>
+      <td>BASIC, CLIENT-CERT, DIGEST</td>
+      <td>Properties / LDAP Realm</td>
+    </tr>
+    <tr>
+      <td>Host Controller Sync</td>
+      <td>1-Way/2-Way SSL, EXTERNAL</td>
+      <td>ssl-context + trust-manager</td>
+    </tr>
+    <tr>
+      <td>App Login (Forms)</td>
+      <td>FORM, SCRAM</td>
+      <td>JDBC / LDAP Realm</td>
+    </tr>
+    <tr>
+      <td>API Access</td>
+      <td>JWT Token</td>
+      <td>Token Realm</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<hr class="my-5"/>
+
+<h2>🔐 What Is a Security Realm? And Is Elytron One?</h2>
+<p><strong>A security realm</strong> in JBoss is a logical source of user identities. Think of it like a user directory: it knows who the users are, how to verify their passwords or credentials, and what roles or permissions they have.</p>
+
+<p>Security realms can be based on:</p>
+<ul>
+  <li><strong>Properties files</strong> (like <code>mgmt-users.properties</code>)</li>
+  <li><strong>LDAP</strong> directories (like Active Directory)</li>
+  <li><strong>JDBC</strong> databases (custom user tables)</li>
+  <li><strong>Token-based</strong> identity systems (JWT, OAuth2)</li>
+</ul>
+
+<p>These realms are then plugged into security domains, which control what users can access.</p>
+
+<h3>🧠 Is Elytron a Security Realm?</h3>
+<p>Not exactly — <strong>Elytron</strong> is more than just a realm. It’s the full <em>security framework</em> introduced in WildFly and JBoss EAP to replace older systems like PicketBox and legacy <code>&lt;security-realm&gt;</code> configs. Elytron manages:</p>
+<ul>
+  <li>Security realms</li>
+  <li>SSL/TLS configuration</li>
+  <li>Authentication mechanisms (BASIC, FORM, SCRAM, etc.)</li>
+  <li>Authorization and role-decoding</li>
+  <li>Credential stores and identity trust</li>
+</ul>
+
+<h3>✅ Why Elytron Is Preferred</h3>
+<ul>
+  <li>🧩 <strong>Unified</strong>: It provides a single way to manage all types of security, from web logins to backend service authentication.</li>
+  <li>🔐 <strong>Secure</strong>: Built on modern encryption, hashing algorithms, and a pluggable architecture.</li>
+  <li>🛠️ <strong>Modular</strong>: Supports layering of realms, SSL contexts, and match rules for ultimate flexibility.</li>
+  <li>🔄 <strong>Dynamic</strong>: You can update security settings at runtime using CLI or management console.</li>
+  <li>🗂️ <strong>Centralized</strong>: It centralizes all identity and trust management across the domain.</li>
+</ul>
+
+<p>In short, Elytron isn't just more secure — it’s also much easier to use, update, and scale securely across large JBoss deployments.</p>
+
+<p class="text-muted small">Reference: <a href="https://docs.wildfly.org/elytron" target="_blank">WildFly Elytron Official Docs</a></p>
+
+<footer class="mt-5 pt-3 border-top text-muted small text-center">
+  &copy; 2025 Chanan Sandaruwan | Designed for professionals
+</footer>
+</div>
+</body>
+</html>
