@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+
+<html data-bs-theme="dark" lang="en">
+<head>
+<!-- Open Graph meta tags for LinkedIn / Facebook / others -->
+<meta content="MOD_PROXY_BALANCER vs MOD_CLUSTER - Which One Should You Use?" property="og:title"/>
+<meta content="A technical comparison between Apache mod_proxy_balancer and mod_cluster for JBoss/WildFly clustering." property="og:description"/>
+<meta content="https://channaln.github.io/images/post/cluster_vs_proxy.png" property="og:image"/>
+<meta content="https://channaln.github.io/blog/cluster_vs_proxy.html" property="og:url"/>
+<meta content="article" property="og:type"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>MOD_PROXY_BALANCER VS MOD_CLUSTER</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<style>
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+    .content-wrapper {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2rem;
+      border: 2px solid #444;
+      border-radius: 1rem;
+      background-color: #1a1a1a;
+    }
+    .table-dark thead th {
+      background-color: #1f1f1f;
+    }
+    pre {
+      background-color: #1a1a1a;
+      color: #00ffcc;
+      padding: 1rem;
+      border-radius: 0.5rem;
+    }
+    .meta-info {
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+<div class="content-wrapper">
+<div class="meta-info mb-3">
+<div><strong>Date:</strong> May 28, 2025</div>
+<div><strong>Product:</strong> JBoss EAP 7.4 Domain Mode</div>
+</div>
+<h1 class="mb-4 text-uppercase">JBoss Domain Mode – Full Elytron + Profile Mapping Diagram</h1>
+<p>This in-depth technical breakdown provides a complete line diagram and configuration trace of how <code>domain.xml</code>, <code>host-master.xml</code>, and <code>host-slave.xml</code> interact under JBoss domain mode, using Elytron SSL, server groups, authentication contexts, and inherited subsystems.</p>
+<hr class="my-5"/>
+<h2>🔗 One-Line System Mapping (SSL + Server Profiles)</h2>
+<pre><code>
+                                                   ┌─────────────────────────────────────────────┐
+                                                   │                domain.xml                   │
+                                                   └─────────────────────────────────────────────┘
+                                                                  │
+                                                                  ▼
+                                                   ┌─────────────────────────────────────────────┐
+                                                   │              &lt;profiles&gt;                     │
+                                                   │   ├─ full (→ acme-servers)                  │
+                                                   │   └─ ha   (→ apex-servers)                  │
+                                                   └─────────────────────────────────────────────┘
+                                                                  │
+                                                                  ▼
+                                                   ┌─────────────────────────────────────────────┐
+                                                   │             &lt;server-groups&gt;                 │
+                                                   │   ├─ acme-servers → profile="full"          │
+                                                   │   └─ apex-servers → profile="ha"            │
+                                                   └─────────────────────────────────────────────┘
+                                                                  │
+                                                                  ▼
+                                                   ┌─────────────────────────────────────────────┐
+                                                   │     &lt;subsystem xmlns="elytron"&gt;             │
+                                                   │   ┌──────────────────────────────────────┐   │
+                                                   │   │ key-store httpsKS                    │   │
+                                                   │   │  → jboss.keystore                    │   │
+                                                   │   └──────────────────────────────────────┘   │
+                                                   │   ┌──────────────────────────────────────┐   │
+                                                   │   │ key-manager httpsKM                  │   │
+                                                   │   │  → uses httpsKS                      │   │
+                                                   │   └──────────────────────────────────────┘   │
+                                                   │   ┌──────────────────────────────────────┐   │
+                                                   │   │ server-ssl-context httpsSSC          │◄──┐│
+                                                   │   │  → uses httpsKM                      │   ││
+                                                   │   │  → used in mgmt interfaces           │   ││
+                                                   │   └──────────────────────────────────────┘   ││
+                                                   └─────────────────────────────────────────────┘│
+                                                                                                   ▼
+                                  ┌─────────────────────────────────────────────┐         ┌─────────────────────────────────────────────┐
+                                  │            host-master.xml                  │         │               host-slave.xml                │
+                                  └─────────────────────────────────────────────┘         └─────────────────────────────────────────────┘
+                                                 │                                                   │
+                                                 ▼                                                   ▼
+                                  ┌─────────────────────────────────────────────┐         ┌─────────────────────────────────────────────┐
+                                  │  &lt;domain-controller local&gt; (boot DC)         │         │  &lt;domain-controller remote&gt;                │
+                                  └─────────────────────────────────────────────┘         │  → host=10.10.20.231                       │
+                                                 │                                         │  → protocol=remote+https                   │
+                                                 ▼                                         │  → authentication-context=slave-context   │
+                                  ┌─────────────────────────────────────────────┐         └─────────────────────────────────────────────┘
+                                  │  &lt;management-interfaces&gt;                    │                    │
+                                  │  → ssl-context=httpsSSC                    │◄────────────────────┘
+                                  └─────────────────────────────────────────────┘
+                                                 ▲
+                                                 │ Reuses httpsSSC defined in domain.xml
+                                                 ▼
+                                  ┌─────────────────────────────────────────────┐
+                                  │  Inherits Elytron from domain               │
+                                  └─────────────────────────────────────────────┘
+
+
+                   ┌───────────────────────────────────────────────────────────────────────────────────────────────────────┐
+                   │                                 host-slave.xml Elytron Subsystem (local override)                      │
+                   └───────────────────────────────────────────────────────────────────────────────────────────────────────┘
+                    │
+                    ▼
+          ┌────────────────────────────────────┐
+          │ trust-store httpsTS                │
+          │  → truststore.jks                  │
+          └────────────────────────────────────┘
+                    │
+                    ▼
+          ┌────────────────────────────────────┐
+          │ trust-manager httpsTM              │
+          │  → uses httpsTS                    │
+          └────────────────────────────────────┘
+                    │
+                    ▼
+          ┌────────────────────────────────────┐
+          │ ssl-context httpsSSC               │
+          │  → trust-manager=httpsTM           │
+          └────────────────────────────────────┘
+                    │                              
+                    ▼
+          ┌────────────────────────────────────┐
+          │ authentication-context slave-ctx   │
+          │ → match-host=10.10.20.231          │
+          │ → ssl-context=httpsSSC             │
+          └────────────────────────────────────┘
+                    │
+                    ▼
+          ┌────────────────────────────────────┐
+          │ &lt;management-interfaces&gt;            │
+          │ → ssl-context=httpsSSC             │
+          └────────────────────────────────────┘
+
+
+                  ┌──────────────────────────────────────────────┐              ┌──────────────────────────────────────────────┐
+                  │     &lt;servers&gt; in host-slave.xml              │              │         &lt;server-groups&gt; in domain.xml         │
+                  └──────────────────────────────────────────────┘              └──────────────────────────────────────────────┘
+                           │       maps group → apex-servers                              │
+                           │       maps group → acme-servers                              │
+                           └──────────────────────────────────────→ inherits profile=ha / full, socket-bindings, deployments
+</code></pre>
+<hr class="my-5"/>
+<h2>🔐 SSL Trust Flow</h2>
+<pre><code>
+[ MASTER SIDE ]                          [ SLAVE SIDE ]
+────────────────────────────────         ────────────────────────────────
+key-store (httpsKS)                      trust-store (httpsTS)
+↓                                        ↓
+key-manager (httpsKM)                   trust-manager (httpsTM)
+↓                                        ↓
+server-ssl-context (httpsSSC)           ssl-context (httpsSSC)
+↓                                        ↓
+mgmt-interfaces + DC endpoint           used by mgmt + auth context
+</code></pre>
+<hr class="my-5"/>
+
+
+
+<h2>🧠 Configuration Dependency Matrix</h2>
+<p>This section outlines the interdependencies across the domain, host controller, and Elytron security configurations. Each element is linked to its origin and purpose in the overall security and runtime topology.</p>
+<div class="table-responsive">
+<table class="table table-bordered table-dark table-striped">
+<thead>
+<tr>
+<th>Configuration File</th>
+<th>Defined Component</th>
+<th>Source or Dependency</th>
+<th>Operational Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>domain.xml</code></td>
+<td><code>key-store httpsKS</code></td>
+<td>JKS file from domain config path</td>
+<td>Secure key material for TLS; consumed by Elytron key-manager</td>
+</tr>
+<tr>
+<td><code>domain.xml</code></td>
+<td><code>server-ssl-context httpsSSC</code></td>
+<td>References key-manager <code>httpsKM</code></td>
+<td>Provides TLS context to all dependent host controllers</td>
+</tr>
+<tr>
+<td><code>host-master.xml</code></td>
+<td><code>management-interfaces</code></td>
+<td>References domain-level <code>httpsSSC</code></td>
+<td>Enables HTTPS-secured access to the management console</td>
+</tr>
+<tr>
+<td><code>host-master.xml</code></td>
+<td><code>domain-controller local</code></td>
+<td>Bootstrap identity for the domain</td>
+<td>Initializes domain-wide service control</td>
+</tr>
+<tr>
+<td><code>host-slave.xml</code></td>
+<td><code>trust-store httpsTS</code></td>
+<td>Truststore JKS file</td>
+<td>Contains CA certificates used to trust domain controller</td>
+</tr>
+<tr>
+<td><code>host-slave.xml</code></td>
+<td><code>trust-manager httpsTM</code></td>
+<td>References <code>httpsTS</code></td>
+<td>Supplies trust anchors to the slave’s Elytron context</td>
+</tr>
+<tr>
+<td><code>host-slave.xml</code></td>
+<td><code>ssl-context httpsSSC</code></td>
+<td>References trust-manager <code>httpsTM</code></td>
+<td>Establishes HTTPS for outbound authentication to DC</td>
+</tr>
+<tr>
+<td><code>host-slave.xml</code></td>
+<td><code>authentication-context slave-context</code></td>
+<td>Maps to <code>httpsSSC</code> with host-matching</td>
+<td>Used by remote+https domain-controller connection</td>
+</tr>
+<tr>
+<td><code>host-slave.xml</code></td>
+<td><code>servers</code> (e.g., acme-one, apex-one)</td>
+<td>Maps to server-groups in <code>domain.xml</code></td>
+<td>Binds to full/ha profiles and manages runtime deployment</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></body>
+</html>
