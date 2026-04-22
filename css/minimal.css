@@ -142,7 +142,7 @@ a { color: inherit; text-decoration: none; }
   color: var(--t1); margin-bottom: 14px;
   text-align: center;
 }
-.hero-sub { font-size: 19px; color: var(--t2); line-height: 1.65; margin-bottom: 28px; max-width: 36rem; margin-left: auto; margin-right: auto; text-align: justify; }
+.hero-sub { font-size: 19px; color: var(--t2); line-height: 1.65; margin-bottom: 28px; max-width: 36rem; margin-left: auto; margin-right: auto; text-align: center; }
 .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
 /* Same paint for both (anchors + :visited can otherwise diverge) */
 .hero-actions a.btn.btn-outline,

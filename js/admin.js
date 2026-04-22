@@ -376,7 +376,7 @@
       '  <meta charset="UTF-8">',
       '  <meta name="viewport" content="width=device-width, initial-scale=1">',
       '  <script src="../js/theme-init.js"><\/script>',
-      "  <title>" + escapeHtml(g.title) + " — Channa Sandaruwan</title>",
+      "  <title>" + escapeHtml(g.title) + " Channa Sandaruwan</title>",
       '  <link rel="stylesheet" href="../css/minimal.css">',
       '  <link rel="stylesheet" href="../css/glass.css">',
       "</head>",
