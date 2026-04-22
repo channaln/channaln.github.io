@@ -35,6 +35,7 @@
       "<div class=\"code-expand-body\"></div></div>";
 
     document.body.appendChild(el);
+    /* Keep last in <body> so paint order stays above main/footer; re-run on open(). */
     root = el;
     contentSlot = el.querySelector(".code-expand-body");
 
@@ -62,6 +63,10 @@
     if (afterCloseTimer) {
       clearTimeout(afterCloseTimer);
       afterCloseTimer = null;
+    }
+    /* Ensure overlay is on top of page (not after content in paint order). */
+    if (el.parentNode === document.body) {
+      document.body.appendChild(el);
     }
 
     lastFocus = document.activeElement;

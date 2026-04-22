@@ -46,6 +46,36 @@
     el.style.colorScheme = eff;
   }
 
+  var THEME_ICONS = {
+    light:
+      '<svg class="site-theme-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>',
+    dark:
+      '<svg class="site-theme-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
+    system:
+      '<svg class="site-theme-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>'
+  };
+  var THEME_ORDER = ["light", "dark", "system"];
+  var THEME_ARIA = {
+    light: "Color theme: light. Click to switch to dark, then system.",
+    dark: "Color theme: dark. Click to switch to system, then light.",
+    system: "Color theme: use system. Click to switch to light, then dark."
+  };
+
+  function nextThemePref(current) {
+    var i = THEME_ORDER.indexOf(current);
+    if (i < 0) return "dark";
+    return THEME_ORDER[(i + 1) % THEME_ORDER.length];
+  }
+
+  function setThemeButtonIcon(btn) {
+    var v = read().theme;
+    if (!btn) return;
+    btn.innerHTML = THEME_ICONS[v] || THEME_ICONS.system;
+    btn.setAttribute("data-theme-pref", v);
+    btn.setAttribute("aria-label", THEME_ARIA[v] || THEME_ARIA.system);
+    btn.setAttribute("title", THEME_ARIA[v] || THEME_ARIA.system);
+  }
+
   function saveTheme(theme) {
     if (theme !== "light" && theme !== "dark" && theme !== "system") return;
     try {
@@ -60,15 +90,13 @@
   }
 
   function syncThemeSelects() {
-    var v = read().theme;
-    var sel = document.getElementById("site-theme");
-    if (sel) sel.value = v;
+    setThemeButtonIcon(document.getElementById("site-theme"));
     var adm = document.getElementById("admin-site-theme");
-    if (adm) adm.value = v;
+    if (adm) adm.value = read().theme;
   }
 
-  function onThemeSelectChange(e) {
-    saveTheme(e.target.value);
+  function onThemeButtonClick() {
+    saveTheme(nextThemePref(read().theme));
   }
 
   function initThemeControl() {
@@ -76,20 +104,13 @@
     if (!ul || document.getElementById("site-theme")) return;
     var li = document.createElement("li");
     li.className = "nav-theme-item";
-    var sel = document.createElement("select");
-    sel.id = "site-theme";
-    sel.className = "site-theme-select";
-    sel.setAttribute("aria-label", "Color theme");
-    sel.title = "Theme: light, dark, or system";
-    [["light", "Light"], ["dark", "Dark"], ["system", "System"]].forEach(function (pair) {
-      var opt = document.createElement("option");
-      opt.value = pair[0];
-      opt.textContent = pair[1];
-      sel.appendChild(opt);
-    });
-    sel.value = read().theme;
-    sel.addEventListener("change", onThemeSelectChange);
-    li.appendChild(sel);
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.id = "site-theme";
+    btn.className = "site-theme-icon-btn";
+    setThemeButtonIcon(btn);
+    btn.addEventListener("click", onThemeButtonClick);
+    li.appendChild(btn);
     var lastLi = ul.querySelector("li:last-child");
     if (lastLi) ul.insertBefore(li, lastLi);
     else ul.appendChild(li);
