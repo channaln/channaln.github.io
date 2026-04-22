@@ -1,50 +1,36 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- SEO -->
   <title>Channa Sandaruwan — Systems Engineer</title>
-  <meta name="description" content="Systems Engineer with 4+ years across Red Hat ecosystems, OpenShift, Ansible, Kubernetes, and enterprise infrastructure automation. Based in Kuwait.">
+  <meta name="description" content="Systems Engineer specialising in Red Hat OpenShift, Ansible automation, and enterprise Linux infrastructure. Based in Kuwait.">
   <meta name="author" content="Channa Sandaruwan">
-  <meta name="keywords" content="Channa Sandaruwan, Systems Engineer, Red Hat, OpenShift, Ansible, Kubernetes, DevOps, Kuwait">
-
-  <!-- Open Graph / LinkedIn -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://channaln.github.io/">
   <meta property="og:title" content="Channa Sandaruwan — Systems Engineer">
-  <meta property="og:description" content="Systems Engineer with 4+ years across Red Hat ecosystems, OpenShift, Ansible, Kubernetes, and enterprise infrastructure automation.">
+  <meta property="og:description" content="Systems Engineer specialising in Red Hat OpenShift, Ansible, and enterprise Linux infrastructure. Based in Kuwait.">
   <meta property="og:image" content="https://channaln.github.io/images/profile.jpg">
-  <meta property="og:image:width" content="800">
-  <meta property="og:image:height" content="800">
   <meta property="og:site_name" content="Channa Sandaruwan">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Channa Sandaruwan — Systems Engineer">
-  <meta name="twitter:description" content="Systems Engineer with 4+ years across Red Hat ecosystems, OpenShift, Ansible, Kubernetes, and enterprise infrastructure automation.">
+  <meta name="twitter:description" content="Systems Engineer specialising in Red Hat OpenShift, Ansible, and enterprise Linux infrastructure.">
   <meta name="twitter:image" content="https://channaln.github.io/images/profile.jpg">
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
-
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/devicon.min.css">
   <link rel="stylesheet" href="css/minimal.css">
 </head>
 <body>
 
-  <div class="bg-orbs" aria-hidden="true">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-  </div>
-
-  <header class="header">
+  <header class="header" id="hdr">
     <div class="container">
-      <a href="index.html" class="logo">channa.dev</a>
+      <a href="index.html" class="logo">channa<span>.dev</span></a>
       <nav>
         <ul class="nav-links">
-          <li><a href="index.html" aria-current="page">Home</a></li>
+          <li><a href="#stack">Stack</a></li>
+          <li><a href="#experience">Experience</a></li>
           <li><a href="blog_list.html">Blog</a></li>
           <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a></li>
         </ul>
@@ -53,150 +39,198 @@
   </header>
 
   <main>
-    <div class="container">
 
-      <!-- ── Hero ─────────────────────────────────── -->
-      <section class="hero">
-        <div class="hero-inner">
-          <div class="hero-text">
-            <p class="hero-eyebrow">// systems engineer · kuwait</p>
-            <h1>Channa Sandaruwan</h1>
-            <div class="hero-title">
-              <span id="typing-text"></span><span class="cursor"></span>
-            </div>
-            <p class="hero-bio">
-              4+ years across Red Hat ecosystems, OpenShift, Ansible, and enterprise infrastructure.
-              Specialising in container orchestration, automation platforms, and production observability at KUWAITNET.
-            </p>
-            <div class="hero-links">
-              <a href="blog_list.html" class="btn btn-primary">Read Blog</a>
-              <a href="https://www.linkedin.com/in/channas" class="btn btn-secondary" target="_blank" rel="noopener">LinkedIn ↗</a>
-            </div>
-          </div>
-          <img src="images/profile.jpg" alt="Channa Sandaruwan" class="profile-photo">
+    <!-- ── WELCOME / HERO ───────────────────────────── -->
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          Systems Engineer &nbsp;·&nbsp; Kuwait
         </div>
-      </section>
+        <h1>Channa<br>Sandaruwan</h1>
+        <div class="hero-role">
+          <span style="color:var(--t3)">// </span>
+          <span class="typed" id="typed"></span><span class="cursor"></span>
+        </div>
+        <p class="hero-bio">
+          Enterprise infrastructure engineer specialising in Red Hat OpenShift, Ansible Automation Platform, and mission-critical Linux environments. RHCA certified with deployments across telecom-scale infrastructure at KUWAITNET.
+        </p>
+        <div class="hero-actions">
+          <a href="blog_list.html" class="btn btn-primary">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+            Read the Blog
+          </a>
+          <a href="https://www.linkedin.com/in/channas" class="btn btn-outline" target="_blank" rel="noopener">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            LinkedIn
+          </a>
+        </div>
+      </div>
+      <div class="scroll-hint">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        scroll
+      </div>
+    </section>
 
-      <!-- ── Skills ────────────────────────────────── -->
-      <section class="section fade-in">
-        <p class="section-label">// skills</p>
-        <h2 class="section-title">Tech Stack</h2>
-        <div class="skills-grid">
+    <!-- ── ABOUT ────────────────────────────────────── -->
+    <section class="section" id="about">
+      <div class="container">
+        <p class="sec-kicker fade-in">About</p>
+        <h2 class="sec-title fade-in">Building infrastructure<br><span>that doesn't fail.</span></h2>
+        <p class="about-body fade-in">
+          I'm a Systems Engineer at <strong>KUWAITNET</strong> in Kuwait with 4+ years building and automating enterprise infrastructure. My focus is Red Hat OpenShift clusters, Ansible Automation Platform deployments, and middleware environments — the kind of work that happens at telecom scale where five-nines availability isn't aspirational, it's contractual. Before KUWAITNET, I built my foundation at <strong>VS Information Systems</strong> managing VMware clusters, Pacemaker HA setups, and Azure infrastructure. I hold the RHCSA, RHCE, and Red Hat Certified OpenShift Administrator certifications and a degree in Network Security from South Eastern University of Sri Lanka.
+        </p>
+        <div class="stats fade-in">
+          <div><span class="stat-val">4+</span><span class="stat-lbl">Years experience</span></div>
+          <div><span class="stat-val">50+</span><span class="stat-lbl">Technologies</span></div>
+          <div><span class="stat-val">5</span><span class="stat-lbl">Certifications</span></div>
+          <div><span class="stat-val">2</span><span class="stat-lbl">Countries</span></div>
+        </div>
+      </div>
+    </section>
 
-          <div class="skill-card">
-            <p class="skill-card-title">Orchestration</p>
-            <div class="skill-tags">
-              <span class="skill-tag">Ansible</span>
-              <span class="skill-tag">AAP 2.4</span>
+    <!-- ── TECH STACK ────────────────────────────────── -->
+    <section class="section" id="stack">
+      <div class="container">
+        <p class="sec-kicker fade-in">Tech Stack</p>
+        <h2 class="sec-title fade-in">Tools of the trade.</h2>
+        <div class="stack-grid fade-in">
+
+          <div>
+            <p class="stack-cat">Container &amp; Orchestration</p>
+            <div class="chips">
+              <span class="chip"><span class="badge b-red">OCP</span> OpenShift</span>
+              <span class="chip"><i class="devicon-kubernetes-plain colored"></i> Kubernetes</span>
+              <span class="chip"><i class="devicon-docker-plain colored"></i> Docker</span>
+              <span class="chip"><span class="badge b-purple">POD</span> Podman</span>
+              <span class="chip"><span class="badge b-blue">HLM</span> Helm</span>
+              <span class="chip"><span class="badge b-orange">ACM</span> Red Hat ACM</span>
             </div>
           </div>
 
-          <div class="skill-card">
-            <p class="skill-card-title">Containers</p>
-            <div class="skill-tags">
-              <span class="skill-tag">OpenShift</span>
-              <span class="skill-tag">Kubernetes</span>
-              <span class="skill-tag">Helm</span>
-              <span class="skill-tag">Docker</span>
-              <span class="skill-tag">Podman</span>
+          <div>
+            <p class="stack-cat">Operating Systems</p>
+            <div class="chips">
+              <span class="chip"><i class="devicon-redhat-plain colored"></i> RHEL</span>
+              <span class="chip"><i class="devicon-ubuntu-plain colored"></i> Ubuntu</span>
+              <span class="chip"><i class="devicon-debian-plain colored"></i> Debian</span>
+              <span class="chip"><span class="badge b-green">RK</span> Rocky Linux</span>
+              <span class="chip"><span class="badge b-green">SUSE</span> SUSE Linux</span>
+              <span class="chip"><span class="badge b-gray">WIN</span> Windows Server</span>
             </div>
           </div>
 
-          <div class="skill-card">
-            <p class="skill-card-title">Linux / OS</p>
-            <div class="skill-tags">
-              <span class="skill-tag">RHEL</span>
-              <span class="skill-tag">SUSE</span>
-              <span class="skill-tag">Debian</span>
-              <span class="skill-tag">Rocky</span>
-              <span class="skill-tag">CentOS</span>
+          <div>
+            <p class="stack-cat">Middleware &amp; App Servers</p>
+            <div class="chips">
+              <span class="chip"><span class="badge b-red">JB</span> JBoss EAP</span>
+              <span class="chip"><i class="devicon-tomcat-line colored"></i> Apache Tomcat</span>
+              <span class="chip"><i class="devicon-nginx-original colored"></i> Nginx</span>
+              <span class="chip"><i class="devicon-apache-plain colored"></i> Apache HTTPD</span>
+              <span class="chip"><span class="badge b-purple">AMQ</span> ActiveMQ</span>
             </div>
           </div>
 
-          <div class="skill-card">
-            <p class="skill-card-title">Middleware</p>
-            <div class="skill-tags">
-              <span class="skill-tag">Tomcat</span>
-              <span class="skill-tag">JBoss EAP</span>
-              <span class="skill-tag">ActiveMQ</span>
+          <div>
+            <p class="stack-cat">Databases</p>
+            <div class="chips">
+              <span class="chip"><i class="devicon-oracle-original colored"></i> Oracle DB</span>
+              <span class="chip"><i class="devicon-postgresql-plain colored"></i> PostgreSQL</span>
+              <span class="chip"><i class="devicon-mysql-original colored"></i> MySQL / MariaDB</span>
+              <span class="chip"><i class="devicon-redis-plain colored"></i> Redis</span>
             </div>
           </div>
 
-          <div class="skill-card">
-            <p class="skill-card-title">Databases</p>
-            <div class="skill-tags">
-              <span class="skill-tag">PostgreSQL</span>
-              <span class="skill-tag">MariaDB</span>
-              <span class="skill-tag">Redis</span>
+          <div>
+            <p class="stack-cat">Automation &amp; DevOps</p>
+            <div class="chips">
+              <span class="chip"><i class="devicon-ansible-plain colored"></i> Ansible / AAP</span>
+              <span class="chip"><i class="devicon-jenkins-line colored"></i> Jenkins</span>
+              <span class="chip"><i class="devicon-argocd-plain colored"></i> ArgoCD</span>
+              <span class="chip"><i class="devicon-terraform-plain colored"></i> Terraform</span>
+              <span class="chip"><i class="devicon-git-plain colored"></i> Git</span>
             </div>
           </div>
 
-          <div class="skill-card">
-            <p class="skill-card-title">Virtualisation</p>
-            <div class="skill-tags">
-              <span class="skill-tag">VMware</span>
-              <span class="skill-tag">Nutanix</span>
-              <span class="skill-tag">Proxmox</span>
+          <div>
+            <p class="stack-cat">Cloud &amp; Virtualisation</p>
+            <div class="chips">
+              <span class="chip"><i class="devicon-amazonwebservices-plain-wordmark colored"></i> AWS</span>
+              <span class="chip"><i class="devicon-azure-plain colored"></i> Azure</span>
+              <span class="chip"><i class="devicon-vmware-plain colored"></i> VMware vSphere</span>
+              <span class="chip"><span class="badge b-green">NX</span> Nutanix</span>
+              <span class="chip"><span class="badge b-orange">PVE</span> Proxmox</span>
             </div>
           </div>
 
-          <div class="skill-card">
-            <p class="skill-card-title">Observability</p>
-            <div class="skill-tags">
-              <span class="skill-tag">Grafana</span>
-              <span class="skill-tag">Prometheus</span>
-              <span class="skill-tag">Loki</span>
-              <span class="skill-tag">OpenTelemetry</span>
+          <div>
+            <p class="stack-cat">Monitoring &amp; Observability</p>
+            <div class="chips">
+              <span class="chip"><i class="devicon-prometheus-original colored"></i> Prometheus</span>
+              <span class="chip"><i class="devicon-grafana-original colored"></i> Grafana</span>
+              <span class="chip"><i class="devicon-elasticsearch-plain colored"></i> ELK Stack</span>
+              <span class="chip"><span class="badge b-orange">Loki</span> Loki</span>
+              <span class="chip"><span class="badge b-purple">OTel</span> OpenTelemetry</span>
             </div>
           </div>
 
-          <div class="skill-card">
-            <p class="skill-card-title">Scripting</p>
-            <div class="skill-tags">
-              <span class="skill-tag">Bash</span>
-              <span class="skill-tag">PowerShell</span>
-              <span class="skill-tag">C</span>
-              <span class="skill-tag">C#</span>
+          <div>
+            <p class="stack-cat">Scripting &amp; Languages</p>
+            <div class="chips">
+              <span class="chip"><i class="devicon-bash-plain colored"></i> Bash</span>
+              <span class="chip"><i class="devicon-powershell-plain colored"></i> PowerShell</span>
+              <span class="chip"><i class="devicon-python-plain colored"></i> Python</span>
+              <span class="chip"><i class="devicon-c-plain colored"></i> C</span>
+              <span class="chip"><i class="devicon-csharp-plain colored"></i> C#</span>
             </div>
           </div>
 
-          <div class="skill-card">
-            <p class="skill-card-title">Networking / Sec</p>
-            <div class="skill-tags">
-              <span class="skill-tag">HAProxy</span>
-              <span class="skill-tag">F5 BIG-IP</span>
-              <span class="skill-tag">Palo Alto</span>
-              <span class="skill-tag">CIS Hardening</span>
+          <div>
+            <p class="stack-cat">Networking &amp; Security</p>
+            <div class="chips">
+              <span class="chip"><span class="badge b-orange">HA</span> HAProxy</span>
+              <span class="chip"><span class="badge b-gray">F5</span> F5 BIG-IP</span>
+              <span class="chip"><span class="badge b-teal">PA</span> Palo Alto</span>
+              <span class="chip"><span class="badge b-red">CIS</span> CIS Hardening</span>
+              <span class="chip"><span class="badge b-sky">SSL</span> SSL / TLS</span>
             </div>
           </div>
 
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- ── Experience ─────────────────────────────── -->
-      <section class="section fade-in">
-        <p class="section-label">// experience</p>
-        <h2 class="section-title">Work History</h2>
-        <div class="exp-list">
+    <!-- ── EXPERIENCE ────────────────────────────────── -->
+    <section class="section" id="experience">
+      <div class="container">
+        <p class="sec-kicker fade-in">Experience</p>
+        <h2 class="sec-title fade-in">Where I've worked.</h2>
+        <div class="timeline fade-in">
 
-          <div class="exp-item">
-            <p class="exp-company">KUWAITNET</p>
-            <p class="exp-role">Systems Engineer</p>
-            <p class="exp-period">Jul 2023 – Present · Kuwait</p>
-            <ul class="exp-highlights">
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-head">
+              <span class="tl-title">Systems Engineer</span>
+              <span class="tl-period">Jul 2023 – Present</span>
+            </div>
+            <p class="tl-company">KUWAITNET · Kuwait</p>
+            <ul class="tl-points">
               <li>Delivered enterprise Ansible Automation Platform (AAP) implementations across VMware, Nutanix, firewall products, and DigitalOcean — cutting manual work by 50–80%; led 7 PoCs as customer-facing automation architect.</li>
-              <li>Deployed Red Hat OpenShift clusters (UPI & IPI on VMware) with integrated ACM, ACS, ODF, and ArgoCD; implemented disconnected registry mirrors and AD integration.</li>
-              <li>Built centralized observability stack: Loki + Promtail + Grafana dashboards + OpenTelemetry for OpenShift cluster and application monitoring.</li>
+              <li>Deployed Red Hat OpenShift clusters (UPI &amp; IPI on VMware) with integrated ACM, ACS, ODF, and ArgoCD; implemented disconnected registry mirrors and Active Directory integration.</li>
+              <li>Built centralised observability stack: Loki + Promtail + Grafana dashboards + OpenTelemetry for OpenShift cluster and application monitoring.</li>
               <li>Implemented Redis standalone, Sentinel, and sharded clusters; managed Tomcat and JBoss EAP environments (SSL, tuning, hardening, deployments).</li>
               <li>Deployed Red Hat Service Mesh 3.0 with sidecar injection, Kiali, and Prometheus; supported ActiveMQ HA and non-HA configurations.</li>
             </ul>
           </div>
 
-          <div class="exp-item">
-            <p class="exp-company">VS Information Systems</p>
-            <p class="exp-role">Associate Systems Engineer</p>
-            <p class="exp-period">Jul 2021 – Jun 2023</p>
-            <ul class="exp-highlights">
+          <div class="tl-item past">
+            <div class="tl-dot"></div>
+            <div class="tl-head">
+              <span class="tl-title">Associate Systems Engineer</span>
+              <span class="tl-period">Jul 2021 – Jun 2023</span>
+            </div>
+            <p class="tl-company">VS Information Systems · Sri Lanka</p>
+            <ul class="tl-points">
               <li>Deployed and managed enterprise-grade Rancher and VMware vSphere (ESXi/vCenter) clusters with HA/DRS; troubleshot compute, storage, and networking issues.</li>
               <li>Administered RHEL High Availability clusters using Pacemaker and supported Linux (RHEL/Ubuntu/CentOS) infrastructure.</li>
               <li>Managed Azure services — AD, VMs, VNets, RBAC, Azure Monitor/Log Analytics, backups, and cost tagging.</li>
@@ -205,124 +239,155 @@
           </div>
 
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- ── Certifications ─────────────────────────── -->
-      <section class="section fade-in">
-        <p class="section-label">// certifications</p>
-        <h2 class="section-title">Licenses &amp; Certifications</h2>
-        <div class="cert-grid">
+    <!-- ── CERTIFICATIONS ────────────────────────────── -->
+    <section class="section" id="certifications">
+      <div class="container">
+        <p class="sec-kicker fade-in">Certifications</p>
+        <h2 class="sec-title fade-in">Red Hat &amp; beyond.</h2>
+        <div class="certs fade-in">
 
-          <div class="cert-item">
-            <p class="cert-name"><span class="cert-dot active"></span>Red Hat Certified Systems Administrator</p>
-            <p class="cert-meta">RHCSA · Issued Oct 2024 · ID 240-097-733</p>
+          <div class="cert-card">
+            <span class="cert-dot active"></span>
+            <div>
+              <p class="cert-name">Red Hat Certified Systems Administrator</p>
+              <p class="cert-meta">RHCSA · Issued Oct 2024 · ID 240-097-733</p>
+            </div>
           </div>
 
-          <div class="cert-item">
-            <p class="cert-name"><span class="cert-dot active"></span>Red Hat Certified Engineer</p>
-            <p class="cert-meta">RHCE · Issued Oct 2024 · ID 240-097-733</p>
+          <div class="cert-card">
+            <span class="cert-dot active"></span>
+            <div>
+              <p class="cert-name">Red Hat Certified Engineer</p>
+              <p class="cert-meta">RHCE · Issued Oct 2024 · ID 240-097-733</p>
+            </div>
           </div>
 
-          <div class="cert-item">
-            <p class="cert-name"><span class="cert-dot active"></span>Red Hat Certified OpenShift Administrator</p>
-            <p class="cert-meta">EX280 · Issued Nov 2025 · ID 240-097-733</p>
+          <div class="cert-card">
+            <span class="cert-dot active"></span>
+            <div>
+              <p class="cert-name">Red Hat Certified OpenShift Administrator</p>
+              <p class="cert-meta">EX280 · Issued Nov 2025 · ID 240-097-733</p>
+            </div>
           </div>
 
-          <div class="cert-item">
-            <p class="cert-name"><span class="cert-dot active"></span>Oracle Cloud Infrastructure Foundations</p>
-            <p class="cert-meta">OCI · Issued 2021</p>
+          <div class="cert-card">
+            <span class="cert-dot active"></span>
+            <div>
+              <p class="cert-name">Oracle Cloud Infrastructure Foundations</p>
+              <p class="cert-meta">OCI · Issued 2021</p>
+            </div>
           </div>
 
-          <div class="cert-item">
-            <p class="cert-name"><span class="cert-dot progress"></span>RH Specialist: OpenShift Automation &amp; Integration</p>
-            <p class="cert-meta">In Progress</p>
+          <div class="cert-card">
+            <span class="cert-dot progress"></span>
+            <div>
+              <p class="cert-name">RH Specialist: OpenShift Automation &amp; Integration</p>
+              <p class="cert-meta">In Progress</p>
+            </div>
           </div>
 
         </div>
-      </section>
+      </div>
+    </section>
 
-    </div><!-- /.container -->
+    <!-- ── BLOG PREVIEW ──────────────────────────────── -->
+    <section class="section" id="blog">
+      <div class="container">
+        <p class="sec-kicker fade-in">Writing</p>
+        <h2 class="sec-title fade-in">Technical articles.</h2>
+        <div class="blog-cards fade-in">
+
+          <a class="blog-card" href="blog/cluster_vs_proxy.html">
+            <span class="bc-tag">Apache · Load Balancing</span>
+            <span class="bc-title">mod_proxy_balancer vs mod_cluster — Which One Should You Use?</span>
+            <span class="bc-excerpt">A deep dive into the architecture and trade-offs of two Apache HTTP Server load balancing modules — static config vs dynamic MCMP registration.</span>
+            <span class="bc-date">Oct 2023</span>
+          </a>
+
+          <a class="blog-card" href="blog/tomcat_upgrade.html">
+            <span class="bc-tag">Middleware</span>
+            <span class="bc-title">Upgrading Apache Tomcat: A Practical Guide</span>
+            <span class="bc-excerpt">Step-by-step production upgrade process — backup, side-by-side install, config migration, symlink switch, and instant rollback.</span>
+            <span class="bc-date">Oct 2023</span>
+          </a>
+
+          <a class="blog-card" href="blog/jboss-domain.html">
+            <span class="bc-tag">JBoss EAP</span>
+            <span class="bc-title">JBoss Domain Mode: A Comprehensive Guide</span>
+            <span class="bc-excerpt">Domain Controller, Host Controllers, Server Groups, and rolling restarts — the complete operational model explained with config examples.</span>
+            <span class="bc-date">Oct 2023</span>
+          </a>
+
+          <a class="blog-card" href="blog/jboss_domain_elytron.html">
+            <span class="bc-tag">JBoss EAP</span>
+            <span class="bc-title">Elytron Security Realm Configuration in Domain Mode</span>
+            <span class="bc-excerpt">Where security configuration lives in domain mode, how to add Elytron realms to a domain profile, and the common pitfalls to avoid.</span>
+            <span class="bc-date">Oct 2023</span>
+          </a>
+
+          <a class="blog-card" href="blog/elytrone_deep.html">
+            <span class="bc-tag">Security</span>
+            <span class="bc-title">Elytron Security Realm — What It Is and Why It Matters</span>
+            <span class="bc-excerpt">Why Red Hat replaced PicketBox with Elytron, how the composable component pipeline works, and a minimal working configuration.</span>
+            <span class="bc-date">Oct 2023</span>
+          </a>
+
+          <a class="blog-card" href="blog/new_post.html">
+            <span class="bc-tag">Automation</span>
+            <span class="bc-title">The Power of Ansible for DevOps</span>
+            <span class="bc-excerpt">Agentless, idempotent, YAML-based — why Ansible is the go-to automation tool for modern infrastructure, with a sample playbook walkthrough.</span>
+            <span class="bc-date">Oct 2023</span>
+          </a>
+
+        </div>
+        <div class="view-all fade-in">
+          <a href="blog_list.html" class="btn btn-outline">View all posts →</a>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <footer class="footer">
     <div class="container">
       <p>&copy; 2025 Channa Sandaruwan · Systems Engineer · Kuwait</p>
+      <nav class="footer-links">
+        <a href="blog_list.html">Blog</a>
+        <a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a>
+      </nav>
     </div>
   </footer>
 
   <script>
-    // Typing animation
-    var phrases = [
-      'Systems Engineer.',
-      'Red Hat Architect.',
-      'OpenShift Administrator.',
-      'Automation Engineer.'
-    ];
-    var i = 0, j = 0, deleting = false;
-    var el = document.getElementById('typing-text');
+    // Header border on scroll
+    var hdr = document.getElementById('hdr');
+    window.addEventListener('scroll', function() {
+      hdr.classList.toggle('is-scrolled', window.scrollY > 20);
+    });
 
+    // Typing animation
+    var phrases = ['Red Hat Architect.', 'OpenShift Administrator.', 'Systems Engineer.', 'Automation Engineer.'];
+    var i = 0, j = 0, del = false;
+    var el = document.getElementById('typed');
     function tick() {
-      var phrase = phrases[i];
-      if (!deleting) {
-        el.textContent = phrase.slice(0, ++j);
-        if (j === phrase.length) { deleting = true; setTimeout(tick, 2200); return; }
-      } else {
-        el.textContent = phrase.slice(0, --j);
-        if (j === 0) { deleting = false; i = (i + 1) % phrases.length; setTimeout(tick, 450); return; }
-      }
-      setTimeout(tick, deleting ? 45 : 70);
+      var p = phrases[i];
+      el.textContent = del ? p.slice(0, --j) : p.slice(0, ++j);
+      if (!del && j === p.length) { del = true; setTimeout(tick, 2200); return; }
+      if (del && j === 0) { del = false; i = (i + 1) % phrases.length; setTimeout(tick, 500); return; }
+      setTimeout(tick, del ? 45 : 72);
     }
     tick();
 
-    // Scroll-triggered fade-in
+    // Scroll fade-in
     var io = new IntersectionObserver(function(entries) {
       entries.forEach(function(e) {
         if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
       });
-    }, { threshold: 0.08 });
+    }, { threshold: 0.05 });
     document.querySelectorAll('.fade-in').forEach(function(el) { io.observe(el); });
-
-    // Particle canvas
-    (function() {
-      var c = document.createElement('canvas');
-      c.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;';
-      document.body.insertBefore(c, document.body.firstChild);
-      var ctx = c.getContext('2d'), W, H, pts = [];
-      function resize() { W = c.width = innerWidth; H = c.height = innerHeight; }
-      resize();
-      window.addEventListener('resize', resize);
-      for (var n = 0; n < 55; n++) {
-        pts.push({
-          x: Math.random() * W, y: Math.random() * H,
-          vx: (Math.random() - .5) * .35, vy: (Math.random() - .5) * .35,
-          r: Math.random() * 1.4 + .3
-        });
-      }
-      function frame() {
-        ctx.clearRect(0, 0, W, H);
-        for (var i = 0; i < pts.length; i++) {
-          var p = pts[i];
-          p.x += p.vx; p.y += p.vy;
-          if (p.x < 0 || p.x > W) p.vx *= -1;
-          if (p.y < 0 || p.y > H) p.vy *= -1;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r, 0, 6.283);
-          ctx.fillStyle = 'rgba(129,140,248,0.55)';
-          ctx.fill();
-          for (var j = i + 1; j < pts.length; j++) {
-            var q = pts[j], dx = p.x - q.x, dy = p.y - q.y, d = Math.sqrt(dx*dx+dy*dy);
-            if (d < 130) {
-              ctx.beginPath();
-              ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
-              ctx.strokeStyle = 'rgba(129,140,248,' + (.14 * (1 - d/130)) + ')';
-              ctx.lineWidth = .5; ctx.stroke();
-            }
-          }
-        }
-        requestAnimationFrame(frame);
-      }
-      frame();
-    })();
   </script>
 
 </body>
