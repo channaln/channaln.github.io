@@ -49,9 +49,20 @@
       </div>
 
       <div class="blog-search-wrap">
-        <label for="blog-search" class="blog-search-label">Search posts</label>
-        <input type="search" id="blog-search" class="blog-search" name="q" placeholder="Filter by title, topic, or keywords…" autocomplete="off" spellcheck="false" aria-describedby="blog-search-hint">
-        <p id="blog-search-hint" class="blog-search-hint">Matches title, tag line, and excerpt. Clears to show all posts.</p>
+        <div class="blog-search-header">
+          <span class="blog-search-eyeline" aria-hidden="true"></span>
+          <label for="blog-search" class="blog-search-label">Find a story</label>
+        </div>
+        <div class="blog-search-field">
+          <span class="blog-search-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              <path d="m21 21-4.2-4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <input type="search" id="blog-search" class="blog-search" name="q" placeholder="Search by title, topic, or any keyword…" autocomplete="off" spellcheck="false" aria-describedby="blog-search-hint" enterkeyhint="search">
+        </div>
+        <p id="blog-search-hint" class="blog-search-hint">Filters the list in real time as you type. Clear the field to see every post again.</p>
         <p id="blog-search-empty" class="blog-search-empty" hidden role="status">No posts match that search. Try a shorter or different term.</p>
       </div>
 
