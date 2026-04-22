@@ -687,16 +687,18 @@ body.experience-page main.page-main {
   align-items: stretch;
 }
 body.experience-page main.page-main > .container {
-  align-items: stretch;
+  /* Center the glass card (not stretch full width of the line) */
+  align-items: center;
   width: 100%;
 }
 body.experience-page .glass-panel.section-glass {
   text-align: start;
-  align-self: stretch;
-  width: 100%;
+  /* Explicit width so the card can sit centered in the main column (not full-bleed flex stretch) */
+  width: min(100%, 52rem);
   max-width: min(52rem, 100%);
-  margin-left: 0;
+  margin-left: auto;
   margin-right: auto;
+  box-sizing: border-box;
 }
 body.experience-page .page-head,
 body.experience-page .page-head h1,
