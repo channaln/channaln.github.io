@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- SEO -->
+  <title>The Power of Ansible for DevOps — Channa Sandaruwan</title>
+  <meta name="description" content="Ansible is a powerful, agentless automation tool that can streamline your DevOps workflow. Learn what it is, why to use it, and how to get started with a sample playbook.">
+  <meta name="author" content="Channa Sandaruwan">
+
+  <!-- Open Graph / LinkedIn -->
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://channaln.github.io/blog/new_post.html">
+  <meta property="og:title" content="The Power of Ansible for DevOps">
+  <meta property="og:description" content="Ansible is a powerful, agentless automation tool that can streamline your DevOps workflow. Learn what it is, why to use it, and how to get started.">
+  <meta property="og:image" content="https://channaln.github.io/images/profile.jpg">
+  <meta property="og:site_name" content="Channa Sandaruwan">
+  <meta property="article:author" content="Channa Sandaruwan">
+  <meta property="article:published_time" content="2023-10-26">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The Power of Ansible for DevOps">
+  <meta name="twitter:description" content="Ansible is a powerful, agentless automation tool that can streamline your DevOps workflow. Learn what it is, why to use it, and how to get started.">
+  <meta name="twitter:image" content="https://channaln.github.io/images/profile.jpg">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/minimal.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container">
+      <a href="../index.html" class="logo">channa.dev</a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="../blog_list.html" aria-current="page">Blog</a></li>
+          <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="post-wrap">
+
+        <a href="../blog_list.html" class="post-back">← Back to Blog</a>
+
+        <div class="post-header">
+          <h1 class="post-title">The Power of Ansible for DevOps</h1>
+          <p class="post-meta">Oct 26, 2023 · Channa Sandaruwan · Automation</p>
+        </div>
+
+        <div class="post-content">
+          <p>In the world of DevOps, automation is king. And when it comes to automation, Ansible is a powerful and popular tool that can help you streamline your workflow and manage your infrastructure with ease. In this post, we'll explore the power of Ansible and how it can help you on your DevOps journey.</p>
+
+          <h2>What is Ansible?</h2>
+          <p>Ansible is an open-source automation tool that allows you to automate IT tasks such as configuration management, application deployment, and orchestration. It uses a simple, human-readable language called YAML to define automation tasks, and it's agentless — meaning you don't need to install any special software on the nodes you want to manage.</p>
+
+          <h2>Why Use Ansible?</h2>
+          <p>There are many reasons to use Ansible for your DevOps automation needs. Here are just a few:</p>
+          <ul>
+            <li><strong>Simplicity:</strong> Ansible's YAML-based syntax is easy to learn and use, even for those new to automation.</li>
+            <li><strong>Agentless:</strong> No agents to install or manage on target nodes — just SSH and Python.</li>
+            <li><strong>Idempotent:</strong> Run playbooks multiple times safely — Ansible only makes changes when needed.</li>
+            <li><strong>Extensible:</strong> A large community contributes thousands of modules and roles, making it easy to extend functionality.</li>
+          </ul>
+
+          <blockquote>
+            "Ansible is the simplest way to automate apps and IT infrastructure."
+          </blockquote>
+
+          <h2>Getting Started with Ansible</h2>
+          <p>Getting started with Ansible is straightforward. All you need is a control node with Ansible installed and one or more managed nodes. You then write a playbook — a YAML file that defines the tasks to perform on those nodes.</p>
+
+          <h2>A Sample Playbook</h2>
+          <p>Here's a simple Ansible playbook that installs and starts the Apache web server:</p>
+          <div class="code-block">
+            <pre><code>- name: Install and start Apache
+  hosts: webservers
+  become: true
+  tasks:
+    - name: Install Apache
+      ansible.builtin.package:
+        name: httpd
+        state: present
+
+    - name: Start and enable Apache
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true</code></pre>
+          </div>
+
+          <h2>Conclusion</h2>
+          <p>Ansible is a powerful and versatile tool that can help you automate your IT infrastructure and streamline your DevOps workflow. Whether you're managing a handful of servers or thousands of nodes across multiple clouds, Ansible's simplicity and flexibility make it an indispensable part of any modern infrastructure toolkit.</p>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 Channa Sandaruwan · Systems Engineer · Kuwait</p>
+    </div>
+  </footer>
+
+</body>
+</html>

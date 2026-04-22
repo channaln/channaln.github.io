@@ -1,120 +1,117 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Blog Posts - Chanan Sandaruwan</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    body {
-      background-color: #000;
-      color: #f8f9fa;
-      font-family: 'Segoe UI', sans-serif;
-    }
-    .content-wrapper {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 2rem;
-      border: 1px solid #666;
-      border-radius: 1rem;
-      background-color: #111;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
-    }
-    .search-box {
-      background-color: #222;
-      border: 1px solid #555;
-      color: #fff;
-      padding: 0.6rem 1rem;
-    }
-    .search-box:focus {
-      box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.15);
-    }
-    .blog-list .list-group-item {
-      background: linear-gradient(90deg, #1a1a1a, #2a2a2a);
-      border: 1px solid #333;
-      border-radius: 0.6rem;
-      margin-bottom: 1rem;
-      transition: all 0.3s ease;
-    }
-    .blog-list a {
-      text-decoration: none;
-      color: #ffffff;
-      font-weight: 500;
-      display: block;
-      padding: 1rem;
-    }
-    .blog-list .list-group-item:hover {
-      background-color: #333;
-      transform: scale(1.01);
-    }
-    .blog-list a:hover {
-      color: #e0e0e0;
-    }
-    h1 {
-      font-size: 2.4rem;
-      letter-spacing: 1px;
-      color: #fff;
-    }
-    .text-muted {
-      color: #bbb !important;
-    }
-    footer {
-      color: #999;
-    }
-  </style>
+
+  <!-- SEO -->
+  <title>Blog — Channa Sandaruwan</title>
+  <meta name="description" content="Technical articles on Linux, middleware, OpenShift, Ansible, and enterprise infrastructure automation by Channa Sandaruwan.">
+  <meta name="author" content="Channa Sandaruwan">
+
+  <!-- Open Graph / LinkedIn -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://channaln.github.io/blog_list.html">
+  <meta property="og:title" content="Blog — Channa Sandaruwan">
+  <meta property="og:description" content="Technical articles on Linux, middleware, OpenShift, Ansible, and enterprise infrastructure automation.">
+  <meta property="og:image" content="https://channaln.github.io/images/profile.jpg">
+  <meta property="og:site_name" content="Channa Sandaruwan">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Blog — Channa Sandaruwan">
+  <meta name="twitter:description" content="Technical articles on Linux, middleware, OpenShift, Ansible, and enterprise infrastructure automation.">
+  <meta name="twitter:image" content="https://channaln.github.io/images/profile.jpg">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/minimal.css">
 </head>
 <body>
-  <div class="content-wrapper">
-    <div class="mb-4">
-      <h1 class="text-uppercase"><i class="fas fa-blog"></i> Blog Posts</h1>
-      <p class="text-muted">Explore my latest technical articles, tutorials, and DevOps insights.</p>
+
+  <header class="header">
+    <div class="container">
+      <a href="index.html" class="logo">channa.dev</a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="blog_list.html" aria-current="page">Blog</a></li>
+          <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a></li>
+        </ul>
+      </nav>
     </div>
+  </header>
 
-    <input type="text" class="form-control search-box mb-4" id="searchInput" placeholder="Search blog titles...">
+  <main>
+    <div class="container">
 
-    <ul class="list-group blog-list" id="blogList">
-      <li class="list-group-item">
-        <a href="blog/cluster_vs_proxy.html">
-            <i class="fas fa-server me-2"></i> MOD_PROXY_BALANCER VS MOD_CLUSTER: WHICH ONE SHOULD YOU USE?
-        </a>
-      </li>
-      <li class="list-group-item">
-        <a href="blog/tomcat_upgrade.html">
-            <i class="fas fa-server me-2"></i> UPGRADING APACHE TOMCAT: A PRACTICAL GUIDE
-        </a>
-      </li>
-      <li class="list-group-item">
-        <a href="blog/jboss_domain_elytron.html">
-            <i class="fas fa-server me-2"></i> DEEP DIVE INTO JBOSS DOMAIN MODE: THE CONFIGURATION OF ELYTRON SECURITY REALM
-        </a>
-      </li> 
-      <li class="list-group-item">
-        <a href="blog/elytrone_deep.html">
-            <i class="fas fa-server me-2"></i> ELYTRON SECURITY REALM: WHAT, WHY ELYTRON SECURITY REALM IS USING
-        </a>
-      </li> 
-      <!-- Add more posts here -->
-    </ul>
+      <div class="page-head">
+        <p class="section-label">// writing</p>
+        <h1>Blog Posts</h1>
+        <p>Technical articles on Linux, middleware, OpenShift, Ansible, and infrastructure automation.</p>
+      </div>
 
-    <footer class="mt-5 pt-3 border-top text-muted small text-center">
-      &copy; 2025 Chanan Sandaruwan | Designed for professionals
-    </footer>
-  </div>
+      <ul class="blog-list">
 
-  <script>
-    const searchInput = document.getElementById("searchInput");
-    const blogList = document.getElementById("blogList");
+        <li>
+          <a href="blog/new_post.html">
+            <p class="post-date">Oct 2023 · Automation</p>
+            <h2>The Power of Ansible for DevOps</h2>
+            <p>In the world of DevOps, automation is king. Ansible is a powerful, agentless tool that helps you streamline your workflow and manage your infrastructure with ease.</p>
+          </a>
+        </li>
 
-    searchInput.addEventListener("input", function () {
-      const filter = this.value.toLowerCase();
-      const items = blogList.getElementsByTagName("li");
+        <li>
+          <a href="blog/cluster_vs_proxy.html">
+            <p class="post-date">Oct 2023 · Apache / Load Balancing</p>
+            <h2>mod_proxy_balancer vs mod_cluster — Which One Should You Use?</h2>
+            <p>A deep dive into the pros and cons of two popular load balancing solutions for Apache HTTP Server.</p>
+          </a>
+        </li>
 
-      Array.from(items).forEach(item => {
-        const text = item.textContent.toLowerCase();
-        item.style.display = text.includes(filter) ? "" : "none";
-      });
-    });
-  </script>
+        <li>
+          <a href="blog/tomcat_upgrade.html">
+            <p class="post-date">Oct 2023 · Middleware</p>
+            <h2>Upgrading Apache Tomcat: A Practical Guide</h2>
+            <p>A practical, step-by-step guide to upgrading your Apache Tomcat server safely in production environments.</p>
+          </a>
+        </li>
+
+        <li>
+          <a href="blog/jboss_domain_elytron.html">
+            <p class="post-date">Oct 2023 · JBoss EAP</p>
+            <h2>Deep Dive into JBoss Domain Mode: Elytron Security Realm Configuration</h2>
+            <p>A deep dive into configuring the Elytron security realm within JBoss EAP domain mode.</p>
+          </a>
+        </li>
+
+        <li>
+          <a href="blog/elytrone_deep.html">
+            <p class="post-date">Oct 2023 · Security</p>
+            <h2>Elytron Security Realm — What It Is and Why It Matters</h2>
+            <p>An exploration of what the Elytron security subsystem is and why Red Hat chose it as the modern security framework for JBoss EAP.</p>
+          </a>
+        </li>
+
+        <li>
+          <a href="blog/jboss-domain.html">
+            <p class="post-date">Oct 2023 · JBoss EAP</p>
+            <h2>JBoss Domain Mode: A Comprehensive Guide</h2>
+            <p>A comprehensive guide to understanding, configuring, and managing JBoss EAP in domain mode.</p>
+          </a>
+        </li>
+
+      </ul>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 Channa Sandaruwan · Systems Engineer · Kuwait</p>
+    </div>
+  </footer>
+
 </body>
 </html>
