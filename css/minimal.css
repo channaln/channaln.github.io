@@ -126,6 +126,13 @@ a { color: inherit; text-decoration: none; }
 .section { width: 100%; max-width: 100%; padding: 80px 0; border-top: 1px solid var(--bd); text-align: center; display: flex; flex-direction: column; align-items: center; }
 .section.section--latest-writing { align-items: flex-start; text-align: left; }
 .container.container--align-left { align-items: flex-start; }
+/* Match hero card width; center the glass panel on the page like the Channa block */
+.section--latest-writing .container--align-left .glass-panel.hero-glass.home-feed {
+  align-self: center;
+  width: 100%;
+  max-width: min(48rem, 100%);
+  box-sizing: border-box;
+}
 .sec-label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--t3); margin-bottom: 8px; }
 .sec-title { font-family: var(--font-heading); font-size: clamp(24px, 3.5vw, 34px); font-weight: 700; color: var(--t1); letter-spacing: -0.02em; margin-bottom: 36px; max-width: 32rem; margin-left: auto; margin-right: auto; }
 .hero-actions--left { justify-content: flex-start; }
@@ -156,15 +163,10 @@ a { color: inherit; text-decoration: none; }
 .story-tag { font-size: 12px; font-weight: 500; color: var(--t2); background: var(--bg3); padding: 4px 10px; border-radius: 100px; }
 .story-time { font-size: 12px; color: var(--t3); }
 
-/* === HOME — compact writing feed (5 posts) === */
+/* === HOME — compact writing feed (5 posts) — width/padding: match .hero-glass in glass.css === */
 .home-feed {
-  width: 100%;
-  max-width: 28rem;
-  margin: 0;
-  padding: 20px 22px 18px;
   text-align: left;
-  box-sizing: border-box;
-  border-radius: 16px;
+  /* Same card footprint as Channa / hero: use class "hero-glass" on the same element */
 }
 .home-feed-label { margin-top: 0; text-align: left; }
 .home-feed .sec-label { text-align: left; margin-left: 0; }
