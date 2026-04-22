@@ -248,3 +248,102 @@ body.page-root .post-wrap.glass-panel {
   box-shadow: var(--glass-shadow);
 }
 body.page-root .post-wrap.glass-panel::after { opacity: 0.25; }
+
+/* =============================================================================
+   Dark theme — glossy metallic titanium matte black (ambient shell + glass)
+   ============================================================================= */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --glass-bg: rgba(26, 28, 34, 0.55);
+  --glass-border: rgba(160, 175, 195, 0.14);
+  --glass-shadow: 0 16px 56px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --glass-shine: linear-gradient(
+    118deg,
+    transparent 0%,
+    rgba(220, 230, 245, 0.14) 38%,
+    rgba(140, 155, 175, 0.08) 50%,
+    rgba(255, 255, 255, 0.05) 52%,
+    transparent 65%,
+    transparent 100%
+  );
+}
+
+/* Matte black titanium base + brushed specular bands */
+html[data-theme="dark"] body.page-root {
+  background:
+    linear-gradient(168deg, #060607 0%, #0b0c0f 14%, #08090b 32%, #0d0e12 48%, #070708 64%, #101116 82%, #0a0a0d 100%),
+    linear-gradient(105deg, rgba(90, 98, 112, 0.07) 0%, transparent 22%, transparent 78%, rgba(70, 78, 92, 0.06) 100%),
+    repeating-linear-gradient(
+      -12deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.015) 2px,
+      rgba(255, 255, 255, 0.015) 3px
+    ),
+    radial-gradient(ellipse 120% 70% at 50% -15%, rgba(100, 115, 135, 0.18) 0%, transparent 52%),
+    radial-gradient(ellipse 55% 45% at 0% 100%, rgba(55, 62, 75, 0.35) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 40% at 100% 85%, rgba(45, 52, 64, 0.4) 0%, transparent 48%);
+  background-color: #050506;
+  background-attachment: fixed;
+}
+
+html[data-theme="dark"] body.page-root::before {
+  background:
+    radial-gradient(ellipse 100% 65% at 12% 8%, rgba(185, 198, 215, 0.12) 0%, rgba(120, 132, 148, 0.04) 28%, transparent 58%),
+    radial-gradient(ellipse 90% 55% at 88% 12%, rgba(160, 175, 195, 0.1) 0%, transparent 52%),
+    radial-gradient(ellipse 70% 45% at 50% 102%, rgba(70, 80, 96, 0.2) 0%, transparent 55%),
+    radial-gradient(ellipse 45% 35% at 72% 48%, rgba(255, 255, 255, 0.04) 0%, transparent 42%),
+    linear-gradient(128deg, transparent 0%, rgba(255, 255, 255, 0.06) 44%, rgba(200, 210, 225, 0.03) 50%, transparent 62%);
+  mix-blend-mode: screen;
+  opacity: 0.85;
+  animation: glass-bg-float 26s ease-in-out infinite alternate;
+}
+
+html[data-theme="dark"] body.page-root::after {
+  background: conic-gradient(
+    from 200deg at 50% 50%,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(180, 195, 215, 0.06) 16%,
+    rgba(255, 255, 255, 0) 34%,
+    rgba(130, 145, 165, 0.05) 48%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  opacity: 0.55;
+  animation: glass-liquid-sheen 32s ease-in-out infinite;
+}
+
+html[data-theme="dark"] body.page-root .header {
+  background: rgba(12, 13, 16, 0.82) !important;
+  backdrop-filter: blur(18px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(140%) !important;
+  border-bottom: 1px solid rgba(120, 135, 155, 0.12) !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+html[data-theme="dark"] body.page-root .footer {
+  background: linear-gradient(180deg, transparent, rgba(18, 20, 26, 0.65));
+  border-top: 1px solid rgba(100, 115, 135, 0.12);
+}
+
+html[data-theme="dark"] .glass-panel,
+html[data-theme="dark"] .work-tabs-panels .work-tab-panel {
+  box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+html[data-theme="dark"] .work-tab {
+  border-color: rgba(140, 155, 175, 0.2);
+  background: rgba(22, 24, 30, 0.45);
+  color: var(--t2);
+}
+
+html[data-theme="dark"] .work-tab:hover {
+  color: var(--t1);
+  background: rgba(36, 40, 50, 0.65);
+}
+
+html[data-theme="dark"] .work-tab[aria-selected="true"] {
+  color: #f0f2f6;
+  background: linear-gradient(145deg, #2a3038, #1e222a);
+  border-color: rgba(160, 175, 195, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}

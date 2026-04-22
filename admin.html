@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="js/theme-init.js"></script>
   <title>Site admin — channa.dev</title>
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" href="css/admin.css">
@@ -31,7 +32,7 @@
       <h1>Content dashboard</h1>
       <p>
         Posts are stored in this browser’s <code>localStorage</code>. To publish for everyone, use <strong>Export HTML</strong> and add the file under <code>blog/</code> in your GitHub repo, then run <strong>Export JSON</strong> as a backup.
-        Site font applies to the whole public site after reload.
+        Site font and color theme apply to the whole public site (theme updates immediately).
       </p>
     </div>
 
@@ -57,6 +58,12 @@
           <div class="btn-row" style="margin-top:8px">
             <button type="button" class="btn-adm" id="btn-font">Save font</button>
           </div>
+          <label for="admin-site-theme" style="display:block;margin-top:16px">Site color theme</label>
+          <select id="admin-site-theme" class="admin-theme-select" style="margin-top:6px">
+            <option value="light">Light</option>
+            <option value="dark">Dark (titanium)</option>
+            <option value="system">System</option>
+          </select>
         </div>
         <div style="margin-top:12px">
           <label class="admin-hint">Import posts JSON</label>
@@ -127,6 +134,7 @@
   </div>
 
   <script src="js/sanitize.js"></script>
+  <script src="js/site-settings.js"></script>
   <script src="js/admin.js"></script>
 </body>
 </html>

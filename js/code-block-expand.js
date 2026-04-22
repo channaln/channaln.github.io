@@ -1,78 +1,126 @@
 /**
- * Add expand (fullscreen) to .post-content .code-block; opens a blurred overlay with the full code.
+ * Code blocks in .post-content: expand to a blurred overlay with zoom-in animation.
  */
 (function () {
   "use strict";
 
-  var overlay;
+  var root;
   var contentSlot;
   var lastFocus;
+  var afterCloseTimer;
+
+  function raf2(fn) {
+    requestAnimationFrame(function () {
+      requestAnimationFrame(fn);
+    });
+  }
 
   function buildOverlay() {
-    if (overlay) return overlay;
-    var root = document.createElement("div");
-    root.id = "code-expand-root";
-    root.className = "code-expand-overlay";
-    root.setAttribute("role", "dialog");
-    root.setAttribute("aria-modal", "true");
-    root.setAttribute("aria-label", "Expanded code");
-    root.hidden = true;
-    root.innerHTML =
-      '<div class="code-expand-backdrop" data-code-expand-close aria-hidden="true"></div>' +
+    if (root) return root;
+    var el = document.createElement("div");
+    el.id = "code-expand-root";
+    el.className = "code-expand-overlay";
+    el.setAttribute("role", "dialog");
+    el.setAttribute("aria-modal", "true");
+    el.setAttribute("aria-label", "Expanded code");
+    el.setAttribute("aria-hidden", "true");
+    el.innerHTML =
+      '<div class="code-expand-backdrop" data-code-expand-close tabindex="-1" aria-hidden="true"></div>' +
       '<div class="code-expand-panel">' +
       '<div class="code-expand-toolbar">' +
       '<button type="button" class="code-expand-close" data-code-expand-close aria-label="Close expanded code">' +
       '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">' +
-      "<line x1=\"18\" y1=\"6\" x2=\"6\" y2=\"18\"/><line x1=\"6\" y1=\"6\" x2=\"18\" y2=\"18\"/></svg></button></div>" +
-      '<div class="code-expand-body"></div></div>';
-    document.body.appendChild(root);
-    overlay = root;
-    contentSlot = root.querySelector(".code-expand-body");
-    var closeEls = root.querySelectorAll("[data-code-expand-close]");
-    for (var i = 0; i < closeEls.length; i++) {
-      closeEls[i].addEventListener("click", function (e) {
-        e.preventDefault();
-        close();
-      });
+      "<line x1=\"18\" y1=\"6\" x2=\"6\" y2=\"18\"/><line x1=\"6\" y1=\"6\" x2=\"18\" y2=\"18\"/>" +
+      "</svg></button></div>" +
+      "<div class=\"code-expand-body\"></div></div>";
+
+    document.body.appendChild(el);
+    root = el;
+    contentSlot = el.querySelector(".code-expand-body");
+
+    var closers = el.querySelectorAll("[data-code-expand-close]");
+    for (var i = 0; i < closers.length; i++) {
+      closers[i].addEventListener("click", onCloseClick, false);
     }
-    return root;
+    return el;
+  }
+
+  function isOpen() {
+    return root && root.classList.contains("is-open");
+  }
+
+  function onCloseClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    close();
   }
 
   function open(preEl) {
-    var root = buildOverlay();
+    if (!preEl) return;
+    var el = buildOverlay();
     if (!contentSlot) return;
+    if (afterCloseTimer) {
+      clearTimeout(afterCloseTimer);
+      afterCloseTimer = null;
+    }
+
     lastFocus = document.activeElement;
     contentSlot.textContent = "";
     var pre = preEl.cloneNode(true);
     pre.removeAttribute("style");
     contentSlot.appendChild(pre);
-    root.hidden = false;
-    document.body.classList.add("code-expand-open");
-    var closeBtn = root.querySelector(".code-expand-close");
-    if (closeBtn) {
-      setTimeout(function () {
-        closeBtn.focus();
-      }, 0);
-    }
+
+    el.setAttribute("aria-hidden", "false");
+    el.classList.remove("is-open");
+    el.style.visibility = "visible";
+
+    raf2(function () {
+      if (!el.parentNode) return;
+      el.classList.add("is-open");
+      document.body.classList.add("code-expand-open");
+      var btn = el.querySelector(".code-expand-close");
+      if (btn) {
+        try {
+          btn.focus();
+        } catch (err) {}
+      }
+    });
   }
 
   function close() {
-    if (!overlay) return;
-    overlay.hidden = true;
-    if (contentSlot) contentSlot.textContent = "";
+    if (!root || !isOpen()) return;
+    root.classList.remove("is-open");
     document.body.classList.remove("code-expand-open");
-    if (lastFocus && typeof lastFocus.focus === "function") {
-      try {
-        lastFocus.focus();
-      } catch (e) {}
+    root.setAttribute("aria-hidden", "true");
+    if (afterCloseTimer) {
+      clearTimeout(afterCloseTimer);
     }
+    var ms = 400;
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      ms = 0;
+    }
+    afterCloseTimer = setTimeout(function () {
+      afterCloseTimer = null;
+      if (contentSlot) {
+        contentSlot.textContent = "";
+      }
+      if (root) {
+        root.style.visibility = "hidden";
+      }
+      if (lastFocus && typeof lastFocus.focus === "function") {
+        try {
+          lastFocus.focus();
+        } catch (e) {}
+      }
+    }, ms);
   }
 
   function onKeydown(e) {
-    if (e.key === "Escape" && !overlay.hidden) {
-      e.preventDefault();
-      close();
-    }
+    if (e.key !== "Escape" || !root) return;
+    if (!isOpen()) return;
+    e.preventDefault();
+    e.stopPropagation();
+    close();
   }
 
   function enhanceBlock(block) {
@@ -80,6 +128,7 @@
     var pre = block.querySelector("pre");
     if (!pre) return;
     block.setAttribute("data-code-expand", "1");
+    block.classList.add("code-block--with-expand");
     var header = document.createElement("div");
     header.className = "code-block-header";
     var btn = document.createElement("button");
@@ -109,10 +158,12 @@
     }
   }
 
-  document.addEventListener("keydown", onKeydown);
+  document.addEventListener("keydown", onKeydown, true);
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else {
     init();
   }
+
+  window.channaInitCodeExpand = init;
 })();

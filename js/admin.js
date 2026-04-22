@@ -375,6 +375,7 @@
       "<head>",
       '  <meta charset="UTF-8">',
       '  <meta name="viewport" content="width=device-width, initial-scale=1">',
+      '  <script src="../js/theme-init.js"><\/script>',
       "  <title>" + escapeHtml(g.title) + " — Channa Sandaruwan</title>",
       '  <link rel="stylesheet" href="../css/minimal.css">',
       '  <link rel="stylesheet" href="../css/glass.css">',
@@ -510,7 +511,8 @@
     } catch (e) {
       localStorage.setItem(STORAGE_SITE, JSON.stringify({ fontPreset: v }));
     }
-    alert("Font saved. Reload the public site to apply.");
+    if (typeof window.channaApplySiteSettings === "function") window.channaApplySiteSettings();
+    alert("Font saved. Reload other open tabs to pick up typography.");
   }
 
   function syncFontSelect() {
@@ -518,6 +520,18 @@
       var o = JSON.parse(localStorage.getItem(STORAGE_SITE) || "{}");
       if (o.fontPreset) $("site-font").value = o.fontPreset;
     } catch (e) {}
+  }
+
+  function syncAdminThemeSelect() {
+    var el = $("admin-site-theme");
+    if (!el) return;
+    try {
+      var o = JSON.parse(localStorage.getItem(STORAGE_SITE) || "{}");
+      var t = o.theme;
+      el.value = t === "light" || t === "dark" || t === "system" ? t : "system";
+    } catch (e) {
+      el.value = "system";
+    }
   }
 
   function importJson(file) {
@@ -556,6 +570,7 @@
         $("admin-dashboard").classList.remove("hidden");
         state.posts = loadPosts();
         syncFontSelect();
+        syncAdminThemeSelect();
         renderList();
         updateStorageHint();
         if (state.posts.length) selectPost(state.posts[0].id);
@@ -580,6 +595,13 @@
     $("btn-preview").addEventListener("click", preview);
     $("btn-font").addEventListener("click", applyFontFromSelect);
     $("file-import").addEventListener("change", importJson);
+    if ($("admin-site-theme")) {
+      $("admin-site-theme").addEventListener("change", function () {
+        if (typeof window.channaSaveSiteTheme === "function") {
+          window.channaSaveSiteTheme($("admin-site-theme").value);
+        }
+      });
+    }
 
     ["f-title", "f-slug", "f-date", "f-topics", "f-excerpt", "f-html"].forEach(function (id) {
       $(id).addEventListener("input", function () {
@@ -605,6 +627,7 @@
   if (isAuthed()) {
     state.posts = loadPosts();
     syncFontSelect();
+    syncAdminThemeSelect();
     renderList();
     updateStorageHint();
     if (state.posts.length) selectPost(state.posts[0].id);

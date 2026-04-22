@@ -95,6 +95,10 @@ body.admin-app {
   box-shadow: 0 0 0 2px rgba(91, 140, 255, 0.2);
 }
 
+.admin-theme-select {
+  max-width: 16rem;
+}
+
 .admin-form textarea.code-body {
   min-height: 320px;
   font-family: ui-monospace, "JetBrains Mono", Consolas, monospace;
