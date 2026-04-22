@@ -65,7 +65,10 @@
     document.getElementById("pv-title").textContent = "Post not found";
     return;
   }
-  document.getElementById("pv-title").textContent = post.title || "Untitled";
+  var vTitle = post.title || "Untitled";
+  if (typeof formatBlogTitle === "function" && post.title) vTitle = formatBlogTitle(post.title);
+  document.getElementById("pv-title").textContent = vTitle;
+  document.title = vTitle + " — channa.dev";
   document.getElementById("pv-meta").textContent = (post.date || "") + " · " + (post.readMin != null ? post.readMin : 5) + " min read";
   document.getElementById("pv-body").innerHTML = post.html || "<p></p>";
   var topics = typeof sanitizeTopicList === "function" ? sanitizeTopicList(post.topics) : [];

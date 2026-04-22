@@ -275,7 +275,9 @@ main {
 .footer-links a:hover { color: var(--t2); }
 
 /* === MISC === */
-#writing .glass-panel > div:last-of-type { text-align: center; padding-top: 28px; }
+#experience .stories-cta { text-align: center; padding-top: 28px; }
+.exp-inner-block { width: 100%; padding: 0 0 40px; margin: 0 0 32px; border-bottom: 1px solid var(--bd); }
+.exp-inner-block:last-of-type { border: none; margin: 0; padding: 0; }
 .fade-in { opacity: 0; transform: translateY(16px); transition: opacity 0.5s ease, transform 0.5s ease; }
 .fade-in.visible { opacity: 1; transform: none; }
 

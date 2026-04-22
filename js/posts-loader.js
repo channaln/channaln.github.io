@@ -51,10 +51,17 @@
     return "#";
   }
 
+  function displayTitle(t) {
+    if (!t) return "";
+    if (typeof window.formatBlogTitle === "function") return window.formatBlogTitle(t);
+    return t;
+  }
+
   function homeStoryCard(post) {
     var href = hrefFor(post);
     var r = post.readMin != null ? post.readMin : 5;
     var tags = topicTags(post);
+    var title = displayTitle(post.title);
     return (
       '<a class="story-card story-from-admin" href="' + esc(href) + '">' +
       '<div class="story-meta">' +
@@ -66,7 +73,7 @@
       '<span class="story-date">' + esc(String(r)) + " min read</span>" +
       "</div>" +
       '<div class="story-body"><div class="story-content">' +
-      "<div class=\"story-title\">" + esc(post.title) + "</div>" +
+      "<div class=\"story-title\">" + esc(title) + "</div>" +
       '<div class="story-excerpt">' + esc(post.excerpt || "") + "</div>" +
       (tags ? '<div class="story-footer">' + tags + "</div>" : "") +
       "</div></div></a>"
@@ -85,11 +92,12 @@
   function blogListItem(post) {
     var href = hrefFor(post);
     var blTag = topicLinePlain(post);
+    var title = displayTitle(post.title);
     return (
       "<li><a href=\"" + esc(href) + '">' +
       '<div class="bl-date-col"><div class="bl-date">' + esc(post.date || "") + '</div><div class="bl-date">' + esc(String(post.readMin != null ? post.readMin : 5)) + " min</div></div>" +
       "<div><p class=\"bl-tag\">" + esc(blTag) + "</p>" +
-      "<h2 class=\"bl-title\">" + esc(post.title) + "</h2>" +
+      "<h2 class=\"bl-title\">" + esc(title) + "</h2>" +
       '<p class="bl-excerpt">' + esc(post.excerpt || "") + "</p></div></a></li>"
     );
   }

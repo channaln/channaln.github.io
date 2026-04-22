@@ -93,6 +93,10 @@
 
   function gatherForm() {
     var title = $("f-title").value.trim();
+    if (title && typeof window.formatBlogTitle === "function") {
+      title = window.formatBlogTitle(title);
+      $("f-title").value = title;
+    }
     var slug = $("f-slug").value.trim() || slugify(title);
     var date = $("f-date").value.trim() || new Date().toLocaleString("en-GB", { month: "short", year: "numeric" });
     var topicsRaw = $("f-topics").value;
@@ -246,7 +250,7 @@
       return;
     }
     var topics = typeof window.sanitizeTopicList === "function" ? window.sanitizeTopicList(g.topics) : g.topics || [];
-    var topicMeta = topics.join(" / ");
+    var topicMeta = topics.join(" · ");
     var body = [
       "<!DOCTYPE html>",
       '<html lang="en">',

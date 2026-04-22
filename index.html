@@ -30,9 +30,7 @@
       <a href="index.html" class="logo">channa<span>.dev</span></a>
       <nav>
         <ul class="nav-links">
-          <li><a href="#work" data-work-tab="stack">Stack</a></li>
-          <li><a href="#work" data-work-tab="experience">Experience</a></li>
-          <li><a href="#work" data-work-tab="certs">Certs</a></li>
+          <li><a href="#experience">Experience</a></li>
           <li><a href="blog_list.html">Blog</a></li>
           <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener" class="nav-cta">LinkedIn ↗</a></li>
         </ul>
@@ -44,38 +42,27 @@
 
     <section class="hero">
       <div class="container glass-panel hero-glass">
-        <img src="images/profile.jpg" alt="Channa Sandaruwan" class="hero-photo">
         <div class="hero-text">
-          <span class="hero-eyebrow">Systems Engineer · Kuwait</span>
           <h1>Channa Sandaruwan</h1>
           <p class="hero-sub">
             Enterprise infrastructure engineer specialising in Red Hat OpenShift, Ansible Automation Platform, and mission-critical Linux environments. RHCA certified with deployments across telecom-scale infrastructure.
           </p>
-          <div class="hero-actions">
-            <a href="blog_list.html" class="btn btn-dark">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
-              Read the Blog
-            </a>
-            <a href="https://www.linkedin.com/in/channas" class="btn btn-outline" target="_blank" rel="noopener">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-              Connect on LinkedIn
-            </a>
-          </div>
-          <div class="hero-stats">
-            <div><div class="hstat-num">4+</div><div class="hstat-lbl">Years experience</div></div>
-            <div><div class="hstat-num">50+</div><div class="hstat-lbl">Technologies</div></div>
-            <div><div class="hstat-num">5</div><div class="hstat-lbl">Certifications</div></div>
-            <div><div class="hstat-num">2</div><div class="hstat-lbl">Countries worked</div></div>
-          </div>
         </div>
       </div>
     </section>
 
-    <section class="section" id="writing">
-      <div class="container glass-panel section-glass">
+    <section class="section" id="experience">
+      <div class="container">
+        <div class="work-tabs" role="tablist" aria-label="Experience content">
+          <span class="work-tab" role="tab" aria-selected="true" id="tab-experience-main" aria-controls="panel-experience-all">Experience</span>
+        </div>
+        <div class="work-tabs-panels">
+          <div class="work-tab-panel glass-panel section-glass" id="panel-experience-all" role="tabpanel" aria-labelledby="tab-experience-main">
+
+            <div class="exp-inner-block exp-writing">
         <p class="sec-label fade-in">Latest Writing</p>
         <h2 class="sec-title fade-in">Technical deep-dives from the field.</h2>
-        <div class="stories fade-in">
+<div class="stories fade-in">
 
           <a class="story-card" href="blog/cluster_vs_proxy.html">
             <div class="story-meta">
@@ -88,11 +75,10 @@
             </div>
             <div class="story-body">
               <div class="story-content">
-                <div class="story-title">mod_proxy_balancer vs mod_cluster — Which One Should You Use?</div>
+                <div class="story-title">Mod proxy balancer and mod cluster — Which One Should You Use?</div>
                 <div class="story-excerpt">A deep dive into the architecture and trade-offs of two Apache HTTP Server load balancing modules — static config versus dynamic MCMP self-registration from the backend nodes.</div>
                 <div class="story-footer">
-                  <span class="story-tag">Apache</span>
-                  <span class="story-tag">Load Balancing</span>
+                  <span class="story-tag">Apache load balancing</span>
                 </div>
               </div>
             </div>
@@ -109,7 +95,7 @@
             </div>
             <div class="story-body">
               <div class="story-content">
-                <div class="story-title">Upgrading Apache Tomcat: A Practical Guide</div>
+                <div class="story-title">Upgrading Apache Tomcat — A Practical Guide</div>
                 <div class="story-excerpt">A step-by-step production-grade guide covering backup, side-by-side installation, configuration migration, symlink switch, validation, and the instant rollback procedure that has saved me more than once.</div>
                 <div class="story-footer">
                   <span class="story-tag">Middleware</span>
@@ -130,7 +116,7 @@
             </div>
             <div class="story-body">
               <div class="story-content">
-                <div class="story-title">JBoss Domain Mode: A Comprehensive Guide</div>
+                <div class="story-title">JBoss Domain Mode — A Comprehensive Guide</div>
                 <div class="story-excerpt">Domain Controller, Host Controllers, Server Groups, and rolling restarts — the complete operational model explained with real domain.xml and host.xml configuration examples.</div>
                 <div class="story-footer">
                   <span class="story-tag">JBoss EAP</span>
@@ -171,7 +157,7 @@
             </div>
             <div class="story-body">
               <div class="story-content">
-                <div class="story-title">JBoss Domain Mode: Elytron Security Realm Configuration</div>
+                <div class="story-title">Elytron in JBoss Domain Mode — Security Realm Configuration</div>
                 <div class="story-excerpt">Where security configuration splits between domain.xml and host.xml, how to add Elytron realms to a domain profile via CLI, and the pitfalls that catch engineers off guard.</div>
                 <div class="story-footer">
                   <span class="story-tag">JBoss EAP</span>
@@ -192,7 +178,7 @@
             </div>
             <div class="story-body">
               <div class="story-content">
-                <div class="story-title">The Power of Ansible for DevOps</div>
+                <div class="story-title">The Power of Ansible — DevOps</div>
                 <div class="story-excerpt">Agentless, idempotent, YAML-based — why Ansible is the go-to automation tool for modern infrastructure, with a practical sample playbook walkthrough.</div>
                 <div class="story-footer">
                   <span class="story-tag">Automation</span>
@@ -203,26 +189,14 @@
           </a>
 
         </div>
-        <div>
+        <div class="stories-cta">
           <a href="blog_list.html" style="font-size:14px;color:var(--ac);font-weight:500;">See all stories →</a>
         </div>
-      </div>
-    </section>
+            </div>
 
-    <section class="section" id="work">
-      <div class="container">
-        <p class="sec-label fade-in">Profile</p>
-        <h2 class="sec-title fade-in">Work and expertise</h2>
-        <div class="work-tabs" role="tablist" aria-label="Work and expertise">
-          <button type="button" class="work-tab" role="tab" id="tab-stack" data-tab="stack" aria-selected="true" aria-controls="panel-stack">Stack</button>
-          <button type="button" class="work-tab" role="tab" id="tab-experience" data-tab="experience" aria-selected="false" aria-controls="panel-experience">Experience</button>
-          <button type="button" class="work-tab" role="tab" id="tab-certs" data-tab="certs" aria-selected="false" aria-controls="panel-certs">Certifications</button>
-        </div>
-        <div class="work-tabs-panels">
-
-          <div class="work-tab-panel glass-panel" id="panel-stack" role="tabpanel" aria-labelledby="tab-stack" data-panel="stack">
-            <p class="sec-label" style="margin-top:0">Tech Stack</p>
-            <h2 class="sec-title" style="margin-top:0;margin-bottom:1.5rem;max-width:none">Tools I work with daily.</h2>
+            <div class="exp-inner-block" id="tech-stack">
+        <p class="sec-label fade-in">Tech Stack</p>
+        <h2 class="sec-title fade-in">Tools I work with daily.</h2>
             <div class="stack-grid fade-in">
 
           <div>
@@ -326,11 +300,11 @@
           </div>
 
             </div>
-          </div>
+            </div>
 
-          <div class="work-tab-panel glass-panel" id="panel-experience" role="tabpanel" aria-labelledby="tab-experience" data-panel="experience" hidden>
-            <p class="sec-label" style="margin-top:0">Experience</p>
-            <h2 class="sec-title" style="margin-top:0;margin-bottom:1.5rem;max-width:none">Where I have worked.</h2>
+            <div class="exp-inner-block" id="work-history">
+        <p class="sec-label fade-in">Employment</p>
+        <h2 class="sec-title fade-in">Where I have worked.</h2>
             <div class="timeline fade-in">
 
           <div class="tl-item">
@@ -365,11 +339,11 @@
           </div>
 
             </div>
-          </div>
+            </div>
 
-          <div class="work-tab-panel glass-panel" id="panel-certs" role="tabpanel" aria-labelledby="tab-certs" data-panel="certs" hidden>
-            <p class="sec-label" style="margin-top:0">Certifications</p>
-            <h2 class="sec-title" style="margin-top:0;margin-bottom:1.5rem;max-width:none">Red Hat and beyond.</h2>
+            <div class="exp-inner-block" id="certifications">
+        <p class="sec-label fade-in">Certifications</p>
+        <h2 class="sec-title fade-in">Red Hat and beyond.</h2>
             <div class="certs fade-in">
 
           <div class="cert-card">
@@ -413,8 +387,9 @@
           </div>
 
             </div>
-          </div>
+            </div>
 
+          </div>
         </div>
       </div>
     </section>
@@ -425,6 +400,7 @@
     <div class="container">
       <p>&copy; 2025 Channa Sandaruwan · Systems Engineer · Kuwait</p>
       <nav class="footer-links">
+        <a href="#experience">Experience</a>
         <a href="blog_list.html">Blog</a>
         <a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a>
       </nav>
@@ -433,7 +409,6 @@
 
   <script src="js/sanitize.js" defer></script>
   <script src="js/site-settings.js" defer></script>
-  <script src="js/work-tabs.js" defer></script>
   <script src="js/posts-loader.js" defer></script>
   <script>
     var io = new IntersectionObserver(function(entries) {
