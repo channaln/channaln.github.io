@@ -288,11 +288,10 @@ body.page-home .header .container {
   background: rgba(0, 0, 0, 0.03);
 }
 .home-feed-item-title {
-  /* Same as .hero-sub: body family, 19px, comfortable line height */
   font-family: var(--font-body);
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 500;
-  line-height: 1.65;
+  line-height: 1.6;
   color: var(--t1);
   text-align: justify;
   width: 100%;
@@ -303,7 +302,7 @@ body.page-home .header .container {
 }
 .home-feed-item-meta {
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.5;
   color: var(--t2);
   letter-spacing: 0.01em;
@@ -315,9 +314,9 @@ body.page-home .header .container {
 }
 .home-feed-cta a {
   font-family: var(--font-body);
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 500;
-  line-height: 1.65;
+  line-height: 1.6;
   color: var(--ac);
   text-decoration: none;
 }
