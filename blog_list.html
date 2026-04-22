@@ -18,19 +18,19 @@
   <meta name="twitter:image" content="https://channaln.github.io/images/profile.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;450;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;0,700;1,500;1,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/minimal.css">
 </head>
 <body>
 
-  <header class="header is-scrolled">
+  <header class="header">
     <div class="container">
       <a href="index.html" class="logo">channa<span>.dev</span></a>
       <nav>
         <ul class="nav-links">
           <li><a href="index.html">Home</a></li>
           <li><a href="blog_list.html" aria-current="page">Blog</a></li>
-          <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a></li>
+          <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener" class="nav-cta">LinkedIn ↗</a></li>
         </ul>
       </nav>
     </div>
@@ -40,8 +40,8 @@
     <div class="container">
 
       <div class="page-head">
-        <p class="sec-kicker">Writing</p>
-        <h1>Blog Posts</h1>
+        <p class="sec-label">Writing</p>
+        <h1>Stories</h1>
         <p>Technical articles on Linux, middleware, OpenShift, Ansible, and infrastructure automation.</p>
       </div>
 
@@ -49,66 +49,84 @@
 
         <li>
           <a href="blog/cluster_vs_proxy.html">
-            <div class="post-date">Oct 2023</div>
+            <div class="bl-date-col">
+              <div class="bl-date">Oct 2023</div>
+              <div class="bl-date">5 min read</div>
+            </div>
             <div>
               <p class="bl-tag">Apache · Load Balancing</p>
-              <h2>mod_proxy_balancer vs mod_cluster — Which One Should You Use?</h2>
-              <p class="bl-desc">A deep dive into the architecture, trade-offs, and configuration of mod_proxy_balancer and mod_cluster — static Apache config versus dynamic MCMP self-registration from the backend nodes.</p>
+              <h2 class="bl-title">mod_proxy_balancer vs mod_cluster — Which One Should You Use?</h2>
+              <p class="bl-excerpt">A deep dive into the architecture and trade-offs of mod_proxy_balancer and mod_cluster — static Apache config versus dynamic MCMP self-registration from the backend nodes, with side-by-side comparison.</p>
             </div>
           </a>
         </li>
 
         <li>
           <a href="blog/tomcat_upgrade.html">
-            <div class="post-date">Oct 2023</div>
+            <div class="bl-date-col">
+              <div class="bl-date">Oct 2023</div>
+              <div class="bl-date">7 min read</div>
+            </div>
             <div>
               <p class="bl-tag">Middleware</p>
-              <h2>Upgrading Apache Tomcat: A Practical Guide</h2>
-              <p class="bl-desc">A step-by-step production-grade guide to upgrading Apache Tomcat — backup, side-by-side installation, configuration migration, symlink switch, validation, and instant rollback procedure.</p>
+              <h2 class="bl-title">Upgrading Apache Tomcat: A Practical Guide</h2>
+              <p class="bl-excerpt">A production-grade step-by-step guide — backup, side-by-side installation, configuration migration, symlink switch, validation, and the two-line rollback procedure that has saved me more than once.</p>
             </div>
           </a>
         </li>
 
         <li>
           <a href="blog/jboss_domain_elytron.html">
-            <div class="post-date">Oct 2023</div>
+            <div class="bl-date-col">
+              <div class="bl-date">Oct 2023</div>
+              <div class="bl-date">5 min read</div>
+            </div>
             <div>
               <p class="bl-tag">JBoss EAP</p>
-              <h2>Deep Dive into JBoss Domain Mode: Elytron Security Realm Configuration</h2>
-              <p class="bl-desc">Configuring Elytron in domain mode — where the security configuration split between domain.xml and host.xml, how to add realms via CLI, and the common pitfalls that catch engineers off guard.</p>
+              <h2 class="bl-title">Deep Dive: Elytron Security Realm Configuration in Domain Mode</h2>
+              <p class="bl-excerpt">Configuring Elytron in JBoss domain mode — the security configuration split between domain.xml and host.xml, adding realms via CLI, and the common pitfalls that catch experienced engineers off guard.</p>
             </div>
           </a>
         </li>
 
         <li>
           <a href="blog/elytrone_deep.html">
-            <div class="post-date">Oct 2023</div>
+            <div class="bl-date-col">
+              <div class="bl-date">Oct 2023</div>
+              <div class="bl-date">6 min read</div>
+            </div>
             <div>
               <p class="bl-tag">Security</p>
-              <h2>Elytron Security Realm — What It Is and Why It Matters</h2>
-              <p class="bl-desc">An in-depth look at the Elytron security subsystem — why Red Hat replaced PicketBox, how the composable SecurityRealm → RoleDecoder → SecurityDomain → AuthenticationFactory pipeline works, and a minimal working example.</p>
+              <h2 class="bl-title">Elytron Security Realm — What It Is and Why It Matters</h2>
+              <p class="bl-excerpt">An in-depth look at the Elytron security subsystem — why Red Hat replaced PicketBox, how the composable SecurityRealm → SecurityDomain → AuthenticationFactory pipeline works, and a complete minimal example.</p>
             </div>
           </a>
         </li>
 
         <li>
           <a href="blog/jboss-domain.html">
-            <div class="post-date">Oct 2023</div>
+            <div class="bl-date-col">
+              <div class="bl-date">Oct 2023</div>
+              <div class="bl-date">6 min read</div>
+            </div>
             <div>
               <p class="bl-tag">JBoss EAP</p>
-              <h2>JBoss Domain Mode: A Comprehensive Guide</h2>
-              <p class="bl-desc">A comprehensive guide to JBoss EAP domain mode — architecture, Domain Controller, Host Controllers, Server Groups, domain.xml and host.xml structure, deployments, and rolling restarts.</p>
+              <h2 class="bl-title">JBoss Domain Mode: A Comprehensive Guide</h2>
+              <p class="bl-excerpt">Domain Controller, Host Controllers, Server Groups, domain.xml, host.xml, rolling restarts — the complete domain mode architecture explained with real configuration examples and CLI commands.</p>
             </div>
           </a>
         </li>
 
         <li>
           <a href="blog/new_post.html">
-            <div class="post-date">Oct 2023</div>
+            <div class="bl-date-col">
+              <div class="bl-date">Oct 2023</div>
+              <div class="bl-date">3 min read</div>
+            </div>
             <div>
               <p class="bl-tag">Automation</p>
-              <h2>The Power of Ansible for DevOps</h2>
-              <p class="bl-desc">Agentless, idempotent, YAML-based — why Ansible is the go-to automation tool for modern infrastructure and how to get started with a practical sample playbook.</p>
+              <h2 class="bl-title">The Power of Ansible for DevOps</h2>
+              <p class="bl-excerpt">Agentless, idempotent, YAML-based — why Ansible is the go-to automation tool for modern infrastructure and how to get started with a practical sample playbook.</p>
             </div>
           </a>
         </li>

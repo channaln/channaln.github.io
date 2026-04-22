@@ -18,13 +18,13 @@
   <meta name="twitter:image" content="https://channaln.github.io/images/profile.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;450;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;0,700;1,500;1,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/devicon.min.css">
   <link rel="stylesheet" href="css/minimal.css">
 </head>
 <body>
 
-  <header class="header" id="hdr">
+  <header class="header">
     <div class="container">
       <a href="index.html" class="logo">channa<span>.dev</span></a>
       <nav>
@@ -32,7 +32,7 @@
           <li><a href="#stack">Stack</a></li>
           <li><a href="#experience">Experience</a></li>
           <li><a href="blog_list.html">Blog</a></li>
-          <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a></li>
+          <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener" class="nav-cta">LinkedIn ↗</a></li>
         </ul>
       </nav>
     </div>
@@ -40,51 +40,171 @@
 
   <main>
 
-    <!-- ── WELCOME / HERO ───────────────────────────── -->
+    <!-- ── PROFILE HERO ──────────────────────────────── -->
     <section class="hero">
-      <div class="hero-inner">
-        <div class="hero-badge">
-          <span class="hero-badge-dot"></span>
-          Systems Engineer &nbsp;·&nbsp; Kuwait
+      <div class="container">
+        <img src="images/profile.jpg" alt="Channa Sandaruwan" class="hero-photo">
+        <div class="hero-text">
+          <span class="hero-eyebrow">Systems Engineer · Kuwait</span>
+          <h1>Channa Sandaruwan</h1>
+          <p class="hero-sub">
+            Enterprise infrastructure engineer specialising in Red Hat OpenShift, Ansible Automation Platform, and mission-critical Linux environments. RHCA certified with deployments across telecom-scale infrastructure.
+          </p>
+          <div class="hero-actions">
+            <a href="blog_list.html" class="btn btn-dark">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+              Read the Blog
+            </a>
+            <a href="https://www.linkedin.com/in/channas" class="btn btn-outline" target="_blank" rel="noopener">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+              Connect on LinkedIn
+            </a>
+          </div>
+          <div class="hero-stats">
+            <div><div class="hstat-num">4+</div><div class="hstat-lbl">Years experience</div></div>
+            <div><div class="hstat-num">50+</div><div class="hstat-lbl">Technologies</div></div>
+            <div><div class="hstat-num">5</div><div class="hstat-lbl">Certifications</div></div>
+            <div><div class="hstat-num">2</div><div class="hstat-lbl">Countries worked</div></div>
+          </div>
         </div>
-        <h1>Channa<br>Sandaruwan</h1>
-        <div class="hero-role">
-          <span style="color:var(--t3)">// </span>
-          <span class="typed" id="typed"></span><span class="cursor"></span>
-        </div>
-        <p class="hero-bio">
-          Enterprise infrastructure engineer specialising in Red Hat OpenShift, Ansible Automation Platform, and mission-critical Linux environments. RHCA certified with deployments across telecom-scale infrastructure at KUWAITNET.
-        </p>
-        <div class="hero-actions">
-          <a href="blog_list.html" class="btn btn-primary">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
-            Read the Blog
-          </a>
-          <a href="https://www.linkedin.com/in/channas" class="btn btn-outline" target="_blank" rel="noopener">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-            LinkedIn
-          </a>
-        </div>
-      </div>
-      <div class="scroll-hint">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-        scroll
       </div>
     </section>
 
-    <!-- ── ABOUT ────────────────────────────────────── -->
-    <section class="section" id="about">
+    <!-- ── WRITING / STORIES ─────────────────────────── -->
+    <section class="section" id="writing">
       <div class="container">
-        <p class="sec-kicker fade-in">About</p>
-        <h2 class="sec-title fade-in">Building infrastructure<br><span>that doesn't fail.</span></h2>
-        <p class="about-body fade-in">
-          I'm a Systems Engineer at <strong>KUWAITNET</strong> in Kuwait with 4+ years building and automating enterprise infrastructure. My focus is Red Hat OpenShift clusters, Ansible Automation Platform deployments, and middleware environments — the kind of work that happens at telecom scale where five-nines availability isn't aspirational, it's contractual. Before KUWAITNET, I built my foundation at <strong>VS Information Systems</strong> managing VMware clusters, Pacemaker HA setups, and Azure infrastructure. I hold the RHCSA, RHCE, and Red Hat Certified OpenShift Administrator certifications and a degree in Network Security from South Eastern University of Sri Lanka.
-        </p>
-        <div class="stats fade-in">
-          <div><span class="stat-val">4+</span><span class="stat-lbl">Years experience</span></div>
-          <div><span class="stat-val">50+</span><span class="stat-lbl">Technologies</span></div>
-          <div><span class="stat-val">5</span><span class="stat-lbl">Certifications</span></div>
-          <div><span class="stat-val">2</span><span class="stat-lbl">Countries</span></div>
+        <p class="sec-label fade-in">Latest Writing</p>
+        <h2 class="sec-title fade-in">Technical deep-dives from the field.</h2>
+        <div class="stories fade-in">
+
+          <a class="story-card" href="blog/cluster_vs_proxy.html">
+            <div class="story-meta">
+              <img class="story-avatar" src="images/profile.jpg" alt="Channa">
+              <span class="story-author">Channa Sandaruwan</span>
+              <span class="story-sep">·</span>
+              <span class="story-date">Oct 2023</span>
+              <span class="story-sep">·</span>
+              <span class="story-date">5 min read</span>
+            </div>
+            <div class="story-body">
+              <div class="story-content">
+                <div class="story-title">mod_proxy_balancer vs mod_cluster — Which One Should You Use?</div>
+                <div class="story-excerpt">A deep dive into the architecture and trade-offs of two Apache HTTP Server load balancing modules — static config versus dynamic MCMP self-registration from the backend nodes.</div>
+                <div class="story-footer">
+                  <span class="story-tag">Apache</span>
+                  <span class="story-tag">Load Balancing</span>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <a class="story-card" href="blog/tomcat_upgrade.html">
+            <div class="story-meta">
+              <img class="story-avatar" src="images/profile.jpg" alt="Channa">
+              <span class="story-author">Channa Sandaruwan</span>
+              <span class="story-sep">·</span>
+              <span class="story-date">Oct 2023</span>
+              <span class="story-sep">·</span>
+              <span class="story-date">7 min read</span>
+            </div>
+            <div class="story-body">
+              <div class="story-content">
+                <div class="story-title">Upgrading Apache Tomcat: A Practical Guide</div>
+                <div class="story-excerpt">A step-by-step production-grade guide covering backup, side-by-side installation, configuration migration, symlink switch, validation, and the instant rollback procedure that has saved me more than once.</div>
+                <div class="story-footer">
+                  <span class="story-tag">Middleware</span>
+                  <span class="story-tag">Tomcat</span>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <a class="story-card" href="blog/jboss-domain.html">
+            <div class="story-meta">
+              <img class="story-avatar" src="images/profile.jpg" alt="Channa">
+              <span class="story-author">Channa Sandaruwan</span>
+              <span class="story-sep">·</span>
+              <span class="story-date">Oct 2023</span>
+              <span class="story-sep">·</span>
+              <span class="story-date">6 min read</span>
+            </div>
+            <div class="story-body">
+              <div class="story-content">
+                <div class="story-title">JBoss Domain Mode: A Comprehensive Guide</div>
+                <div class="story-excerpt">Domain Controller, Host Controllers, Server Groups, and rolling restarts — the complete operational model explained with real domain.xml and host.xml configuration examples.</div>
+                <div class="story-footer">
+                  <span class="story-tag">JBoss EAP</span>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <a class="story-card" href="blog/elytrone_deep.html">
+            <div class="story-meta">
+              <img class="story-avatar" src="images/profile.jpg" alt="Channa">
+              <span class="story-author">Channa Sandaruwan</span>
+              <span class="story-sep">·</span>
+              <span class="story-date">Oct 2023</span>
+              <span class="story-sep">·</span>
+              <span class="story-date">6 min read</span>
+            </div>
+            <div class="story-body">
+              <div class="story-content">
+                <div class="story-title">Elytron Security Realm — What It Is and Why It Matters</div>
+                <div class="story-excerpt">Why Red Hat replaced PicketBox with Elytron, how the composable security pipeline works from realm to authentication factory, and a complete minimal working example.</div>
+                <div class="story-footer">
+                  <span class="story-tag">Security</span>
+                  <span class="story-tag">JBoss EAP</span>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <a class="story-card" href="blog/jboss_domain_elytron.html">
+            <div class="story-meta">
+              <img class="story-avatar" src="images/profile.jpg" alt="Channa">
+              <span class="story-author">Channa Sandaruwan</span>
+              <span class="story-sep">·</span>
+              <span class="story-date">Oct 2023</span>
+              <span class="story-sep">·</span>
+              <span class="story-date">5 min read</span>
+            </div>
+            <div class="story-body">
+              <div class="story-content">
+                <div class="story-title">JBoss Domain Mode: Elytron Security Realm Configuration</div>
+                <div class="story-excerpt">Where security configuration splits between domain.xml and host.xml, how to add Elytron realms to a domain profile via CLI, and the pitfalls that catch engineers off guard.</div>
+                <div class="story-footer">
+                  <span class="story-tag">JBoss EAP</span>
+                  <span class="story-tag">Security</span>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <a class="story-card" href="blog/new_post.html">
+            <div class="story-meta">
+              <img class="story-avatar" src="images/profile.jpg" alt="Channa">
+              <span class="story-author">Channa Sandaruwan</span>
+              <span class="story-sep">·</span>
+              <span class="story-date">Oct 2023</span>
+              <span class="story-sep">·</span>
+              <span class="story-date">3 min read</span>
+            </div>
+            <div class="story-body">
+              <div class="story-content">
+                <div class="story-title">The Power of Ansible for DevOps</div>
+                <div class="story-excerpt">Agentless, idempotent, YAML-based — why Ansible is the go-to automation tool for modern infrastructure, with a practical sample playbook walkthrough.</div>
+                <div class="story-footer">
+                  <span class="story-tag">Automation</span>
+                  <span class="story-tag">Ansible</span>
+                </div>
+              </div>
+            </div>
+          </a>
+
+        </div>
+        <div style="padding-top:28px">
+          <a href="blog_list.html" style="font-size:14px;color:var(--ac);font-weight:500;">See all stories →</a>
         </div>
       </div>
     </section>
@@ -92,8 +212,8 @@
     <!-- ── TECH STACK ────────────────────────────────── -->
     <section class="section" id="stack">
       <div class="container">
-        <p class="sec-kicker fade-in">Tech Stack</p>
-        <h2 class="sec-title fade-in">Tools of the trade.</h2>
+        <p class="sec-label fade-in">Tech Stack</p>
+        <h2 class="sec-title fade-in">Tools I work with daily.</h2>
         <div class="stack-grid fade-in">
 
           <div>
@@ -203,7 +323,7 @@
     <!-- ── EXPERIENCE ────────────────────────────────── -->
     <section class="section" id="experience">
       <div class="container">
-        <p class="sec-kicker fade-in">Experience</p>
+        <p class="sec-label fade-in">Experience</p>
         <h2 class="sec-title fade-in">Where I've worked.</h2>
         <div class="timeline fade-in">
 
@@ -215,7 +335,7 @@
             </div>
             <p class="tl-company">KUWAITNET · Kuwait</p>
             <ul class="tl-points">
-              <li>Delivered enterprise Ansible Automation Platform (AAP) implementations across VMware, Nutanix, firewall products, and DigitalOcean — cutting manual work by 50–80%; led 7 PoCs as customer-facing automation architect.</li>
+              <li>Delivered enterprise Ansible Automation Platform (AAP) implementations across VMware, Nutanix, and firewall products — cutting manual work by 50–80%; led 7 PoCs as customer-facing automation architect.</li>
               <li>Deployed Red Hat OpenShift clusters (UPI &amp; IPI on VMware) with integrated ACM, ACS, ODF, and ArgoCD; implemented disconnected registry mirrors and Active Directory integration.</li>
               <li>Built centralised observability stack: Loki + Promtail + Grafana dashboards + OpenTelemetry for OpenShift cluster and application monitoring.</li>
               <li>Implemented Redis standalone, Sentinel, and sharded clusters; managed Tomcat and JBoss EAP environments (SSL, tuning, hardening, deployments).</li>
@@ -245,7 +365,7 @@
     <!-- ── CERTIFICATIONS ────────────────────────────── -->
     <section class="section" id="certifications">
       <div class="container">
-        <p class="sec-kicker fade-in">Certifications</p>
+        <p class="sec-label fade-in">Certifications</p>
         <h2 class="sec-title fade-in">Red Hat &amp; beyond.</h2>
         <div class="certs fade-in">
 
@@ -253,7 +373,7 @@
             <span class="cert-dot active"></span>
             <div>
               <p class="cert-name">Red Hat Certified Systems Administrator</p>
-              <p class="cert-meta">RHCSA · Issued Oct 2024 · ID 240-097-733</p>
+              <p class="cert-meta">RHCSA · Oct 2024 · ID 240-097-733</p>
             </div>
           </div>
 
@@ -261,7 +381,7 @@
             <span class="cert-dot active"></span>
             <div>
               <p class="cert-name">Red Hat Certified Engineer</p>
-              <p class="cert-meta">RHCE · Issued Oct 2024 · ID 240-097-733</p>
+              <p class="cert-meta">RHCE · Oct 2024 · ID 240-097-733</p>
             </div>
           </div>
 
@@ -269,7 +389,7 @@
             <span class="cert-dot active"></span>
             <div>
               <p class="cert-name">Red Hat Certified OpenShift Administrator</p>
-              <p class="cert-meta">EX280 · Issued Nov 2025 · ID 240-097-733</p>
+              <p class="cert-meta">EX280 · Nov 2025 · ID 240-097-733</p>
             </div>
           </div>
 
@@ -277,7 +397,7 @@
             <span class="cert-dot active"></span>
             <div>
               <p class="cert-name">Oracle Cloud Infrastructure Foundations</p>
-              <p class="cert-meta">OCI · Issued 2021</p>
+              <p class="cert-meta">OCI · 2021</p>
             </div>
           </div>
 
@@ -289,62 +409,6 @@
             </div>
           </div>
 
-        </div>
-      </div>
-    </section>
-
-    <!-- ── BLOG PREVIEW ──────────────────────────────── -->
-    <section class="section" id="blog">
-      <div class="container">
-        <p class="sec-kicker fade-in">Writing</p>
-        <h2 class="sec-title fade-in">Technical articles.</h2>
-        <div class="blog-cards fade-in">
-
-          <a class="blog-card" href="blog/cluster_vs_proxy.html">
-            <span class="bc-tag">Apache · Load Balancing</span>
-            <span class="bc-title">mod_proxy_balancer vs mod_cluster — Which One Should You Use?</span>
-            <span class="bc-excerpt">A deep dive into the architecture and trade-offs of two Apache HTTP Server load balancing modules — static config vs dynamic MCMP registration.</span>
-            <span class="bc-date">Oct 2023</span>
-          </a>
-
-          <a class="blog-card" href="blog/tomcat_upgrade.html">
-            <span class="bc-tag">Middleware</span>
-            <span class="bc-title">Upgrading Apache Tomcat: A Practical Guide</span>
-            <span class="bc-excerpt">Step-by-step production upgrade process — backup, side-by-side install, config migration, symlink switch, and instant rollback.</span>
-            <span class="bc-date">Oct 2023</span>
-          </a>
-
-          <a class="blog-card" href="blog/jboss-domain.html">
-            <span class="bc-tag">JBoss EAP</span>
-            <span class="bc-title">JBoss Domain Mode: A Comprehensive Guide</span>
-            <span class="bc-excerpt">Domain Controller, Host Controllers, Server Groups, and rolling restarts — the complete operational model explained with config examples.</span>
-            <span class="bc-date">Oct 2023</span>
-          </a>
-
-          <a class="blog-card" href="blog/jboss_domain_elytron.html">
-            <span class="bc-tag">JBoss EAP</span>
-            <span class="bc-title">Elytron Security Realm Configuration in Domain Mode</span>
-            <span class="bc-excerpt">Where security configuration lives in domain mode, how to add Elytron realms to a domain profile, and the common pitfalls to avoid.</span>
-            <span class="bc-date">Oct 2023</span>
-          </a>
-
-          <a class="blog-card" href="blog/elytrone_deep.html">
-            <span class="bc-tag">Security</span>
-            <span class="bc-title">Elytron Security Realm — What It Is and Why It Matters</span>
-            <span class="bc-excerpt">Why Red Hat replaced PicketBox with Elytron, how the composable component pipeline works, and a minimal working configuration.</span>
-            <span class="bc-date">Oct 2023</span>
-          </a>
-
-          <a class="blog-card" href="blog/new_post.html">
-            <span class="bc-tag">Automation</span>
-            <span class="bc-title">The Power of Ansible for DevOps</span>
-            <span class="bc-excerpt">Agentless, idempotent, YAML-based — why Ansible is the go-to automation tool for modern infrastructure, with a sample playbook walkthrough.</span>
-            <span class="bc-date">Oct 2023</span>
-          </a>
-
-        </div>
-        <div class="view-all fade-in">
-          <a href="blog_list.html" class="btn btn-outline">View all posts →</a>
         </div>
       </div>
     </section>
@@ -362,26 +426,6 @@
   </footer>
 
   <script>
-    // Header border on scroll
-    var hdr = document.getElementById('hdr');
-    window.addEventListener('scroll', function() {
-      hdr.classList.toggle('is-scrolled', window.scrollY > 20);
-    });
-
-    // Typing animation
-    var phrases = ['Red Hat Architect.', 'OpenShift Administrator.', 'Systems Engineer.', 'Automation Engineer.'];
-    var i = 0, j = 0, del = false;
-    var el = document.getElementById('typed');
-    function tick() {
-      var p = phrases[i];
-      el.textContent = del ? p.slice(0, --j) : p.slice(0, ++j);
-      if (!del && j === p.length) { del = true; setTimeout(tick, 2200); return; }
-      if (del && j === 0) { del = false; i = (i + 1) % phrases.length; setTimeout(tick, 500); return; }
-      setTimeout(tick, del ? 45 : 72);
-    }
-    tick();
-
-    // Scroll fade-in
     var io = new IntersectionObserver(function(entries) {
       entries.forEach(function(e) {
         if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
