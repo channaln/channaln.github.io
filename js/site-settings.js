@@ -111,9 +111,7 @@
     setThemeButtonIcon(btn);
     btn.addEventListener("click", onThemeButtonClick);
     li.appendChild(btn);
-    var lastLi = ul.querySelector("li:last-child");
-    if (lastLi) ul.insertBefore(li, lastLi);
-    else ul.appendChild(li);
+    ul.appendChild(li);
   }
 
   var mql = null;
