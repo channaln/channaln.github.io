@@ -377,13 +377,25 @@ body.experience-page .header .container {
   display: inline-flex;
   box-sizing: border-box;
   flex-direction: row;
+  flex-wrap: nowrap;
   direction: ltr;
   justify-content: flex-start;
   align-items: center;
-  flex-wrap: nowrap;
+  gap: 7px;
   white-space: nowrap;
   text-align: left;
   max-width: none;
+  /* Names wrapped in .chip-text so flex order is always [icon|badge] [label] */
+  unicode-bidi: embed;
+}
+.stack-tool-cell .chip .chip-text {
+  flex: 0 1 auto;
+  min-width: 0;
+  text-align: left;
+}
+.stack-tool-cell .chip i,
+.stack-tool-cell .chip .badge {
+  flex-shrink: 0;
 }
 
 @media (max-width: 600px) {
@@ -465,6 +477,18 @@ body.experience-page .section-glass .sec-title {
   margin-left: 0;
   margin-right: 0;
   max-width: none;
+}
+/* Tool rows: align with left headings (not centered column) */
+body.experience-page .stack-grid {
+  align-items: flex-start;
+}
+body.experience-page .stack-cat {
+  justify-content: flex-start;
+  text-align: left;
+}
+body.experience-page .stack-cat::before,
+body.experience-page .stack-cat::after {
+  display: none;
 }
 
 /* Blog / Stories list page — same justification as main */
