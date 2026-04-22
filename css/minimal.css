@@ -422,7 +422,7 @@ body.experience-page .header .container {
   text-align: left;
   margin-inline: auto;
 }
-.timeline { max-width: 680px; position: relative; padding-left: 20px; }
+.timeline { width: 100%; max-width: 680px; margin: 0 auto; position: relative; padding-left: 20px; }
 .timeline::before { content: ''; position: absolute; left: 0; top: 6px; bottom: 0; width: 1px; background: var(--bd); }
 .tl-item { position: relative; padding: 0 0 48px 28px; }
 .tl-item:last-child { padding-bottom: 0; }
