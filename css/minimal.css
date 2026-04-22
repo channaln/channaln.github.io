@@ -564,7 +564,7 @@ main {
 .post-back:hover { color: var(--t2); }
 .post-header { margin-bottom: 40px; padding-bottom: 36px; border-bottom: 1px solid var(--bd); }
 .post-label { font-size: calc(11px * 0.7); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ac); margin-bottom: 14px; }
-.post-title { font-family: var(--font-heading); font-size: clamp(14px, 2.25vw, 22px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; color: var(--t1); margin-bottom: 16px; }
+.post-title { font-family: var(--font-heading); font-size: clamp(20px, 3.1vw, 34px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; color: var(--t1); margin-bottom: 16px; }
 .post-meta { font-size: 13px; color: var(--t3); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .post-meta .author-thumb { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
 /* Article page only — topic is half the meta line (13px → ~6.5px); Stories / home use .story-tag at full 12px */
@@ -574,7 +574,7 @@ main {
 /* Post body — left-aligned (title + content) */
 .post-wrap { text-align: left; }
 .post-header { text-align: left; }
-.post-content { font-size: 19px; line-height: 1.92; color: #3d3d3d; text-align: left; }
+.post-content { font-size: 17px; line-height: 1.9; color: #3d3d3d; text-align: left; }
 .post-back { text-align: left; }
 .post-content p { margin-bottom: 28px; }
 .post-content h2 { font-family: var(--font-heading); font-size: 28px; font-weight: 700; color: var(--t1); letter-spacing: -0.015em; margin: 64px 0 20px; line-height: 1.2; }
@@ -878,7 +878,7 @@ html[data-theme="dark"] .code-expand-backdrop {
   .bl-date-col { width: 100%; text-align: left; display: block; }
   .section { padding: 56px 0; }
   .hero-stats { gap: 24px; }
-  .post-content { font-size: 17px; }
+  .post-content { font-size: 16px; }
   .code-block pre { font-size: 13px; padding: 16px 18px; }
 }
 
