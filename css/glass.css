@@ -296,7 +296,8 @@ html[data-theme="dark"] body.page-root::before {
     linear-gradient(128deg, transparent 0%, rgba(255, 255, 255, 0.06) 44%, rgba(200, 210, 225, 0.03) 50%, transparent 62%);
   mix-blend-mode: screen;
   opacity: 0.85;
-  animation: glass-bg-float 26s ease-in-out infinite alternate;
+  animation: none;
+  transform: none;
 }
 
 html[data-theme="dark"] body.page-root::after {
@@ -309,7 +310,8 @@ html[data-theme="dark"] body.page-root::after {
     rgba(255, 255, 255, 0) 100%
   );
   opacity: 0.55;
-  animation: glass-liquid-sheen 32s ease-in-out infinite;
+  animation: none;
+  transform: none;
 }
 
 html[data-theme="dark"] body.page-root .header {
@@ -328,6 +330,14 @@ html[data-theme="dark"] body.page-root .footer {
 html[data-theme="dark"] .glass-panel,
 html[data-theme="dark"] .work-tabs-panels .work-tab-panel {
   box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Dark mode: no looping glass / ambient motion (static sheen only) */
+html[data-theme="dark"] .glass-panel::after,
+html[data-theme="dark"] .work-tabs-panels .work-tab-panel::after {
+  animation: none;
+  transform: translate3d(0, 0, 0);
+  opacity: 0.22;
 }
 
 html[data-theme="dark"] .work-tab {
