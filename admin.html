@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Site admin — channa.dev</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-app">
+
+  <div id="login-screen" class="admin-surface">
+    <div class="glass-card" id="login-form-wrap">
+      <h2 style="margin:0 0 16px;font-size:1.1rem">Admin sign-in</h2>
+      <p class="admin-hint" style="margin-bottom:16px">
+        This page is not linked from the public site. Replace the default password hash in <code>js/admin.js</code> (constant <code>ADMIN_HASH</code>) with the SHA-256 hex of your own password. Default password until you change it: <strong>channa-admin</strong>.
+      </p>
+      <form id="login-form" class="admin-form" autocomplete="off">
+        <label for="login-pass">Password</label>
+        <input type="password" id="login-pass" required placeholder="Enter password">
+        <div class="btn-row" style="margin-top:16px">
+          <button type="submit" class="btn-adm primary">Unlock dashboard</button>
+        </div>
+        <p id="login-err" class="err-msg" role="alert"></p>
+      </form>
+    </div>
+  </div>
+
+  <div id="admin-dashboard" class="admin-surface hidden">
+    <div class="admin-hero">
+      <h1>Content dashboard</h1>
+      <p>
+        Posts are stored in this browser’s <code>localStorage</code>. To publish for everyone, use <strong>Export HTML</strong> and add the file under <code>blog/</code> in your GitHub repo, then run <strong>Export JSON</strong> as a backup.
+        Site font applies to the whole public site after reload.
+      </p>
+    </div>
+
+    <div class="admin-grid">
+      <div class="glass-card">
+        <h3 style="margin:0 0 12px;font-size:0.95rem">Posts</h3>
+        <div class="btn-row" style="margin-bottom:12px">
+          <button type="button" class="btn-adm primary" id="btn-new">New post</button>
+          <button type="button" class="btn-adm" id="btn-logout">Sign out</button>
+        </div>
+        <ul class="post-list" id="post-list"></ul>
+        <p class="admin-hint">Topics: letters and numbers only (commas between). Underscores and symbols are stripped on save.</p>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08)">
+          <label for="site-font">Site font (public pages)</label>
+          <select id="site-font">
+            <option value="inter">Inter + Lora headings</option>
+            <option value="dm">DM Sans</option>
+            <option value="source">Source Sans + Source Serif</option>
+            <option value="lora">Lora headings + Inter body</option>
+            <option value="georgia">Georgia</option>
+            <option value="system">System UI</option>
+          </select>
+          <div class="btn-row" style="margin-top:8px">
+            <button type="button" class="btn-adm" id="btn-font">Save font</button>
+          </div>
+        </div>
+        <div style="margin-top:12px">
+          <label class="admin-hint">Import posts JSON</label>
+          <input type="file" id="file-import" accept="application/json,.json" style="margin-top:6px;font-size:12px;width:100%">
+        </div>
+        <div class="btn-row" style="margin-top:12px">
+          <button type="button" class="btn-adm" id="btn-export-json">Export all JSON</button>
+        </div>
+      </div>
+
+      <div class="glass-card" id="editor-area">
+        <h3 id="editor-title" style="margin:0 0 16px;font-size:0.95rem">Edit post</h3>
+        <div class="admin-form">
+          <div class="field">
+            <label for="f-title">Title</label>
+            <input type="text" id="f-title" placeholder="Post title">
+          </div>
+          <div class="field">
+            <label for="f-slug">URL slug (filename)</label>
+            <input type="text" id="f-slug" placeholder="my-post-title">
+          </div>
+          <div class="field" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+              <label for="f-date">Date line</label>
+              <input type="text" id="f-date" placeholder="Apr 2026">
+            </div>
+            <div>
+              <label>Read time (auto)</label>
+              <input type="text" id="f-read" readonly style="opacity:0.85" value="1">
+            </div>
+          </div>
+          <div class="field">
+            <label for="f-topics">Topics (comma-separated, letters/numbers only)</label>
+            <input type="text" id="f-topics" placeholder="OpenShift, Ansible, Linux">
+          </div>
+          <div class="field">
+            <label for="f-excerpt">Excerpt (optional — auto from body if empty)</label>
+            <input type="text" id="f-excerpt" placeholder="Short blurb for lists">
+          </div>
+          <div class="field">
+            <label for="f-html">Body (HTML)</label>
+            <div class="admin-toolbar">
+              <button type="button" class="btn-adm" id="btn-code">Insert code block</button>
+              <label class="btn-adm" style="cursor:pointer;margin:0">Upload image
+                <input type="file" id="file-img" accept="image/*" hidden>
+              </label>
+              <button type="button" class="btn-adm" id="btn-imgurl">Image from URL</button>
+            </div>
+            <textarea class="code-body" id="f-html" placeholder="<p>…</p>"></textarea>
+          </div>
+          <div class="btn-row">
+            <button type="button" class="btn-adm primary" id="btn-save">Save to browser</button>
+            <button type="button" class="btn-adm" id="btn-preview">Preview in new tab</button>
+            <button type="button" class="btn-adm" id="btn-export-html">Export post HTML</button>
+            <button type="button" class="btn-adm danger" id="btn-del">Delete</button>
+          </div>
+          <p id="save-status" class="admin-hint" style="min-height:1.2em"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/sanitize.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

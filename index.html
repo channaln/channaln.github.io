@@ -18,19 +18,21 @@
   <meta name="twitter:image" content="https://channaln.github.io/images/profile.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;450;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;0,700;1,500;1,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@300;400;450;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;0,700;1,500;1,700&family=Source+Sans+3:ital,wght@0,300..900;1,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/devicon.min.css">
   <link rel="stylesheet" href="css/minimal.css">
+  <link rel="stylesheet" href="css/glass.css">
 </head>
-<body>
+<body class="page-root">
 
   <header class="header">
     <div class="container">
       <a href="index.html" class="logo">channa<span>.dev</span></a>
       <nav>
         <ul class="nav-links">
-          <li><a href="#stack">Stack</a></li>
-          <li><a href="#experience">Experience</a></li>
+          <li><a href="#work" data-work-tab="stack">Stack</a></li>
+          <li><a href="#work" data-work-tab="experience">Experience</a></li>
+          <li><a href="#work" data-work-tab="certs">Certs</a></li>
           <li><a href="blog_list.html">Blog</a></li>
           <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener" class="nav-cta">LinkedIn ↗</a></li>
         </ul>
@@ -38,11 +40,10 @@
     </div>
   </header>
 
-  <main>
+  <main class="page-main">
 
-    <!-- ── PROFILE HERO ──────────────────────────────── -->
     <section class="hero">
-      <div class="container">
+      <div class="container glass-panel hero-glass">
         <img src="images/profile.jpg" alt="Channa Sandaruwan" class="hero-photo">
         <div class="hero-text">
           <span class="hero-eyebrow">Systems Engineer · Kuwait</span>
@@ -70,9 +71,8 @@
       </div>
     </section>
 
-    <!-- ── WRITING / STORIES ─────────────────────────── -->
     <section class="section" id="writing">
-      <div class="container">
+      <div class="container glass-panel section-glass">
         <p class="sec-label fade-in">Latest Writing</p>
         <h2 class="sec-title fade-in">Technical deep-dives from the field.</h2>
         <div class="stories fade-in">
@@ -209,15 +209,24 @@
       </div>
     </section>
 
-    <!-- ── TECH STACK ────────────────────────────────── -->
-    <section class="section" id="stack">
+    <section class="section" id="work">
       <div class="container">
-        <p class="sec-label fade-in">Tech Stack</p>
-        <h2 class="sec-title fade-in">Tools I work with daily.</h2>
-        <div class="stack-grid fade-in">
+        <p class="sec-label fade-in">Profile</p>
+        <h2 class="sec-title fade-in">Work and expertise</h2>
+        <div class="work-tabs" role="tablist" aria-label="Work and expertise">
+          <button type="button" class="work-tab" role="tab" id="tab-stack" data-tab="stack" aria-selected="true" aria-controls="panel-stack">Stack</button>
+          <button type="button" class="work-tab" role="tab" id="tab-experience" data-tab="experience" aria-selected="false" aria-controls="panel-experience">Experience</button>
+          <button type="button" class="work-tab" role="tab" id="tab-certs" data-tab="certs" aria-selected="false" aria-controls="panel-certs">Certifications</button>
+        </div>
+        <div class="work-tabs-panels">
+
+          <div class="work-tab-panel glass-panel" id="panel-stack" role="tabpanel" aria-labelledby="tab-stack" data-panel="stack">
+            <p class="sec-label" style="margin-top:0">Tech Stack</p>
+            <h2 class="sec-title" style="margin-top:0;margin-bottom:1.5rem;max-width:none">Tools I work with daily.</h2>
+            <div class="stack-grid fade-in">
 
           <div>
-            <p class="stack-cat">Container &amp; Orchestration</p>
+            <p class="stack-cat">Container and Orchestration</p>
             <div class="chips">
               <span class="chip"><span class="badge b-red">OCP</span> OpenShift</span>
               <span class="chip"><i class="devicon-kubernetes-plain colored"></i> Kubernetes</span>
@@ -241,7 +250,7 @@
           </div>
 
           <div>
-            <p class="stack-cat">Middleware &amp; App Servers</p>
+            <p class="stack-cat">Middleware and App Servers</p>
             <div class="chips">
               <span class="chip"><span class="badge b-red">JB</span> JBoss EAP</span>
               <span class="chip"><i class="devicon-tomcat-line colored"></i> Apache Tomcat</span>
@@ -262,7 +271,7 @@
           </div>
 
           <div>
-            <p class="stack-cat">Automation &amp; DevOps</p>
+            <p class="stack-cat">Automation and DevOps</p>
             <div class="chips">
               <span class="chip"><i class="devicon-ansible-plain colored"></i> Ansible / AAP</span>
               <span class="chip"><i class="devicon-jenkins-line colored"></i> Jenkins</span>
@@ -273,7 +282,7 @@
           </div>
 
           <div>
-            <p class="stack-cat">Cloud &amp; Virtualisation</p>
+            <p class="stack-cat">Cloud and Virtualisation</p>
             <div class="chips">
               <span class="chip"><i class="devicon-amazonwebservices-plain-wordmark colored"></i> AWS</span>
               <span class="chip"><i class="devicon-azure-plain colored"></i> Azure</span>
@@ -284,7 +293,7 @@
           </div>
 
           <div>
-            <p class="stack-cat">Monitoring &amp; Observability</p>
+            <p class="stack-cat">Monitoring and Observability</p>
             <div class="chips">
               <span class="chip"><i class="devicon-prometheus-original colored"></i> Prometheus</span>
               <span class="chip"><i class="devicon-grafana-original colored"></i> Grafana</span>
@@ -295,7 +304,7 @@
           </div>
 
           <div>
-            <p class="stack-cat">Scripting &amp; Languages</p>
+            <p class="stack-cat">Scripting and Languages</p>
             <div class="chips">
               <span class="chip"><i class="devicon-bash-plain colored"></i> Bash</span>
               <span class="chip"><i class="devicon-powershell-plain colored"></i> PowerShell</span>
@@ -306,7 +315,7 @@
           </div>
 
           <div>
-            <p class="stack-cat">Networking &amp; Security</p>
+            <p class="stack-cat">Networking and Security</p>
             <div class="chips">
               <span class="chip"><span class="badge b-orange">HA</span> HAProxy</span>
               <span class="chip"><span class="badge b-gray">F5</span> F5 BIG-IP</span>
@@ -316,16 +325,13 @@
             </div>
           </div>
 
-        </div>
-      </div>
-    </section>
+            </div>
+          </div>
 
-    <!-- ── EXPERIENCE ────────────────────────────────── -->
-    <section class="section" id="experience">
-      <div class="container">
-        <p class="sec-label fade-in">Experience</p>
-        <h2 class="sec-title fade-in">Where I've worked.</h2>
-        <div class="timeline fade-in">
+          <div class="work-tab-panel glass-panel" id="panel-experience" role="tabpanel" aria-labelledby="tab-experience" data-panel="experience" hidden>
+            <p class="sec-label" style="margin-top:0">Experience</p>
+            <h2 class="sec-title" style="margin-top:0;margin-bottom:1.5rem;max-width:none">Where I have worked.</h2>
+            <div class="timeline fade-in">
 
           <div class="tl-item">
             <div class="tl-dot"></div>
@@ -336,7 +342,7 @@
             <p class="tl-company">KUWAITNET · Kuwait</p>
             <ul class="tl-points">
               <li>Delivered enterprise Ansible Automation Platform (AAP) implementations across VMware, Nutanix, and firewall products — cutting manual work by 50–80%; led 7 PoCs as customer-facing automation architect.</li>
-              <li>Deployed Red Hat OpenShift clusters (UPI &amp; IPI on VMware) with integrated ACM, ACS, ODF, and ArgoCD; implemented disconnected registry mirrors and Active Directory integration.</li>
+              <li>Deployed Red Hat OpenShift clusters (UPI and IPI on VMware) with integrated ACM, ACS, ODF, and ArgoCD; implemented disconnected registry mirrors and Active Directory integration.</li>
               <li>Built centralised observability stack: Loki + Promtail + Grafana dashboards + OpenTelemetry for OpenShift cluster and application monitoring.</li>
               <li>Implemented Redis standalone, Sentinel, and sharded clusters; managed Tomcat and JBoss EAP environments (SSL, tuning, hardening, deployments).</li>
               <li>Deployed Red Hat Service Mesh 3.0 with sidecar injection, Kiali, and Prometheus; supported ActiveMQ HA and non-HA configurations.</li>
@@ -358,16 +364,13 @@
             </ul>
           </div>
 
-        </div>
-      </div>
-    </section>
+            </div>
+          </div>
 
-    <!-- ── CERTIFICATIONS ────────────────────────────── -->
-    <section class="section" id="certifications">
-      <div class="container">
-        <p class="sec-label fade-in">Certifications</p>
-        <h2 class="sec-title fade-in">Red Hat &amp; beyond.</h2>
-        <div class="certs fade-in">
+          <div class="work-tab-panel glass-panel" id="panel-certs" role="tabpanel" aria-labelledby="tab-certs" data-panel="certs" hidden>
+            <p class="sec-label" style="margin-top:0">Certifications</p>
+            <h2 class="sec-title" style="margin-top:0;margin-bottom:1.5rem;max-width:none">Red Hat and beyond.</h2>
+            <div class="certs fade-in">
 
           <div class="cert-card">
             <span class="cert-dot active"></span>
@@ -404,8 +407,11 @@
           <div class="cert-card">
             <span class="cert-dot progress"></span>
             <div>
-              <p class="cert-name">RH Specialist: OpenShift Automation &amp; Integration</p>
+              <p class="cert-name">RH Specialist: OpenShift Automation and Integration</p>
               <p class="cert-meta">In Progress</p>
+            </div>
+          </div>
+
             </div>
           </div>
 
@@ -425,6 +431,10 @@
     </div>
   </footer>
 
+  <script src="js/sanitize.js" defer></script>
+  <script src="js/site-settings.js" defer></script>
+  <script src="js/work-tabs.js" defer></script>
+  <script src="js/posts-loader.js" defer></script>
   <script>
     var io = new IntersectionObserver(function(entries) {
       entries.forEach(function(e) {

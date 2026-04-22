@@ -1,0 +1,4 @@
+# https://channaln.github.io
+User-agent: *
+Disallow: /admin.html
+Disallow: /post-view.html
