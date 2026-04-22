@@ -968,30 +968,52 @@ html[data-theme="dark"] .btn-outline:hover {
   border-color: rgba(160, 175, 195, 0.4);
 }
 
-/* Primary CTA: light fill on dark shell (was washed out when --t1 was used as fill) */
+/* Primary CTA: dark metal (same family as header LinkedIn) — not a light pill */
 html[data-theme="dark"] .btn.btn-dark {
-  background: linear-gradient(180deg, #e8eaef 0%, #d8dce4 100%);
-  color: #0a0a0d;
-  border-color: rgba(255, 255, 255, 0.12);
+  background: linear-gradient(145deg, #3a424e, #2a3038) !important;
+  color: #f0f2f6 !important;
+  border: 1px solid rgba(160, 175, 195, 0.24) !important;
 }
 
 html[data-theme="dark"] .btn.btn-dark:hover {
-  background: linear-gradient(180deg, #f2f4f7 0%, #e0e4ec 100%);
-  color: #0a0a0d;
+  background: linear-gradient(145deg, #4a5260, #343a46) !important;
+  color: #fff !important;
+  border-color: rgba(180, 195, 210, 0.32) !important;
 }
 
-/* Home — Latest Writing list: dark glass (not white wash) */
+/* Home — hero + Latest Writing cards: dark glass (titanium, not light wash) */
+html[data-theme="dark"] .hero .glass-panel.hero-glass,
+html[data-theme="dark"] .section--latest-writing .glass-panel.hero-glass.home-feed {
+  background: rgba(14, 16, 22, 0.78) !important;
+  border-color: rgba(120, 135, 155, 0.18) !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+html[data-theme="dark"] .home-feed .sec-label,
+html[data-theme="dark"] .home-feed-label {
+  color: var(--t3);
+}
+
+html[data-theme="dark"] .home-feed-heading {
+  color: var(--t1);
+}
+
+/* Home — Latest Writing list: nested dark panel */
 html[data-theme="dark"] .home-feed-list {
-  background: rgba(10, 12, 16, 0.55);
-  border-color: rgba(80, 95, 115, 0.2);
+  background: rgba(6, 8, 12, 0.72);
+  border-color: rgba(70, 85, 102, 0.38);
 }
 
 html[data-theme="dark"] .home-feed-item:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 html[data-theme="dark"] .home-feed-item-title {
   color: var(--t1);
+}
+
+html[data-theme="dark"] .home-feed-item-meta {
+  color: var(--t3);
 }
 
 html[data-theme="dark"] .home-feed-cta a {
