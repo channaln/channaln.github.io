@@ -1,6 +1,7 @@
 /**
  * Merges posts from localStorage (author drafts / preview) into home + blog list.
- * Storage: localStorage "channa:posts" — JSON array of { title, slug, excerpt, readMin, date, topics[], href? }
+ * Storage: localStorage "channa:posts" — JSON array of { title, slug, excerpt, readMin, date, topics[], draft?, href? }
+ * Posts with draft: true are omitted from home + blog list (still in admin / post-view preview).
  */
 (function () {
   var STORAGE = "channa:posts";
@@ -23,6 +24,10 @@
     } catch (e) {
       return [];
     }
+  }
+
+  function isListedPost(post) {
+    return post.draft !== true;
   }
 
   function topicTags(post) {
@@ -105,7 +110,7 @@
   function runHome() {
     var el = document.querySelector(".stories");
     if (!el) return;
-    var extra = loadPosts();
+    var extra = loadPosts().filter(isListedPost);
     for (var i = extra.length - 1; i >= 0; i--) {
       el.insertAdjacentHTML("afterbegin", homeStoryCard(extra[i]));
     }
@@ -114,7 +119,7 @@
   function runBlogList() {
     var ul = document.querySelector(".blog-list");
     if (!ul) return;
-    var extra = loadPosts();
+    var extra = loadPosts().filter(isListedPost);
     for (var i = extra.length - 1; i >= 0; i--) {
       ul.insertAdjacentHTML("afterbegin", blogListItem(extra[i]));
     }

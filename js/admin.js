@@ -7,10 +7,11 @@
   var SESSION_MS = 86400000;
 
   /**
-   * Change this hash after first login: SHA-256 hex of your chosen password.
-   * Default password: channa-admin  (replace immediately in production)
+   * SHA-256 hex (64 chars) of your admin password. Generate:
+   *   printf '%s' 'YourLongPassword' | shasum -a 256
+   * First-time bootstrap credential is documented in ADMIN.md — rotate this hash before treating the site as public.
    */
-  var ADMIN_HASH = "80bae81e70f1f8100d5c359f4d3d2ab783dd6f4cd82e861b6790e178d1944081";
+  var ADMIN_HASH = "5b730bce76764ce56314924b8c298102e11d4826a37b3cb20a7c8f449179a735";
 
   var state = {
     posts: [],
@@ -18,6 +19,8 @@
     pendingId: null,
     dirty: false
   };
+
+  var autosaveTimer = null;
 
   function $(id) {
     return document.getElementById(id);
@@ -50,6 +53,7 @@
   }
 
   function logout() {
+    clearAutosaveTimer();
     try {
       localStorage.removeItem(STORAGE_AUTH);
     } catch (e) {}
@@ -68,9 +72,97 @@
     }
   }
 
+  function estimateStoredPostsBytes() {
+    try {
+      return new Blob([JSON.stringify(state.posts)]).size;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  function warnIfLargeImageInsert(dataUrl) {
+    if (!dataUrl || String(dataUrl).length < 400000) return;
+    var el = $("storage-hint");
+    if (el) {
+      el.textContent =
+        "Large image embedded (~" +
+        Math.round(String(dataUrl).length / 1024) +
+        " KB). localStorage is ~5 MB total — prefer repo image paths for published posts.";
+    }
+  }
+
+  function updateStorageHint() {
+    var el = $("storage-hint");
+    if (!el) return;
+    var b = estimateStoredPostsBytes();
+    var kb = (b / 1024).toFixed(1);
+    el.textContent = "Stored posts ≈ " + kb + " KB (localStorage ~5 MB max). Export JSON as backup.";
+    if (b > 4 * 1024 * 1024) {
+      el.textContent += " Near limit — remove base64 images or export and trim.";
+    }
+  }
+
+  function writePostsStorage() {
+    try {
+      localStorage.setItem(STORAGE_POSTS, JSON.stringify(state.posts));
+      updateStorageHint();
+    } catch (err) {
+      if (err && err.name === "QuotaExceededError") {
+        alert(
+          "localStorage is full. Export JSON, delete drafts, or replace large base64 images with file URLs."
+        );
+      }
+      throw err;
+    }
+  }
+
   function savePosts() {
-    localStorage.setItem(STORAGE_POSTS, JSON.stringify(state.posts));
+    writePostsStorage();
     state.dirty = false;
+  }
+
+  function upsertPostGathered(g) {
+    var idx = state.posts.findIndex(function (x) {
+      return x.id === g.id;
+    });
+    if (idx >= 0) {
+      state.posts[idx] = g;
+      state.currentId = g.id;
+    } else {
+      state.posts.push(g);
+      state.currentId = g.id;
+    }
+    state.pendingId = null;
+  }
+
+  function tryAutosave() {
+    if (!state.dirty) return;
+    var g = gatherForm();
+    if (!g.title) return;
+    upsertPostGathered(g);
+    try {
+      writePostsStorage();
+      state.dirty = false;
+      var msg = "Auto-saved " + new Date().toLocaleTimeString();
+      $("save-status").textContent = msg;
+      setTimeout(function () {
+        var el = $("save-status");
+        if (el && el.textContent === msg) el.textContent = "";
+      }, 2200);
+    } catch (err) {
+      /* writePostsStorage already alerted on quota */
+    }
+  }
+
+  function clearAutosaveTimer() {
+    clearTimeout(autosaveTimer);
+    autosaveTimer = null;
+  }
+
+  function scheduleAutosave() {
+    if (!isAuthed()) return;
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(tryAutosave, 2800);
   }
 
   function uid() {
@@ -114,7 +206,8 @@
       readMin: readMin,
       topics: topics,
       excerpt: $("f-excerpt").value.trim() || textExcerpt(html),
-      html: html
+      html: html,
+      draft: $("f-draft") ? !!$("f-draft").checked : false
     };
   }
 
@@ -131,6 +224,7 @@
     $("f-excerpt").value = p.excerpt || "";
     $("f-html").value = p.html || "";
     $("f-read").textContent = String(p.readMin != null ? p.readMin : readingMinutes(p.html));
+    if ($("f-draft")) $("f-draft").checked = p.draft === true;
   }
 
   function renderList() {
@@ -142,6 +236,7 @@
       if (p.id === state.currentId) li.classList.add("active");
       li.innerHTML =
         '<span class="pl-title">' + escapeHtml(p.title || "Untitled") + "</span>" +
+        (p.draft ? '<span class="pl-draft" title="Hidden from home and blog list">Draft</span>' : "") +
         '<span class="pl-meta">' + escapeHtml(p.date || "") + " · " + escapeHtml(p.slug || "") + "</span>";
       li.addEventListener("click", function () {
         if (state.dirty && !confirm("Discard unsaved changes?")) return;
@@ -164,6 +259,7 @@
       return x.id === id;
     });
     if (!p) return;
+    clearAutosaveTimer();
     state.currentId = id;
     state.pendingId = null;
     state.dirty = false;
@@ -174,6 +270,7 @@
 
   function newPost() {
     if (state.dirty && !confirm("Discard unsaved changes?")) return;
+    clearAutosaveTimer();
     state.currentId = null;
     state.pendingId = uid();
     state.dirty = false;
@@ -184,6 +281,7 @@
     $("f-excerpt").value = "";
     $("f-html").value = "<p></p>\n";
     $("f-read").textContent = "1";
+    if ($("f-draft")) $("f-draft").checked = false;
     $("editor-title").textContent = "New post";
     renderList();
   }
@@ -194,22 +292,42 @@
       alert("Title is required.");
       return;
     }
-    var idx = state.posts.findIndex(function (x) {
-      return x.id === g.id;
-    });
-    if (idx >= 0) {
-      state.posts[idx] = g;
-      state.currentId = g.id;
-    } else {
-      state.posts.push(g);
-      state.currentId = g.id;
-    }
-    state.pendingId = null;
+    upsertPostGathered(g);
     savePosts();
     renderList();
-    $("save-status").textContent = "Saved " + new Date().toLocaleTimeString();
+    var msg = "Saved " + new Date().toLocaleTimeString();
+    $("save-status").textContent = msg;
     setTimeout(function () {
-      $("save-status").textContent = "";
+      var el = $("save-status");
+      if (el && el.textContent === msg) el.textContent = "";
+    }, 2500);
+  }
+
+  function duplicateCurrent() {
+    var g = gatherForm();
+    if (!g.title.trim()) {
+      alert("Enter a title before duplicating.");
+      return;
+    }
+    var topicsCopy = Array.isArray(g.topics) ? g.topics.slice() : [];
+    var copy = {
+      id: uid(),
+      title: (g.title || "Untitled") + " (copy)",
+      slug: slugify((g.slug || "post") + "-copy"),
+      date: g.date,
+      readMin: g.readMin,
+      topics: topicsCopy,
+      excerpt: g.excerpt || "",
+      html: g.html || "",
+      draft: !!g.draft
+    };
+    state.posts.push(copy);
+    savePosts();
+    selectPost(copy.id);
+    $("save-status").textContent = "Duplicated — editing copy";
+    setTimeout(function () {
+      var el = $("save-status");
+      if (el && el.textContent === "Duplicated — editing copy") el.textContent = "";
     }, 2500);
   }
 
@@ -293,6 +411,17 @@
     ta.selectionStart = ta.selectionEnd = start + text.length;
     ta.focus();
     state.dirty = true;
+    scheduleAutosave();
+  }
+
+  function insertImageDataUrl(dataUrl) {
+    warnIfLargeImageInsert(dataUrl);
+    var safe = String(dataUrl || "").replace(/"/g, "");
+    var img =
+      '\n<p><img src="' +
+      safe +
+      '" alt="" style="max-width:100%;height:auto;border-radius:8px"></p>\n';
+    insertAtCursor($("f-html"), img);
   }
 
   function onPickImage(e) {
@@ -301,12 +430,50 @@
     if (f.type && f.type.indexOf("image") !== 0) return;
     var r = new FileReader();
     r.onload = function () {
-      var url = r.result;
-      var img = '\n<p><img src="' + url + '" alt="" style="max-width:100%;height:auto;border-radius:8px"></p>\n';
-      insertAtCursor($("f-html"), img);
+      insertImageDataUrl(r.result);
     };
     r.readAsDataURL(f);
     e.target.value = "";
+  }
+
+  function onEditorPaste(e) {
+    var items = e.clipboardData && e.clipboardData.items;
+    if (!items || !items.length) return;
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].type && items[i].type.indexOf("image") === 0) {
+        e.preventDefault();
+        var f = items[i].getAsFile();
+        if (!f) return;
+        var r = new FileReader();
+        r.onload = function () {
+          insertImageDataUrl(r.result);
+        };
+        r.readAsDataURL(f);
+        return;
+      }
+    }
+  }
+
+  function onEditorDragOver(e) {
+    e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = "copy";
+  }
+
+  function onEditorDrop(e) {
+    e.preventDefault();
+    var files = e.dataTransfer && e.dataTransfer.files;
+    if (!files || !files.length) return;
+    for (var i = 0; i < files.length; i++) {
+      var f = files[i];
+      if (f.type && f.type.indexOf("image") === 0) {
+        var r = new FileReader();
+        r.onload = function (ev) {
+          insertImageDataUrl(ev.target.result);
+        };
+        r.readAsDataURL(f);
+        return;
+      }
+    }
   }
 
   function insertImageUrl() {
@@ -389,6 +556,7 @@
         state.posts = loadPosts();
         syncFontSelect();
         renderList();
+        updateStorageHint();
         if (state.posts.length) selectPost(state.posts[0].id);
         else newPost();
       });
@@ -401,6 +569,11 @@
     $("btn-code").addEventListener("click", insertCode);
     $("btn-imgurl").addEventListener("click", insertImageUrl);
     $("file-img").addEventListener("change", onPickImage);
+    if ($("btn-duplicate")) $("btn-duplicate").addEventListener("click", duplicateCurrent);
+    var taHtml = $("f-html");
+    taHtml.addEventListener("paste", onEditorPaste);
+    taHtml.addEventListener("dragover", onEditorDragOver);
+    taHtml.addEventListener("drop", onEditorDrop);
     $("btn-export-json").addEventListener("click", exportJson);
     $("btn-export-html").addEventListener("click", exportHtml);
     $("btn-preview").addEventListener("click", preview);
@@ -410,8 +583,15 @@
     ["f-title", "f-slug", "f-date", "f-topics", "f-excerpt", "f-html"].forEach(function (id) {
       $(id).addEventListener("input", function () {
         state.dirty = true;
+        scheduleAutosave();
       });
     });
+    if ($("f-draft")) {
+      $("f-draft").addEventListener("change", function () {
+        state.dirty = true;
+        scheduleAutosave();
+      });
+    }
   }
 
   if (isAuthed()) {
@@ -425,6 +605,7 @@
     state.posts = loadPosts();
     syncFontSelect();
     renderList();
+    updateStorageHint();
     if (state.posts.length) selectPost(state.posts[0].id);
     else newPost();
   }

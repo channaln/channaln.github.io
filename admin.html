@@ -13,7 +13,7 @@
     <div class="glass-card" id="login-form-wrap">
       <h2 style="margin:0 0 16px;font-size:1.1rem">Admin sign-in</h2>
       <p class="admin-hint" style="margin-bottom:16px">
-        This page is not linked from the public site. Replace the default password hash in <code>js/admin.js</code> (constant <code>ADMIN_HASH</code>) with the SHA-256 hex of your own password. Default password until you change it: <strong>channa-admin</strong>.
+        This page is not linked from the public site. Set your own <code>ADMIN_HASH</code> in <code>js/admin.js</code> (see <a href="ADMIN.md" style="color:inherit;text-decoration:underline">ADMIN.md</a>). Use a long, unique password — client-side auth is not a substitute for edge protection on sensitive deployments.
       </p>
       <form id="login-form" class="admin-form" autocomplete="off">
         <label for="login-pass">Password</label>
@@ -96,6 +96,10 @@
             <label for="f-excerpt">Excerpt (optional — auto from body if empty)</label>
             <input type="text" id="f-excerpt" placeholder="Short blurb for lists">
           </div>
+          <div class="field" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <input type="checkbox" id="f-draft" name="f-draft">
+            <label for="f-draft" style="margin:0;font-weight:500">Draft (hidden from home and blog list until unchecked and saved)</label>
+          </div>
           <div class="field">
             <label for="f-html">Body (HTML)</label>
             <div class="admin-toolbar">
@@ -105,15 +109,18 @@
               </label>
               <button type="button" class="btn-adm" id="btn-imgurl">Image from URL</button>
             </div>
+            <p class="admin-hint" style="margin:6px 0 8px">Paste images into the body area (cursor in the box) or drag a file onto it.</p>
             <textarea class="code-body" id="f-html" placeholder="<p>…</p>"></textarea>
           </div>
           <div class="btn-row">
             <button type="button" class="btn-adm primary" id="btn-save">Save to browser</button>
             <button type="button" class="btn-adm" id="btn-preview">Preview in new tab</button>
             <button type="button" class="btn-adm" id="btn-export-html">Export post HTML</button>
+            <button type="button" class="btn-adm" id="btn-duplicate">Duplicate post</button>
             <button type="button" class="btn-adm danger" id="btn-del">Delete</button>
           </div>
           <p id="save-status" class="admin-hint" style="min-height:1.2em"></p>
+          <p id="storage-hint" class="admin-hint" style="margin-top:6px"></p>
         </div>
       </div>
     </div>

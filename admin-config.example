@@ -1,0 +1,14 @@
+# Example: set admin password hash (do not commit real secrets)
+#
+# 1. Choose a long random password.
+# 2. Compute SHA-256 hex (64 characters):
+#
+#    macOS / BSD:
+#      printf '%s' 'YOUR_PASSWORD_HERE' | shasum -a 256
+#
+#    Linux:
+#      printf '%s' 'YOUR_PASSWORD_HERE' | sha256sum
+#
+# 3. Paste the hex (first column only) into js/admin.js as ADMIN_HASH.
+#
+# 4. Remove or replace the bootstrap password in ADMIN.md after you rotate.
