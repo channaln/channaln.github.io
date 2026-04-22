@@ -118,6 +118,9 @@
     for (var i = extra.length - 1; i >= 0; i--) {
       ul.insertAdjacentHTML("afterbegin", blogListItem(extra[i]));
     }
+    try {
+      ul.dispatchEvent(new CustomEvent("postsListUpdated", { bubbles: true }));
+    } catch (e) {}
   }
 
   function run() {

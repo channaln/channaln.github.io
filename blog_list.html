@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="css/minimal.css">
   <link rel="stylesheet" href="css/glass.css">
 </head>
-<body class="page-root">
+<body class="page-root blog-list-page">
 
   <header class="header">
     <div class="container">
@@ -46,6 +46,13 @@
         <p class="sec-label">Writing</p>
         <h1>Stories</h1>
         <p>Technical articles on Linux, middleware, OpenShift, Ansible, and infrastructure automation.</p>
+      </div>
+
+      <div class="blog-search-wrap">
+        <label for="blog-search" class="blog-search-label">Search posts</label>
+        <input type="search" id="blog-search" class="blog-search" name="q" placeholder="Filter by title, topic, or keywords…" autocomplete="off" spellcheck="false" aria-describedby="blog-search-hint">
+        <p id="blog-search-hint" class="blog-search-hint">Matches title, tag line, and excerpt. Clears to show all posts.</p>
+        <p id="blog-search-empty" class="blog-search-empty" hidden role="status">No posts match that search. Try a shorter or different term.</p>
       </div>
 
       <ul class="blog-list">
@@ -154,5 +161,6 @@
   <script src="js/sanitize.js" defer></script>
   <script src="js/site-settings.js" defer></script>
   <script src="js/posts-loader.js" defer></script>
+  <script src="js/blog-search.js" defer></script>
 </body>
 </html>
