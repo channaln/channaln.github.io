@@ -266,7 +266,7 @@
       '    <a href="../blog_list.html" class="post-back">← Back to Blog</a>',
       '    <div class="post-header">',
       '      <h1 class="post-title">' + escapeHtml(g.title) + "</h1>",
-      '      <p class="post-meta">' + escapeHtml(g.date) + " · Channa Sandaruwan · " + escapeHtml(topicMeta) + "</p>",
+      '      <p class="post-meta">' + escapeHtml(g.date) + " · Channa Sandaruwan · " + '<span class="post-meta-topic">' + escapeHtml(topicMeta) + "</span></p>",
       "    </div>",
       '    <div class="post-content">' + (g.html || "") + "</div>",
       "  </div></div></main>",

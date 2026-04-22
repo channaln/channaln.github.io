@@ -160,7 +160,7 @@ a { color: inherit; text-decoration: none; }
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .story-footer { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
-.story-tag { font-size: 12px; font-weight: 500; color: var(--t2); background: var(--bg3); padding: 4px 10px; border-radius: 100px; }
+.story-tag { font-size: calc(12px * 0.7); font-weight: 500; color: var(--t2); background: var(--bg3); padding: 3px 8px; border-radius: 100px; }
 .story-time { font-size: 12px; color: var(--t3); }
 
 /* === HOME — compact writing feed (5 posts) — width/padding: match .hero-glass in glass.css === */
@@ -363,7 +363,7 @@ a { color: inherit; text-decoration: none; }
 .blog-list li a:hover .bl-title { color: #444; }
 .bl-date-col { flex-shrink: 0; width: 80px; padding-top: 4px; text-align: right; }
 .bl-date { font-size: 12px; color: var(--t3); line-height: 1.5; }
-.bl-tag { font-size: 11px; color: var(--ac); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+.bl-tag { font-size: calc(11px * 0.7); color: var(--ac); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
 .bl-title { font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--t1); letter-spacing: -0.01em; line-height: 1.35; margin-bottom: 6px; transition: color var(--ts); }
 .bl-excerpt { font-size: 14px; color: var(--t2); line-height: 1.7; }
 
@@ -540,10 +540,13 @@ main {
 .post-back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--t3); margin-bottom: 48px; transition: color var(--ts); }
 .post-back:hover { color: var(--t2); }
 .post-header { margin-bottom: 40px; padding-bottom: 36px; border-bottom: 1px solid var(--bd); }
-.post-label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ac); margin-bottom: 14px; }
+.post-label { font-size: calc(11px * 0.7); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ac); margin-bottom: 14px; }
 .post-title { font-family: var(--font-heading); font-size: clamp(28px, 4.5vw, 44px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; color: var(--t1); margin-bottom: 16px; }
-.post-meta { font-size: 13px; color: var(--t3); display: flex; align-items: center; gap: 8px; }
+.post-meta { font-size: 13px; color: var(--t3); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .post-meta .author-thumb { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+/* Topic segment only — 30% smaller than body meta line */
+.post-meta-topic { font-size: 70%; color: var(--t2); font-weight: 500; letter-spacing: 0.02em; }
+.post-header .post-meta { line-height: 1.5; }
 
 /* Post body — left-aligned (title + content) */
 .post-wrap { text-align: left; }
@@ -558,10 +561,50 @@ main {
 .post-content strong { color: var(--t1); font-weight: 600; }
 .post-content em { font-style: italic; }
 .post-content a { color: var(--t1); text-decoration: underline; text-underline-offset: 3px; }
-.post-content code { font-family: var(--font-mono); font-size: 0.82em; background: var(--bg3); color: #c41a7f; padding: 2px 5px; border-radius: 3px; border: 1px solid var(--bd); }
+/* Inline code in prose (not in fenced blocks) */
+.post-content p code,
+.post-content li code,
+.post-content td code,
+.post-content blockquote code { font-family: var(--font-mono), ui-monospace, monospace; font-size: 0.82em; background: #f0f3f6; color: #0d1117; padding: 2px 6px; border-radius: 4px; border: 1px solid #d8dee4; }
 .post-content blockquote { border-left: 3px solid var(--t1); padding: 4px 24px; margin: 40px 0; color: var(--t2); font-style: italic; font-size: 22px; line-height: 1.65; }
-.code-block { background: #f6f8fa; border: 1px solid var(--bd); border-radius: 6px; overflow-x: auto; margin: 8px 0 32px; }
-.code-block pre { padding: 20px 24px; font-family: var(--font-mono); font-size: 13px; line-height: 1.7; color: #24292f; white-space: pre; }
+/* Code blocks — monospace, high contrast, easy to scan */
+.code-block {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 12px 0 32px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.code-block pre {
+  margin: 0;
+  padding: 20px 24px 22px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  tab-size: 2;
+  font-family: var(--font-mono), "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.65;
+  color: #e6edf3;
+  background: transparent;
+  white-space: pre;
+  font-weight: 450;
+  font-feature-settings: "calt" 0, "liga" 0;
+  letter-spacing: 0.01em;
+}
+.code-block pre code {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+  font-weight: inherit;
+  letter-spacing: inherit;
+}
+.post-content .code-block { color: #e6edf3; }
 .compare-table { width: 100%; border-collapse: collapse; font-size: 14.5px; margin: 12px 0 28px; border: 1px solid var(--bd); border-radius: 6px; overflow: hidden; }
 .compare-table th, .compare-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--bd); }
 .compare-table th { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--t3); background: var(--bg2); }
@@ -596,4 +639,5 @@ main {
   .section { padding: 56px 0; }
   .hero-stats { gap: 24px; }
   .post-content { font-size: 17px; }
+  .code-block pre { font-size: 13px; padding: 16px 18px; }
 }
