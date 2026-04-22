@@ -3,34 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- SEO -->
   <title>Upgrading Apache Tomcat: A Practical Guide — Channa Sandaruwan</title>
-  <meta name="description" content="A practical, step-by-step guide to upgrading your Apache Tomcat server safely in production environments.">
+  <meta name="description" content="A step-by-step production-grade guide to upgrading Apache Tomcat — covering backup, configuration migration, side-by-side install, validation, and rollback.">
   <meta name="author" content="Channa Sandaruwan">
-
-  <!-- Open Graph / LinkedIn -->
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://channaln.github.io/blog/tomcat_upgrade.html">
   <meta property="og:title" content="Upgrading Apache Tomcat: A Practical Guide">
-  <meta property="og:description" content="A practical, step-by-step guide to upgrading your Apache Tomcat server safely in production environments.">
+  <meta property="og:description" content="A step-by-step production-grade guide to upgrading Apache Tomcat — backup, config migration, side-by-side install, and rollback.">
   <meta property="og:image" content="https://channaln.github.io/images/tomcat_upgrade.png">
   <meta property="og:site_name" content="Channa Sandaruwan">
   <meta property="article:author" content="Channa Sandaruwan">
   <meta property="article:published_time" content="2023-10-26">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Upgrading Apache Tomcat: A Practical Guide">
-  <meta name="twitter:description" content="A practical, step-by-step guide to upgrading your Apache Tomcat server safely in production environments.">
+  <meta name="twitter:description" content="A step-by-step production-grade guide to upgrading Apache Tomcat — backup, config migration, side-by-side install, and rollback.">
   <meta name="twitter:image" content="https://channaln.github.io/images/tomcat_upgrade.png">
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="../css/minimal.css">
 </head>
 <body>
+
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
 
   <header class="header">
     <div class="container">
@@ -57,9 +56,126 @@
         </div>
 
         <div class="post-content">
-          <p>A practical, step-by-step guide to upgrading your Apache Tomcat server safely in production environments.</p>
-        </div>
 
+          <p>Tomcat upgrades look deceptively simple — extract a new archive, copy your config, done. In practice, each major version introduces deprecated attributes, changed defaults, and occasionally breaking changes that will bring down your applications if you're not prepared. This guide documents the process I use in production, built from managing Tomcat environments across multiple enterprise deployments.</p>
+
+          <h2>Why You Should Upgrade</h2>
+          <p>Running an outdated Tomcat version means missing security patches for actively exploited CVEs. Beyond security, newer releases bring meaningful performance improvements in HTTP/2 handling, connection threading, and memory management. The longer you delay, the harder the eventual jump becomes — especially crossing the Tomcat 9 → 10 boundary where the Jakarta EE namespace migration is required.</p>
+
+          <h2>Pre-Upgrade Checklist</h2>
+          <p>Before downloading anything, confirm:</p>
+          <ul>
+            <li><strong>Servlet spec compatibility:</strong> Tomcat 9 = Servlet 4.0 (<code>javax.*</code>). Tomcat 10+ = Jakarta EE 9+ (<code>jakarta.*</code>). Crossing this boundary requires application-level changes.</li>
+            <li><strong>Java version:</strong> Each Tomcat version has a minimum required JDK. Tomcat 10.1 requires Java 11 or later.</li>
+            <li><strong>Review the changelog</strong> for deprecated attributes or removed features that affect your <code>server.xml</code> configuration.</li>
+            <li><strong>Inventory all custom config:</strong> <code>server.xml</code>, <code>context.xml</code>, <code>web.xml</code>, <code>setenv.sh</code>, and any custom Valves or Realms.</li>
+          </ul>
+
+          <h2>Step 1 — Full Backup</h2>
+          <p>Never skip this step. Back up the entire installation directory and your deployment artifacts:</p>
+          <div class="code-block"><pre><code># Full installation backup
+cp -a /opt/tomcat /opt/tomcat-bkp-$(date +%Y%m%d)
+
+# Config-only backup (faster to restore)
+tar czf /backup/tomcat-conf-$(date +%Y%m%d).tar.gz \
+  /opt/tomcat/conf/ \
+  /opt/tomcat/bin/setenv.sh \
+  /opt/tomcat/webapps/
+
+# Record current version
+/opt/tomcat/bin/version.sh | head -3</code></pre></div>
+
+          <h2>Step 2 — Download and Verify</h2>
+          <p>Always download from the official Apache mirror and verify the checksum before extracting:</p>
+          <div class="code-block"><pre><code># Download (adjust version number)
+wget https://downloads.apache.org/tomcat/tomcat-10/v10.1.28/bin/apache-tomcat-10.1.28.tar.gz
+wget https://downloads.apache.org/tomcat/tomcat-10/v10.1.28/bin/apache-tomcat-10.1.28.tar.gz.sha512
+
+# Verify integrity
+sha512sum -c apache-tomcat-10.1.28.tar.gz.sha512</code></pre></div>
+
+          <h2>Step 3 — Side-by-Side Installation</h2>
+          <p>Install the new version <em>alongside</em> the existing one. Never overwrite an active installation:</p>
+          <div class="code-block"><pre><code>tar xzf apache-tomcat-10.1.28.tar.gz -C /opt/
+# At this point you have both:
+#   /opt/tomcat             (current symlink → old version)
+#   /opt/apache-tomcat-10.1.28  (new version, not yet active)</code></pre></div>
+
+          <h2>Step 4 — Migrate Configuration</h2>
+          <p>This is the highest-risk step. Do <em>not</em> copy configuration files wholesale — always diff and merge:</p>
+          <div class="code-block"><pre><code># Diff each file individually
+diff /opt/tomcat/conf/server.xml /opt/apache-tomcat-10.1.28/conf/server.xml
+diff /opt/tomcat/conf/context.xml /opt/apache-tomcat-10.1.28/conf/context.xml
+diff /opt/tomcat/conf/web.xml /opt/apache-tomcat-10.1.28/conf/web.xml</code></pre></div>
+
+          <p>Key things to watch per file:</p>
+          <ul>
+            <li><strong>server.xml</strong> — Check HTTP connector attributes. In Tomcat 9+, <code>scheme</code> and <code>secure</code> on the HTTP connector were deprecated in favour of <code>RemoteIpValve</code>. SSL connector attribute names changed significantly in Tomcat 9.</li>
+            <li><strong>context.xml</strong> — Resource definitions and session persistence configuration. These are usually safe to copy directly.</li>
+            <li><strong>web.xml</strong> — The default servlet and JSP servlet mappings changed between versions. Merge your custom entries into the new file rather than replacing it.</li>
+            <li><strong>setenv.sh</strong> — Safe to copy; just review JVM flags for compatibility with the new JDK requirement.</li>
+          </ul>
+
+          <p>Copy your merged configuration to the new installation:</p>
+          <div class="code-block"><pre><code>cp /opt/tomcat/conf/server.xml     /opt/apache-tomcat-10.1.28/conf/
+cp /opt/tomcat/conf/context.xml    /opt/apache-tomcat-10.1.28/conf/
+cp /opt/tomcat/bin/setenv.sh       /opt/apache-tomcat-10.1.28/bin/
+cp -r /opt/tomcat/webapps/myapp    /opt/apache-tomcat-10.1.28/webapps/</code></pre></div>
+
+          <h2>Step 5 — Stop, Switch, Start</h2>
+          <div class="code-block"><pre><code># Graceful shutdown of current instance
+/opt/tomcat/bin/shutdown.sh
+sleep 10  # Wait for in-flight requests to complete
+
+# Switch the symlink atomically
+ln -sfn /opt/apache-tomcat-10.1.28 /opt/tomcat
+
+# Start the new instance
+/opt/tomcat/bin/startup.sh
+
+# Watch startup logs
+tail -f /opt/tomcat/logs/catalina.out</code></pre></div>
+
+          <h2>Step 6 — Validate</h2>
+          <p>After startup, run through these checks before declaring success:</p>
+          <ul>
+            <li>All applications deployed without errors — check <code>catalina.out</code> for <code>SEVERE</code> or <code>ERROR</code> log lines.</li>
+            <li>Test every application endpoint, including authenticated paths.</li>
+            <li>Verify SSL/TLS connectors: <code>openssl s_client -connect hostname:8443</code> and confirm the certificate chain.</li>
+            <li>Check thread pool health via the Manager app at <code>/manager/status</code>.</li>
+            <li>Run your application's smoke test suite if you have one.</li>
+          </ul>
+
+          <h2>Rollback Procedure</h2>
+          <p>If anything is wrong, rollback is a two-line operation because of the symlink approach:</p>
+          <div class="code-block"><pre><code># Stop the new instance
+/opt/tomcat/bin/shutdown.sh
+
+# Restore the symlink to the old version
+ln -sfn /opt/apache-tomcat-&lt;old-version&gt; /opt/tomcat
+
+# Start the old instance
+/opt/tomcat/bin/startup.sh</code></pre></div>
+
+          <h2>Common Issues I've Hit in Production</h2>
+
+          <table class="compare-table">
+            <thead>
+              <tr><th>Issue</th><th>Cause</th><th>Fix</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>ClassNotFoundException: javax.servlet.*</code></td><td>Application uses javax.* but Tomcat 10+ expects jakarta.*</td><td>Use Tomcat Migration Tool or stay on Tomcat 9.x</td></tr>
+              <tr><td>SSL connector rejects start</td><td>Deprecated attributes in server.xml</td><td>Replace old-style SSL config with newer NIO connector + SSLHostConfig</td></tr>
+              <tr><td>Applications fail to deploy silently</td><td>web.xml version mismatch</td><td>Check <code>&lt;web-app version="..."&gt;</code> matches your servlet spec</td></tr>
+              <tr><td>OutOfMemoryError on startup</td><td>maxThreads or heap settings not migrated from setenv.sh</td><td>Verify setenv.sh was copied and is executable</td></tr>
+            </tbody>
+          </table>
+
+          <blockquote>
+            The most expensive mistake you can make is upgrading Tomcat and your application at the same time. Change one variable at a time — upgrade the container first, validate, then update the application.
+          </blockquote>
+
+        </div>
       </div>
     </div>
   </main>
@@ -70,5 +186,40 @@
     </div>
   </footer>
 
+  <script>
+    (function() {
+      var c = document.createElement('canvas');
+      c.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;';
+      document.body.insertBefore(c, document.body.firstChild);
+      var ctx = c.getContext('2d'), W, H, pts = [];
+      function resize() { W = c.width = innerWidth; H = c.height = innerHeight; }
+      resize(); window.addEventListener('resize', resize);
+      for (var n = 0; n < 40; n++) {
+        pts.push({ x: Math.random()*W, y: Math.random()*H,
+          vx: (Math.random()-.5)*.3, vy: (Math.random()-.5)*.3, r: Math.random()*1.2+.3 });
+      }
+      function frame() {
+        ctx.clearRect(0, 0, W, H);
+        for (var i = 0; i < pts.length; i++) {
+          var p = pts[i];
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 0 || p.x > W) p.vx *= -1;
+          if (p.y < 0 || p.y > H) p.vy *= -1;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283);
+          ctx.fillStyle = 'rgba(129,140,248,0.45)'; ctx.fill();
+          for (var j = i+1; j < pts.length; j++) {
+            var q = pts[j], dx = p.x-q.x, dy = p.y-q.y, d = Math.sqrt(dx*dx+dy*dy);
+            if (d < 120) {
+              ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y);
+              ctx.strokeStyle = 'rgba(129,140,248,'+(.12*(1-d/120))+')';
+              ctx.lineWidth = .5; ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(frame);
+      }
+      frame();
+    })();
+  </script>
 </body>
 </html>
