@@ -622,10 +622,22 @@ main {
 .post-content { font-size: 17px; line-height: 1.9; color: #3d3d3d; text-align: justify; }
 .post-back { text-align: left; }
 .post-header .post-meta { text-align: left; }
+/* Fenced code + modal copy: always left (never inherit article justify) */
 .post-content .code-block,
-.post-content .code-block pre { text-align: left; }
+.post-content .code-block pre,
+.post-content .code-block pre code,
+main .code-block,
 main .code-block pre,
-main .code-block .code-block-header { text-align: left; }
+main .code-block pre code,
+main .code-block .code-block-header,
+.code-block,
+.code-block pre,
+.code-block pre code,
+.code-expand-body,
+.code-expand-body pre,
+.code-expand-body pre code {
+  text-align: left !important;
+}
 .post-content p { margin-bottom: 28px; }
 .post-content h2 { font-family: var(--font-heading); font-size: 28px; font-weight: 700; color: var(--t1); letter-spacing: -0.015em; margin: 64px 0 20px; line-height: 1.2; }
 .post-content h3 { font-size: 20px; font-weight: 600; color: var(--t1); margin: 40px 0 14px; }
