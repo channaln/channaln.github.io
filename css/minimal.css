@@ -188,20 +188,31 @@ a { color: inherit; text-decoration: none; }
 .story-tag { font-size: 12px; font-weight: 500; color: var(--t2); background: var(--bg3); padding: 3px 8px; border-radius: 100px; }
 .story-time { font-size: 12px; color: var(--t3); }
 
-/* === HOME — compact writing feed (5 posts) — width/padding: match .hero-glass in glass.css === */
+/* === HOME — writing feed: same type as hero (Lora for title line, body font for list like .hero-sub) === */
 .home-feed {
   text-align: justify;
+  font-family: var(--font-body);
   /* Same card footprint as Channa / hero: use class "hero-glass" on the same element */
 }
-.home-feed-label { margin-top: 0; text-align: justify; }
-.home-feed .sec-label { text-align: justify; margin-left: 0; }
+.home-feed .sec-label,
+.home-feed-label {
+  text-align: justify;
+  margin: 0 0 8px 0;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--t3);
+}
 .home-feed-heading {
+  /* Same family + weight as .hero h1, scaled for section subheading */
   font-family: var(--font-heading);
-  font-size: clamp(1.05rem, 2.4vw, 1.2rem);
+  font-size: clamp(24px, 3.2vw, 36px);
   font-weight: 700;
   color: var(--t1);
   letter-spacing: -0.02em;
-  line-height: 1.3;
+  line-height: 1.1;
   margin: 0 0 12px;
   text-align: justify;
   width: 100%;
@@ -235,10 +246,11 @@ a { color: inherit; text-decoration: none; }
   background: rgba(0, 0, 0, 0.03);
 }
 .home-feed-item-title {
-  font-family: var(--font-heading);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.4;
+  /* Same as .hero-sub: body family, 19px, comfortable line height */
+  font-family: var(--font-body);
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.65;
   color: var(--t1);
   text-align: justify;
   width: 100%;
@@ -248,8 +260,10 @@ a { color: inherit; text-decoration: none; }
   overflow: hidden;
 }
 .home-feed-item-meta {
-  font-size: 11px;
-  color: var(--t3);
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--t2);
   letter-spacing: 0.01em;
   text-align: justify;
 }
@@ -258,8 +272,10 @@ a { color: inherit; text-decoration: none; }
   text-align: justify;
 }
 .home-feed-cta a {
-  font-size: 14px;
+  font-family: var(--font-body);
+  font-size: 19px;
   font-weight: 500;
+  line-height: 1.65;
   color: var(--ac);
   text-decoration: none;
 }
@@ -1021,7 +1037,7 @@ html[data-theme="dark"] .home-feed-item-title {
 }
 
 html[data-theme="dark"] .home-feed-item-meta {
-  color: var(--t3);
+  color: var(--t2);
 }
 
 html[data-theme="dark"] .home-feed-cta a {
