@@ -357,3 +357,16 @@ html[data-theme="dark"] .work-tab[aria-selected="true"] {
   border-color: rgba(160, 175, 195, 0.25);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
+
+/* Experience page: this file’s `.section-glass { width: 100% }` wins in cascade after minimal.css
+   and was preventing true horizontal centering. Parent uses text-align: center; card is inline-block. */
+body.experience-page .glass-panel.section-glass,
+body.experience-page .section-glass.glass-panel {
+  display: inline-block;
+  width: min(100%, 52rem);
+  max-width: min(52rem, 100%);
+  margin: 0;
+  vertical-align: top;
+  text-align: start;
+  box-sizing: border-box;
+}

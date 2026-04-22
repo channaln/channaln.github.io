@@ -686,19 +686,25 @@ body.experience-page main.page-main {
   text-align: start;
   align-items: stretch;
 }
+/* Center the experience card: flex children + width:100% from glass.css often eat margin:auto — use the inline-block + text-align:center parent trick */
 body.experience-page main.page-main > .container {
-  /* Center the glass card (not stretch full width of the line) */
-  align-items: center;
+  display: block;
   width: 100%;
+  max-width: var(--mw);
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 clamp(16px, 5vw, 32px);
+  box-sizing: border-box;
+  text-align: center;
 }
 body.experience-page .glass-panel.section-glass {
+  display: inline-block;
   text-align: start;
-  /* Centered card: constrained width, flex + block margins (parent .container is align-items: center) */
   width: min(100%, 52rem);
   max-width: min(52rem, 100%);
-  margin-inline: auto;
-  align-self: center;
+  margin: 0;
   box-sizing: border-box;
+  vertical-align: top;
 }
 body.experience-page .page-head,
 body.experience-page .page-head h1,
