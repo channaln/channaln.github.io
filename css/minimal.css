@@ -235,7 +235,7 @@ a { color: inherit; text-decoration: none; }
 
 /* === TECH STACK === */
 .stack-grid { display: flex; flex-direction: column; align-items: center; gap: 32px; width: 100%; }
-.stack-grid > div { width: 100%; max-width: 42rem; }
+.stack-grid > div { width: 100%; max-width: 56rem; }
 .stack-cat {
   font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--t3); margin-bottom: 12px; display: flex; align-items: center; justify-content: center;
@@ -244,6 +244,53 @@ a { color: inherit; text-decoration: none; }
 .stack-cat::before,
 .stack-cat::after { content: ''; flex: 1 1 0; min-width: 0; max-width: 120px; height: 1px; background: var(--bd); }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+
+/* Invisible 6-column “table” for tools (Experience page) */
+.stack-tool-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0;
+  padding: 0;
+}
+.stack-tool-table {
+  width: 100%;
+  min-width: 32rem;
+  table-layout: fixed;
+  border: none;
+  border-collapse: separate;
+  border-spacing: 8px 10px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+.stack-tool-table tbody { vertical-align: middle; }
+.stack-tool-table tr { border: none; }
+.stack-tool-cell {
+  border: none;
+  padding: 0;
+  vertical-align: middle;
+  text-align: center;
+  width: 16.66%;
+  min-width: 0;
+}
+.stack-tool-cell .chip {
+  display: inline-flex;
+  max-width: 100%;
+  box-sizing: border-box;
+  justify-content: center;
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+.stack-tool-cell--spacer { pointer-events: none; }
+
+@media (max-width: 600px) {
+  .stack-tool-table { min-width: 28rem; }
+  .stack-tool-cell .chip { font-size: 12px; padding: 5px 10px; }
+  .stack-tool-cell .chip i { font-size: 14px; }
+}
+
 .chip {
   display: inline-flex; align-items: center; gap: 7px;
   padding: 6px 14px; background: var(--bg2); border: 1px solid var(--bd); border-radius: 100px;
