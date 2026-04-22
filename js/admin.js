@@ -555,6 +555,276 @@
     file.target.value = "";
   }
 
+  // ── GitHub publishing ───────────────────────────────────────────────────────
+
+  var STORAGE_GH = "channa:github";
+  var GH_OWNER   = "channaln";
+  var GH_REPO    = "channaln.github.io";
+  var GH_BRANCH  = "main";
+  var GH_API     = "https://api.github.com";
+
+  function loadPat() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_GH) || "{}").pat || ""; } catch (e) { return ""; }
+  }
+
+  function savePat(pat) {
+    try { localStorage.setItem(STORAGE_GH, JSON.stringify({ pat: pat.trim() })); } catch (e) {}
+  }
+
+  function syncPatField() {
+    var el = $("gh-pat");
+    if (!el) return;
+    if (loadPat()) el.placeholder = "Token saved (•••)";
+  }
+
+  async function ghApi(method, path, body) {
+    var pat = loadPat();
+    if (!pat) throw new Error("No GitHub token saved. Enter one in the ‘Publish to GitHub’ section on the left.");
+    var opts = {
+      method: method,
+      headers: {
+        "Authorization": "Bearer " + pat,
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28"
+      }
+    };
+    if (body) {
+      opts.headers["Content-Type"] = "application/json";
+      opts.body = JSON.stringify(body);
+    }
+    var res = await fetch(GH_API + "/repos/" + GH_OWNER + "/" + GH_REPO + path, opts);
+    if (res.status === 404) return null;
+    if (res.status === 204) return {};
+    if (!res.ok) {
+      var err = await res.json().catch(function () { return {}; });
+      throw new Error("GitHub " + res.status + ": " + (err.message || res.statusText));
+    }
+    return res.json();
+  }
+
+  async function ghGetFile(path) {
+    var data = await ghApi("GET", "/contents/" + path);
+    if (!data) return null;
+    try {
+      var decoded = decodeURIComponent(escape(atob(data.content.replace(/[\r\n]/g, ""))));
+      return { sha: data.sha, content: decoded };
+    } catch (e) {
+      return { sha: data.sha, content: atob(data.content.replace(/[\r\n]/g, "")) };
+    }
+  }
+
+  async function ghPutFile(path, content, message, sha) {
+    var encoded;
+    try { encoded = btoa(unescape(encodeURIComponent(content))); } catch (e) { encoded = btoa(content); }
+    var body = { message: message, content: encoded, branch: GH_BRANCH };
+    if (sha) body.sha = sha;
+    return ghApi("PUT", "/contents/" + path, body);
+  }
+
+  async function ghDeleteFile(path, message, sha) {
+    return ghApi("DELETE", "/contents/" + path, { message: message, sha: sha, branch: GH_BRANCH });
+  }
+
+  function buildPostHtml(g) {
+    var topics  = typeof window.sanitizeTopicList === "function" ? window.sanitizeTopicList(g.topics) : (g.topics || []);
+    var topicFirst = topics[0] || "";
+    var topicMeta  = topics.join(" · ");
+    var slug    = g.slug || "post";
+    var excerpt = g.excerpt || textExcerpt(g.html);
+    var dateIso;
+    try { dateIso = new Date().toISOString().split("T")[0]; } catch (e) { dateIso = ""; }
+    var esc = escapeHtml;
+    var lines = [
+      "<!DOCTYPE html>",
+      '<html lang="en">',
+      "<head>",
+      '  <meta charset="UTF-8">',
+      '  <meta name="viewport" content="width=device-width, initial-scale=1">',
+      '  <script src="../js/theme-init.js"><\/script>',
+      '  <title>' + esc(g.title) + " — Channa Sandaruwan</title>",
+      '  <meta name="description" content="' + esc(excerpt) + '">',
+      '  <meta name="author" content="Channa Sandaruwan">',
+      '  <meta property="og:type" content="article">',
+      '  <meta property="og:url" content="https://channaln.github.io/blog/' + slug + '.html">',
+      '  <meta property="og:title" content="' + esc(g.title) + '">',
+      '  <meta property="og:description" content="' + esc(excerpt) + '">',
+      '  <meta property="og:image" content="https://channaln.github.io/images/profile.jpg">',
+      '  <meta property="og:site_name" content="Channa Sandaruwan">',
+      '  <meta property="article:author" content="Channa Sandaruwan">',
+      '  <meta property="article:published_time" content="' + dateIso + '">',
+      '  <meta name="twitter:card" content="summary_large_image">',
+      '  <meta name="twitter:title" content="' + esc(g.title) + '">',
+      '  <meta name="twitter:description" content="' + esc(excerpt) + '">',
+      '  <meta name="twitter:image" content="https://channaln.github.io/images/profile.jpg">',
+      '  <link rel="preconnect" href="https://fonts.googleapis.com">',
+      '  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
+      '  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000&family=Inter:wght@300;400;450;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;0,700&family=Source+Sans+3:ital,wght@0,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900&display=swap" rel="stylesheet">',
+      '  <link rel="stylesheet" href="../css/minimal.css">',
+      '  <link rel="stylesheet" href="../css/glass.css">',
+      "</head>",
+      '<body class="page-root">',
+      "",
+      '  <header class="header">',
+      '    <div class="container">',
+      '      <a href="../index.html" class="logo">channa<span>.dev</span></a>',
+      "      <nav>",
+      '        <ul class="nav-links">',
+      '          <li><a href="../index.html">Home</a></li>',
+      '          <li><a href="../experience.html">Experience</a></li>',
+      '          <li><a href="../blog_list.html" aria-current="page">Blog</a></li>',
+      '          <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener" class="nav-cta">LinkedIn ↗</a></li>',
+      "        </ul>",
+      "      </nav>",
+      "    </div>",
+      "  </header>",
+      "",
+      '  <main class="page-main">',
+      '    <div class="container">',
+      '      <div class="post-wrap">',
+      '        <a href="../blog_list.html" class="post-back">← Back to Blog</a>',
+      '        <div class="post-header">',
+      (topicFirst ? '          <p class="post-label">' + esc(topicFirst) + "</p>" : ""),
+      '          <h1 class="post-title">' + esc(g.title) + "</h1>",
+      '          <p class="post-meta">' + esc(g.date) + " · Channa Sandaruwan" +
+        (topicMeta ? " · <span class=\"post-meta-topic\">" + esc(topicMeta) + "</span>" : "") + "</p>",
+      "        </div>",
+      '        <div class="post-content">',
+      (g.html || ""),
+      "        </div>",
+      "      </div>",
+      "    </div>",
+      "  </main>",
+      "",
+      '  <footer class="footer">',
+      '    <div class="container">',
+      "      <p>&copy; 2025 Channa Sandaruwan · Systems Engineer · Kuwait</p>",
+      '      <nav class="footer-links">',
+      '        <a href="../index.html">Home</a>',
+      '        <a href="../experience.html">Experience</a>',
+      '        <a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a>',
+      "      </nav>",
+      "    </div>",
+      "  </footer>",
+      "",
+      '  <script src="../js/sanitize.js" defer><\/script>',
+      '  <script src="../js/site-settings.js" defer><\/script>',
+      '  <script src="../js/code-block-expand.js" defer><\/script>',
+      "</body>",
+      "</html>"
+    ];
+    return lines.filter(function (l) { return l !== null && l !== undefined && l !== false; }).join("\n");
+  }
+
+  function buildBlogListEntry(g) {
+    var topics = typeof window.sanitizeTopicList === "function" ? window.sanitizeTopicList(g.topics) : (g.topics || []);
+    var topicFirst = topics[0] || "";
+    var slug    = g.slug || "post";
+    var excerpt = g.excerpt || textExcerpt(g.html);
+    return [
+      "        <li>",
+      '          <a href="blog/' + slug + '.html">',
+      '            <div class="bl-date-col">',
+      "              <div class=\"bl-date\">" + escapeHtml(g.date) + "</div>",
+      "              <div class=\"bl-date\">" + (g.readMin || 1) + " min read</div>",
+      "            </div>",
+      "            <div>",
+      '              <p class="bl-tag">' + escapeHtml(topicFirst) + "</p>",
+      '              <h2 class="bl-title">' + escapeHtml(g.title) + "</h2>",
+      '              <p class="bl-excerpt">' + escapeHtml(excerpt) + "</p>",
+      "            </div>",
+      "          </a>",
+      "        </li>"
+    ].join("\n");
+  }
+
+  function removeBlogListEntry(html, slug) {
+    var target = 'href="blog/' + slug + '.html"';
+    var parts = html.split(/(?=[ \t]*<li\b)/);
+    return parts.filter(function (part) {
+      if (part.indexOf("<li") < 0) return true;
+      return part.indexOf(target) < 0;
+    }).join("");
+  }
+
+  async function updateBlogListHtml(g, remove) {
+    var file = await ghGetFile("blog_list.html");
+    if (!file) throw new Error("Could not fetch blog_list.html from GitHub.");
+    var slug = g.slug || "post";
+    var alreadyExists = file.content.indexOf('href="blog/' + slug + '.html"') >= 0;
+    var html = removeBlogListEntry(file.content, slug);
+    if (!remove) {
+      html = html.replace('<ul class="blog-list">', '<ul class="blog-list">\n' + buildBlogListEntry(g) + "\n");
+    }
+    var verb = remove ? "Remove" : (alreadyExists ? "Update" : "Add");
+    await ghPutFile("blog_list.html", html, verb + " post in blog list: " + (g.title || slug), file.sha);
+  }
+
+  function setGhStatus(msg, isError) {
+    var el = $("gh-status");
+    if (!el) return;
+    el.textContent = msg;
+    el.style.color = isError ? "#f08080" : "#8b91a0";
+  }
+
+  async function publishToGitHub() {
+    var btn = $("btn-publish-gh");
+    if (btn) { btn.disabled = true; btn.textContent = "Publishing…"; }
+    setGhStatus("");
+    try {
+      var g = gatherForm();
+      if (!g.title) { alert("Add a title first."); return; }
+      upsertPostGathered(g);
+      savePosts();
+      renderList();
+      var postPath = "blog/" + (g.slug || "post") + ".html";
+      setGhStatus("Checking for existing file…");
+      var existing = await ghGetFile(postPath);
+      setGhStatus("Uploading post…");
+      await ghPutFile(postPath, buildPostHtml(g),
+        (existing ? "Update" : "Add") + " post: " + g.title,
+        existing ? existing.sha : undefined);
+      setGhStatus("Updating blog list…");
+      await updateBlogListHtml(g, false);
+      setGhStatus("✓ Published! GitHub Pages will go live in ~30 seconds.");
+      $("save-status").textContent = "Published to GitHub ✓";
+      setTimeout(function () {
+        var el = $("save-status");
+        if (el && el.textContent === "Published to GitHub ✓") el.textContent = "";
+      }, 5000);
+    } catch (err) {
+      setGhStatus((err && err.message) || String(err), true);
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = "↑ Publish to GitHub"; }
+    }
+  }
+
+  async function unpublishFromGitHub() {
+    var g = gatherForm();
+    var slug = g.slug || "post";
+    if (!confirm("Delete blog/" + slug + ".html from GitHub and remove it from the blog list?")) return;
+    var btn = $("btn-unpublish-gh");
+    if (btn) { btn.disabled = true; btn.textContent = "Unpublishing…"; }
+    setGhStatus("");
+    try {
+      var postPath = "blog/" + slug + ".html";
+      setGhStatus("Fetching file…");
+      var existing = await ghGetFile(postPath);
+      if (existing) {
+        setGhStatus("Deleting post file…");
+        await ghDeleteFile(postPath, "Remove post: " + (g.title || slug), existing.sha);
+      }
+      setGhStatus("Updating blog list…");
+      await updateBlogListHtml(g, true);
+      setGhStatus("Unpublished from GitHub.");
+    } catch (err) {
+      setGhStatus((err && err.message) || String(err), true);
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = "Unpublish from GitHub"; }
+    }
+  }
+
+  // ── end GitHub publishing ───────────────────────────────────────────────────
+
   function bind() {
     $("login-form").addEventListener("submit", function (e) {
       e.preventDefault();
@@ -571,6 +841,7 @@
         state.posts = loadPosts();
         syncFontSelect();
         syncAdminThemeSelect();
+        syncPatField();
         renderList();
         updateStorageHint();
         if (state.posts.length) selectPost(state.posts[0].id);
@@ -615,6 +886,29 @@
         scheduleAutosave();
       });
     }
+
+    if ($("btn-save-pat")) {
+      $("btn-save-pat").addEventListener("click", function () {
+        var val = ($("gh-pat").value || "").trim();
+        if (!val) { alert("Enter a token first."); return; }
+        savePat(val);
+        $("gh-pat").value = "";
+        $("gh-pat").placeholder = "Token saved (•••)";
+        $("gh-pat-status").textContent = "Token saved.";
+        setTimeout(function () { if ($("gh-pat-status")) $("gh-pat-status").textContent = ""; }, 2500);
+      });
+    }
+    if ($("btn-clear-pat")) {
+      $("btn-clear-pat").addEventListener("click", function () {
+        savePat("");
+        $("gh-pat").value = "";
+        $("gh-pat").placeholder = "ghp_…";
+        $("gh-pat-status").textContent = "Token cleared.";
+        setTimeout(function () { if ($("gh-pat-status")) $("gh-pat-status").textContent = ""; }, 2500);
+      });
+    }
+    if ($("btn-publish-gh")) $("btn-publish-gh").addEventListener("click", publishToGitHub);
+    if ($("btn-unpublish-gh")) $("btn-unpublish-gh").addEventListener("click", unpublishFromGitHub);
   }
 
   if (isAuthed()) {
@@ -628,6 +922,7 @@
     state.posts = loadPosts();
     syncFontSelect();
     syncAdminThemeSelect();
+    syncPatField();
     renderList();
     updateStorageHint();
     if (state.posts.length) selectPost(state.posts[0].id);
