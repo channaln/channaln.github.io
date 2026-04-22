@@ -693,11 +693,11 @@ body.experience-page main.page-main > .container {
 }
 body.experience-page .glass-panel.section-glass {
   text-align: start;
-  /* Explicit width so the card can sit centered in the main column (not full-bleed flex stretch) */
+  /* Centered card: constrained width, flex + block margins (parent .container is align-items: center) */
   width: min(100%, 52rem);
   max-width: min(52rem, 100%);
-  margin-left: auto;
-  margin-right: auto;
+  margin-inline: auto;
+  align-self: center;
   box-sizing: border-box;
 }
 body.experience-page .page-head,
