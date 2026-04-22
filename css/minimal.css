@@ -127,14 +127,16 @@ a { color: inherit; text-decoration: none; }
   font-size: clamp(36px, 5vw, 56px);
   font-weight: 700; letter-spacing: -0.02em; line-height: 1.1;
   color: var(--t1); margin-bottom: 14px;
+  text-align: center;
 }
-.hero-sub { font-size: 19px; color: var(--t2); line-height: 1.65; margin-bottom: 28px; max-width: 36rem; margin-left: auto; margin-right: auto; }
+.hero-sub { font-size: 19px; color: var(--t2); line-height: 1.65; margin-bottom: 28px; max-width: 36rem; margin-left: auto; margin-right: auto; text-align: justify; }
 .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
 .btn {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 10px 22px; border-radius: 100px;
   font-size: 14px; font-weight: 500;
   transition: all var(--ts); border: 1px solid transparent; cursor: pointer;
+  text-align: center;
 }
 .btn-dark { background: var(--t1); color: #fff; }
 .btn-dark:hover { background: #3d3d3d; }
@@ -146,8 +148,8 @@ a { color: inherit; text-decoration: none; }
 .hstat-lbl { font-size: 12px; color: var(--t3); }
 
 /* === SECTIONS === */
-.section { width: 100%; max-width: 100%; padding: 80px 0; border-top: 1px solid var(--bd); text-align: center; display: flex; flex-direction: column; align-items: center; }
-.section.section--latest-writing { align-items: flex-start; text-align: left; }
+.section { width: 100%; max-width: 100%; padding: 80px 0; border-top: 1px solid var(--bd); text-align: justify; display: flex; flex-direction: column; align-items: center; }
+.section.section--latest-writing { align-items: flex-start; text-align: justify; }
 .container.container--align-left { align-items: flex-start; }
 /* Match hero card width; center the glass panel on the page like the Channa block */
 .section--latest-writing .container--align-left .glass-panel.hero-glass.home-feed {
@@ -170,7 +172,7 @@ a { color: inherit; text-decoration: none; }
 .story-sep { color: var(--t3); font-size: 11px; }
 .story-date { font-size: 13px; color: var(--t2); }
 .story-body { display: flex; align-items: flex-start; justify-content: center; gap: 40px; }
-.story-content { flex: 1; min-width: 0; text-align: center; }
+.story-content { flex: 1; min-width: 0; text-align: justify; }
 .story-title {
   font-family: var(--font-heading);
   font-size: 22px; font-weight: 700; line-height: 1.35; color: var(--t1);
@@ -188,11 +190,11 @@ a { color: inherit; text-decoration: none; }
 
 /* === HOME — compact writing feed (5 posts) — width/padding: match .hero-glass in glass.css === */
 .home-feed {
-  text-align: left;
+  text-align: justify;
   /* Same card footprint as Channa / hero: use class "hero-glass" on the same element */
 }
-.home-feed-label { margin-top: 0; text-align: left; }
-.home-feed .sec-label { text-align: left; margin-left: 0; }
+.home-feed-label { margin-top: 0; text-align: justify; }
+.home-feed .sec-label { text-align: justify; margin-left: 0; }
 .home-feed-heading {
   font-family: var(--font-heading);
   font-size: clamp(1.05rem, 2.4vw, 1.2rem);
@@ -201,7 +203,7 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: -0.02em;
   line-height: 1.3;
   margin: 0 0 12px;
-  text-align: left;
+  text-align: justify;
   width: 100%;
 }
 .home-feed-list {
@@ -225,7 +227,7 @@ a { color: inherit; text-decoration: none; }
   padding: 10px 12px;
   text-decoration: none;
   color: inherit;
-  text-align: left;
+  text-align: justify;
   align-items: flex-start;
   transition: background 0.12s ease;
 }
@@ -238,7 +240,7 @@ a { color: inherit; text-decoration: none; }
   font-weight: 600;
   line-height: 1.4;
   color: var(--t1);
-  text-align: left;
+  text-align: justify;
   width: 100%;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -249,11 +251,11 @@ a { color: inherit; text-decoration: none; }
   font-size: 11px;
   color: var(--t3);
   letter-spacing: 0.01em;
-  text-align: left;
+  text-align: justify;
 }
 .home-feed-cta {
   margin: 14px 0 0;
-  text-align: left;
+  text-align: justify;
 }
 .home-feed-cta a {
   font-size: 14px;
@@ -350,12 +352,12 @@ a { color: inherit; text-decoration: none; }
 .tl-period { font-size: 12px; color: var(--t3); white-space: nowrap; }
 .tl-company { font-size: 13px; color: var(--ac); font-weight: 500; margin-bottom: 14px; }
 .tl-points { list-style: none; display: flex; flex-direction: column; gap: 6px; }
-.tl-points li { font-size: 14px; color: var(--t2); line-height: 1.65; padding-left: 14px; position: relative; }
+.tl-points li { font-size: 14px; color: var(--t2); line-height: 1.65; padding-left: 14px; position: relative; text-align: justify; }
 .tl-points li::before { content: '–'; position: absolute; left: 0; color: var(--t3); }
 
 /* === CERTIFICATIONS === */
 .certs { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; justify-content: center; width: 100%; max-width: 56rem; margin-inline: auto; }
-.cert-card { display: flex; align-items: flex-start; gap: 12px; padding: 16px 18px; background: var(--bg2); border: 1px solid var(--bd); border-radius: var(--r); transition: border-color var(--ts); text-align: left; }
+.cert-card { display: flex; align-items: flex-start; gap: 12px; padding: 16px 18px; background: var(--bg2); border: 1px solid var(--bd); border-radius: var(--r); transition: border-color var(--ts); text-align: justify; }
 .cert-card:hover { border-color: var(--bd2); }
 .cert-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
 .cert-dot.active { background: #22c55e; }
@@ -364,24 +366,24 @@ a { color: inherit; text-decoration: none; }
 .cert-meta { font-size: 12px; color: var(--t3); }
 
 /* === BLOG LIST PAGE === */
-.page-head { padding: 100px 0 44px; border-bottom: 1px solid var(--bd); text-align: center; }
-.page-head h1 { font-family: var(--font-heading); font-size: clamp(32px, 5vw, 52px); font-weight: 700; color: var(--t1); letter-spacing: -0.025em; margin-bottom: 10px; }
-.page-head p { font-size: 16px; color: var(--t2); max-width: 36rem; margin: 0 auto; }
+.page-head { padding: 100px 0 44px; border-bottom: 1px solid var(--bd); text-align: justify; }
+.page-head h1 { font-family: var(--font-heading); font-size: clamp(32px, 5vw, 52px); font-weight: 700; color: var(--t1); letter-spacing: -0.025em; margin-bottom: 10px; text-align: center; }
+.page-head p { font-size: 16px; color: var(--t2); max-width: 36rem; margin: 0 auto; text-align: justify; }
 
-/* Blog / Stories list page only — left-aligned list + search + all titles */
-.blog-list-page .section-glass { text-align: left; }
-.blog-list-page .page-head { text-align: left; }
+/* Blog / Stories list page — same justification as main */
+.blog-list-page .section-glass { text-align: justify; }
+.blog-list-page .page-head { text-align: justify; }
 .blog-list-page .page-head h1 { text-align: left; }
-.blog-list-page .page-head p { margin-left: 0; margin-right: 0; text-align: left; }
+.blog-list-page .page-head p { margin-left: 0; margin-right: 0; text-align: justify; }
 .blog-list-page .bl-tag,
 .blog-list-page .bl-title,
-.blog-list-page .bl-excerpt { text-align: left; }
+.blog-list-page .bl-excerpt { text-align: justify; }
 .blog-list-page .blog-search-wrap { margin-left: 0; margin-right: 0; }
 
 .blog-list { list-style: none; }
 .blog-list li { border-bottom: 1px solid var(--bd); }
 .blog-list li[hidden] { display: none !important; }
-.blog-list li a { display: flex; align-items: flex-start; justify-content: flex-start; gap: 28px; padding: 28px 0; flex-wrap: wrap; text-align: left; }
+.blog-list li a { display: flex; align-items: flex-start; justify-content: flex-start; gap: 28px; padding: 28px 0; flex-wrap: wrap; text-align: justify; }
 .blog-list li a > div:last-child { flex: 1; min-width: min(100%, 40rem); }
 .blog-list li a:hover .bl-title { color: #444; }
 .bl-date-col { flex-shrink: 0; width: 80px; padding-top: 4px; text-align: right; }
@@ -537,7 +539,7 @@ a { color: inherit; text-decoration: none; }
   font-size: 15px;
   color: var(--t2);
   padding: 20px 0 8px;
-  text-align: left;
+  text-align: justify;
   border-radius: 8px;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -558,6 +560,7 @@ main {
   flex-direction: column;
   align-items: center;
   flex: 1 0 auto;
+  text-align: justify;
 }
 .post-wrap { max-width: var(--art); margin: 0 auto; padding: 48px 32px 96px; }
 .post-back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--t3); margin-bottom: 48px; transition: color var(--ts); }
@@ -571,11 +574,16 @@ main {
 .post-meta-topic { font-size: 50%; color: var(--t2); font-weight: 500; letter-spacing: 0.02em; }
 .post-header .post-meta { line-height: 1.5; }
 
-/* Post body — left-aligned (title + content) */
-.post-wrap { text-align: left; }
-.post-header { text-align: left; }
-.post-content { font-size: 17px; line-height: 1.9; color: #3d3d3d; text-align: left; }
+/* Post body — justified; narrow pieces reset below */
+.post-wrap { text-align: justify; }
+.post-header { text-align: justify; }
+.post-content { font-size: 17px; line-height: 1.9; color: #3d3d3d; text-align: justify; }
 .post-back { text-align: left; }
+.post-header .post-meta { text-align: left; }
+.post-content .code-block,
+.post-content .code-block pre { text-align: left; }
+main .code-block pre,
+main .code-block .code-block-header { text-align: left; }
 .post-content p { margin-bottom: 28px; }
 .post-content h2 { font-family: var(--font-heading); font-size: 28px; font-weight: 700; color: var(--t1); letter-spacing: -0.015em; margin: 64px 0 20px; line-height: 1.2; }
 .post-content h3 { font-size: 20px; font-weight: 600; color: var(--t1); margin: 40px 0 14px; }
@@ -589,7 +597,7 @@ main {
 .post-content li code,
 .post-content td code,
 .post-content blockquote code { font-family: var(--font-mono), ui-monospace, monospace; font-size: 0.82em; background: #f0f3f6; color: #0d1117; padding: 2px 6px; border-radius: 4px; border: 1px solid #d8dee4; }
-.post-content blockquote { border-left: 3px solid var(--t1); padding: 4px 24px; margin: 40px 0; color: var(--t2); font-style: italic; font-size: 22px; line-height: 1.65; }
+.post-content blockquote { border-left: 3px solid var(--t1); padding: 4px 24px; margin: 40px 0; color: var(--t2); font-style: italic; font-size: 22px; line-height: 1.65; text-align: justify; }
 /* Code blocks — monospace, high contrast, easy to scan */
 .code-block {
   background: #0d1117;
@@ -863,7 +871,7 @@ html[data-theme="dark"] .code-expand-backdrop {
 .footer-links a:hover { color: var(--t2); }
 
 /* === MISC === */
-.stories-cta { text-align: left; padding-top: 20px; }
+.stories-cta { text-align: justify; padding-top: 20px; }
 .exp-inner-block { width: 100%; padding: 0 0 40px; margin: 0 0 32px; border-bottom: 1px solid var(--bd); }
 .exp-inner-block:last-of-type { border: none; margin: 0; padding: 0; }
 .fade-in { opacity: 0; transform: translateY(16px); transition: opacity 0.5s ease, transform 0.5s ease; }
