@@ -464,15 +464,7 @@ body.experience-page .page-head p {
   margin-left: 0;
   margin-right: 0;
 }
-/* Experience — Tech Stack + “Tools I work with daily.” and rest of glass card: left (not centered .sec-title) */
-body.experience-page .section-glass {
-  text-align: left;
-}
-body.experience-page .section-glass .sec-label,
-body.experience-page .section-glass .sec-title,
-body.experience-page .section-glass h1 {
-  text-align: left;
-}
+/* (Experience headings + glass: see block after `main` — uses text-align: start) */
 body.experience-page .section-glass .sec-title {
   margin-left: 0;
   margin-right: 0;
@@ -687,6 +679,33 @@ main {
 main .hero .hero-text,
 main .hero p.hero-sub {
   text-align: center;
+}
+
+/* Experience page: `main` above uses justify; reset inheritance + don’t center the column */
+body.experience-page main.page-main {
+  text-align: start;
+  align-items: stretch;
+}
+body.experience-page main.page-main > .container {
+  align-items: stretch;
+  width: 100%;
+}
+body.experience-page .glass-panel.section-glass {
+  text-align: start;
+  align-self: stretch;
+  width: 100%;
+  max-width: min(52rem, 100%);
+  margin-left: 0;
+  margin-right: auto;
+}
+body.experience-page .page-head,
+body.experience-page .page-head h1,
+body.experience-page .page-head p,
+body.experience-page .page-head .sec-label,
+body.experience-page .section-glass .sec-label,
+body.experience-page .section-glass h1,
+body.experience-page .section-glass h2.sec-title {
+  text-align: start;
 }
 .post-wrap { max-width: var(--art); margin: 0 auto; padding: 48px 32px 96px; }
 .post-back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--t3); margin-bottom: 48px; transition: color var(--ts); }
