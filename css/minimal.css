@@ -452,6 +452,20 @@ body.experience-page .page-head p {
   margin-left: 0;
   margin-right: 0;
 }
+/* Experience — Tech Stack + “Tools I work with daily.” and rest of glass card: left (not centered .sec-title) */
+body.experience-page .section-glass {
+  text-align: left;
+}
+body.experience-page .section-glass .sec-label,
+body.experience-page .section-glass .sec-title,
+body.experience-page .section-glass h1 {
+  text-align: left;
+}
+body.experience-page .section-glass .sec-title {
+  margin-left: 0;
+  margin-right: 0;
+  max-width: none;
+}
 
 /* Blog / Stories list page — same justification as main */
 .blog-list-page .section-glass { text-align: justify; }
