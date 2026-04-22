@@ -2,6 +2,17 @@
    minimal.css — Medium-inspired design
    ================================================================ */
 
+/* Code blocks: Monaspace Neon (OFL, “Mona” monospace; often confused with Mono Lisa / Mono Lisa).
+   For commercial Mono Lisa, add a @font-face (WOFF2) and put 'Mono Lisa' / 'MonoLisa' first in --font-code. */
+@font-face {
+  font-family: 'Monaspace Neon';
+  font-style: normal;
+  font-weight: 200 800;
+  font-stretch: 100% 150%;
+  src: url("https://cdn.jsdelivr.net/gh/githubnext/monaspace@main/fonts/Web%20Fonts/Variable%20Web%20Fonts/Monaspace%20Neon/Monaspace%20Neon%20Var.woff2") format("woff2");
+  font-display: swap;
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -22,6 +33,8 @@
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
   --font-heading: 'Lora', Georgia, 'Times New Roman', serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  /* Fenced code only — can override for local Mono Lisa / Mono Lisa WOFF2 */
+  --font-code: 'Monaspace Neon', 'Mono Lisa', 'MonoLisa', 'JetBrains Mono', ui-monospace, monospace;
 }
 
 html { scroll-behavior: smooth; }
@@ -160,7 +173,7 @@ a { color: inherit; text-decoration: none; }
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .story-footer { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
-.story-tag { font-size: calc(12px * 0.7); font-weight: 500; color: var(--t2); background: var(--bg3); padding: 3px 8px; border-radius: 100px; }
+.story-tag { font-size: 12px; font-weight: 500; color: var(--t2); background: var(--bg3); padding: 3px 8px; border-radius: 100px; }
 .story-time { font-size: 12px; color: var(--t3); }
 
 /* === HOME — compact writing feed (5 posts) — width/padding: match .hero-glass in glass.css === */
@@ -544,8 +557,8 @@ main {
 .post-title { font-family: var(--font-heading); font-size: clamp(28px, 4.5vw, 44px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; color: var(--t1); margin-bottom: 16px; }
 .post-meta { font-size: 13px; color: var(--t3); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .post-meta .author-thumb { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
-/* Topic segment only — 30% smaller than body meta line */
-.post-meta-topic { font-size: 70%; color: var(--t2); font-weight: 500; letter-spacing: 0.02em; }
+/* Article page only — topic is half the meta line (13px → ~6.5px); Stories / home use .story-tag at full 12px */
+.post-meta-topic { font-size: 50%; color: var(--t2); font-weight: 500; letter-spacing: 0.02em; }
 .post-header .post-meta { line-height: 1.5; }
 
 /* Post body — left-aligned (title + content) */
@@ -582,14 +595,15 @@ main {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   tab-size: 2;
-  font-family: var(--font-mono), "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-family: var(--font-code), "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   font-size: 14px;
   line-height: 1.65;
   color: #e6edf3;
   background: transparent;
   white-space: pre;
   font-weight: 450;
-  font-feature-settings: "calt" 0, "liga" 0;
+  /* Monaspace: texture healing uses calt */
+  font-feature-settings: "calt" 1, "liga" 0;
   letter-spacing: 0.01em;
 }
 .code-block pre code {
