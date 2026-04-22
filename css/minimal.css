@@ -715,7 +715,12 @@ body.experience-page .section-glass h1,
 body.experience-page .section-glass h2.sec-title {
   text-align: start;
 }
-.post-wrap { max-width: var(--art); margin: 0 auto; padding: 48px 32px 96px; }
+@keyframes post-enter {
+  from { opacity: 0; transform: translateY(28px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+.post-wrap { max-width: var(--art); margin: 0 auto; padding: 48px 32px 96px; animation: post-enter 0.5s cubic-bezier(0.22, 0.9, 0.32, 1) both; }
+@media (prefers-reduced-motion: reduce) { .post-wrap { animation: none; } }
 .post-back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--t3); margin-bottom: 48px; transition: color var(--ts); }
 .post-back:hover { color: var(--t2); }
 .post-header { margin-bottom: 40px; padding-bottom: 36px; border-bottom: 1px solid var(--bd); }
