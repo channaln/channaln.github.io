@@ -153,6 +153,86 @@ a { color: inherit; text-decoration: none; }
 .story-tag { font-size: 12px; font-weight: 500; color: var(--t2); background: var(--bg3); padding: 4px 10px; border-radius: 100px; }
 .story-time { font-size: 12px; color: var(--t3); }
 
+/* === HOME — compact writing feed (5 posts) === */
+.home-feed {
+  width: 100%;
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 20px 22px 18px;
+  text-align: left;
+  box-sizing: border-box;
+  border-radius: 16px;
+}
+.home-feed-lede {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--t2);
+  margin: 0 0 16px;
+}
+.home-feed .sec-label { text-align: left; margin-left: 0; }
+.home-feed-heading {
+  font-family: var(--font-heading);
+  font-size: clamp(1.05rem, 2.4vw, 1.2rem);
+  font-weight: 700;
+  color: var(--t1);
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  margin: 0 0 12px;
+}
+.home-feed-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.35);
+}
+.home-feed-list li { margin: 0; border-top: 1px solid var(--bd); }
+.home-feed-list li:first-child { border-top: 0; }
+.home-feed-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.12s ease;
+}
+.home-feed-item:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+.home-feed-item-title {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--t1);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.home-feed-item-meta {
+  font-size: 11px;
+  color: var(--t3);
+  letter-spacing: 0.01em;
+}
+.home-feed-cta {
+  margin: 14px 0 0;
+  text-align: left;
+}
+.home-feed-cta a {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ac);
+  text-decoration: none;
+}
+.home-feed-cta a:hover { text-decoration: underline; text-underline-offset: 2px; }
+
 /* === TECH STACK === */
 .stack-grid { display: flex; flex-direction: column; align-items: center; gap: 32px; width: 100%; }
 .stack-grid > div { width: 100%; max-width: 42rem; }
@@ -302,10 +382,6 @@ main {
 .footer-links a:hover { color: var(--t2); }
 
 /* === MISC === */
-.exp-writing .story-meta { justify-content: flex-start; }
-.exp-writing .story-body { justify-content: flex-start; }
-.exp-writing .story-content { text-align: left; }
-.exp-writing .story-footer { justify-content: flex-start; }
 .stories-cta { text-align: left; padding-top: 20px; }
 .exp-inner-block { width: 100%; padding: 0 0 40px; margin: 0 0 32px; border-bottom: 1px solid var(--bd); }
 .exp-inner-block:last-of-type { border: none; margin: 0; padding: 0; }
