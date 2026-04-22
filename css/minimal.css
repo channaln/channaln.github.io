@@ -90,10 +90,6 @@ a { color: inherit; text-decoration: none; }
   justify-content: flex-end;
   min-width: 0;
 }
-.header .container > .site-theme-icon-btn {
-  flex-shrink: 0;
-  align-self: center;
-}
 .logo { font-size: 20px; font-weight: 700; color: var(--t1); letter-spacing: -0.02em; }
 .logo span { color: var(--ac); }
 .nav-links { list-style: none; display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 20px; margin: 0; padding: 0; }
@@ -967,7 +963,7 @@ html[data-theme="dark"] .code-expand-backdrop {
   }
 }
 @media (max-width: 700px) {
-  .nav-links li:not(:last-child) { display: none; }
+  .nav-links li:not(:last-child):not(.nav-theme-item) { display: none; }
   .hero .container { gap: 20px; }
   .hero-photo { width: 80px; height: 80px; }
   .blog-list li a { gap: 16px; flex-direction: column; }
@@ -1035,6 +1031,12 @@ html[data-theme="dark"] .site-theme-icon-btn:active:focus-visible {
   display: block;
   flex-shrink: 0;
   pointer-events: none;
+}
+/* Theme icon: small nudge right only; nav row otherwise unchanged from before */
+.nav-theme-item {
+  display: flex;
+  align-items: center;
+  margin-left: 6px;
 }
 
 html[data-theme="dark"] {

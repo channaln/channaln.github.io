@@ -100,18 +100,18 @@
   }
 
   function initThemeControl() {
-    var container = document.querySelector(".header .container");
-    if (!container || document.getElementById("site-theme")) return;
-    var nav = container.querySelector("nav");
-    if (!nav) return;
+    var ul = document.querySelector(".header .nav-links");
+    if (!ul || document.getElementById("site-theme")) return;
+    var li = document.createElement("li");
+    li.className = "nav-theme-item";
     var btn = document.createElement("button");
     btn.type = "button";
     btn.id = "site-theme";
     btn.className = "site-theme-icon-btn";
     setThemeButtonIcon(btn);
     btn.addEventListener("click", onThemeButtonClick);
-    // After <nav> so the icon sits in the true top-right of the header bar
-    container.insertBefore(btn, nav.nextSibling);
+    li.appendChild(btn);
+    ul.appendChild(li);
   }
 
   var mql = null;
