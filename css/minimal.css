@@ -564,7 +564,7 @@ main {
 .post-back:hover { color: var(--t2); }
 .post-header { margin-bottom: 40px; padding-bottom: 36px; border-bottom: 1px solid var(--bd); }
 .post-label { font-size: calc(11px * 0.7); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ac); margin-bottom: 14px; }
-.post-title { font-family: var(--font-heading); font-size: clamp(28px, 4.5vw, 44px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; color: var(--t1); margin-bottom: 16px; }
+.post-title { font-family: var(--font-heading); font-size: clamp(14px, 2.25vw, 22px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; color: var(--t1); margin-bottom: 16px; }
 .post-meta { font-size: 13px; color: var(--t3); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .post-meta .author-thumb { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
 /* Article page only — topic is half the meta line (13px → ~6.5px); Stories / home use .story-tag at full 12px */
