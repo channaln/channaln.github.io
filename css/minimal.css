@@ -435,6 +435,20 @@ body.experience-page .header .container {
 .page-head h1 { font-family: var(--font-heading); font-size: clamp(32px, 5vw, 52px); font-weight: 700; color: var(--t1); letter-spacing: -0.025em; margin-bottom: 10px; text-align: center; }
 .page-head p { font-size: 16px; color: var(--t2); max-width: 36rem; margin: 0 auto; text-align: justify; }
 
+/* Experience — Career / title / subhead all left (glass card) */
+body.experience-page .page-head {
+  text-align: left;
+}
+body.experience-page .page-head h1,
+body.experience-page .page-head p,
+body.experience-page .page-head .sec-label {
+  text-align: left;
+}
+body.experience-page .page-head p {
+  margin-left: 0;
+  margin-right: 0;
+}
+
 /* Blog / Stories list page — same justification as main */
 .blog-list-page .section-glass { text-align: justify; }
 .blog-list-page .page-head { text-align: justify; }
