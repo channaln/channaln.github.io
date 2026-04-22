@@ -90,8 +90,10 @@ a { color: inherit; text-decoration: none; }
   justify-content: flex-end;
   min-width: 0;
 }
-/* Home: header matches hero glass card width; logo and nav at same left/right as that rectangle */
-body.page-home .header .container {
+/* Home, Blog, Experience: same header width as home hero card (channa.dev + nav to edges of 48rem) */
+body.page-home .header .container,
+body.blog-list-page .header .container,
+body.experience-page .header .container {
   max-width: min(48rem, 100%);
   width: 100%;
   margin-left: auto;
