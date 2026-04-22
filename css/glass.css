@@ -236,6 +236,12 @@ body.page-root .footer {
 /* Blog pages use same ambient shell when page-root is on body */
 body.page-root .post-wrap .post-content { background: transparent; }
 
+/* Timeline left-aligned on standalone experience (no .section parent) */
+.section-glass .timeline {
+  text-align: left;
+  margin-inline: auto;
+}
+
 /* Long-form articles: full glass card without double padding issues */
 body.page-root .post-wrap.glass-panel {
   border-radius: 20px;
