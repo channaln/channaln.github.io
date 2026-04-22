@@ -346,9 +346,10 @@ body.experience-page .header .container {
   padding: 0;
 }
 .stack-tool-table {
-  width: 100%;
-  min-width: 32rem;
-  table-layout: fixed;
+  width: max-content;
+  min-width: min(100%, 32rem);
+  max-width: none;
+  table-layout: auto;
   border: none;
   border-collapse: separate;
   border-spacing: 8px 10px;
@@ -363,18 +364,23 @@ body.experience-page .header .container {
   padding: 0;
   vertical-align: middle;
   text-align: center;
-  width: 16.66%;
+  width: auto;
   min-width: 0;
+  white-space: nowrap;
+}
+.stack-tool-cell--spacer {
+  pointer-events: none;
+  white-space: normal;
 }
 .stack-tool-cell .chip {
   display: inline-flex;
-  max-width: 100%;
   box-sizing: border-box;
   justify-content: center;
-  flex-wrap: wrap;
-  row-gap: 4px;
+  align-items: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  max-width: none;
 }
-.stack-tool-cell--spacer { pointer-events: none; }
 
 @media (max-width: 600px) {
   .stack-tool-table { min-width: 28rem; }
