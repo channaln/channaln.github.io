@@ -389,6 +389,7 @@
       '    <div class="post-content">' + (g.html || "") + "</div>",
       "  </div></div></main>",
       '  <script src="../js/site-settings.js" defer><\/script>',
+      '  <script src="../js/code-block-expand.js" defer><\/script>',
       "</body>",
       "</html>"
     ].join("\n");
