@@ -753,7 +753,7 @@ body.experience-page .section-glass h2.sec-title {
 /* Post body — justified; narrow pieces reset below */
 .post-wrap { text-align: justify; }
 .post-header { text-align: justify; }
-.post-content { font-size: 17px; line-height: 1.9; color: #3d3d3d; text-align: justify; }
+.post-content { font-size: 17px; line-height: 1.9; color: #3d3d3d; text-align: justify; font-family: 'Times New Roman', Times, serif; }
 .post-back { text-align: left; }
 .post-header .post-meta { text-align: left; }
 /* Fenced code + modal copy: always left (never inherit article justify) */
