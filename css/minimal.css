@@ -84,18 +84,20 @@ a { color: inherit; text-decoration: none; }
   margin-inline: auto;
   padding: 0 clamp(16px, 4vw, 32px);
 }
-/* Home page: header matches hero-glass width (48rem) */
+/* Per-page header alignment: padding pushes logo/nav to match glass panel corners.
+   50% = 50vw (header is full-width fixed). Glass half-widths: 24rem / 26rem / 370px */
 body.page-home .header .container {
-  max-width: min(48rem, 100%);
+  max-width: 100%;
+  padding-inline: max(16px, calc(50% - 24rem));
 }
-/* Blog list + Experience pages: header matches section-glass width (52rem) */
 body.blog-list-page .header .container,
 body.experience-page .header .container {
-  max-width: min(52rem, 100%);
+  max-width: 100%;
+  padding-inline: max(16px, calc(50% - 26rem));
 }
-/* Blog post pages: header matches article column width (--art = 740px) */
 body.page-root:not(.blog-list-page):not(.page-home):not(.experience-page) .header .container {
-  max-width: var(--art);
+  max-width: 100%;
+  padding-inline: max(16px, calc(50% - 370px));
 }
 .header .container .logo { flex-shrink: 0; }
 .header .container > nav {
