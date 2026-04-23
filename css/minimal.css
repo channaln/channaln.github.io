@@ -16,14 +16,14 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:    #f0efec;
-  --bg2:   #e8e7e3;
-  --bg3:   #deddd9;
-  --t1:    #1c1c1a;
-  --t2:    #66635e;
-  --t3:    #a09d98;
-  --bd:    #cac8c3;
-  --bd2:   #aeaca7;
+  --bg:    #ffffff;
+  --bg2:   #f9f9f9;
+  --bg3:   #f2f2f2;
+  --t1:    #242424;
+  --t2:    #6b6b6b;
+  --t3:    #b3b3b3;
+  --bd:    #e8e8e8;
+  --bd2:   #c8c8c8;
   --ac:    #1a8917;
   --r:     4px;
   --mw:    1192px;
@@ -67,7 +67,7 @@ a { color: inherit; text-decoration: none; }
 /* === HEADER === */
 .header {
   position: fixed; inset: 0 0 auto 0; z-index: 200;
-  background: rgba(234, 232, 228, 0.94);
+  background: rgba(255,255,255,0.96);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--bd);
 }
