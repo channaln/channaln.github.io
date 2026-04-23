@@ -1,183 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="../js/theme-init.js"></script>
-  <title>Mod proxy balancer and mod cluster Which One Should You Use? Channa Sandaruwan</title>
-  <meta name="description" content="A deep dive into the architecture, trade-offs, and configuration of mod_proxy_balancer and mod_cluster — two Apache HTTP Server load balancing modules.">
-  <meta name="author" content="Channa Sandaruwan">
-  <meta property="og:type" content="article">
-  <meta property="og:url" content="https://channaln.github.io/blog/cluster_vs_proxy.html">
-  <meta property="og:title" content="Mod proxy balancer and mod cluster Which One Should You Use?">
-  <meta property="og:description" content="A deep dive into the architecture, trade-offs, and configuration of two popular Apache HTTP Server load balancing modules.">
-  <meta property="og:image" content="https://channaln.github.io/images/cluster_vs_proxy.png">
-  <meta property="og:site_name" content="Channa Sandaruwan">
-  <meta property="article:author" content="Channa Sandaruwan">
-  <meta property="article:published_time" content="2023-10-26">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Mod proxy balancer and mod cluster Which One Should You Use?">
-  <meta name="twitter:description" content="A deep dive into the architecture, trade-offs, and configuration of two popular Apache HTTP Server load balancing modules.">
-  <meta name="twitter:image" content="https://channaln.github.io/images/cluster_vs_proxy.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000&family=Inter:wght@300;400;450;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;0,700&family=Source+Sans+3:ital,wght@0,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/minimal.css">
-  <link rel="stylesheet" href="../css/glass.css">
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <script src="../js/theme-init.js"></script>
+ <title>Mod proxy balancer and mod cluster Which One Should You Use? Channa Sandaruwan</title>
+ <meta name="description" content="A deep dive into the architecture, trade-offs, and configuration of mod_proxy_balancer and mod_cluster two Apache HTTP Server load balancing modules.">
+ <meta name="author" content="Channa Sandaruwan">
+ <meta property="og:type" content="article">
+ <meta property="og:url" content="https://channaln.github.io/blog/cluster_vs_proxy.html">
+ <meta property="og:title" content="Mod proxy balancer and mod cluster Which One Should You Use?">
+ <meta property="og:description" content="A deep dive into the architecture, trade-offs, and configuration of two popular Apache HTTP Server load balancing modules.">
+ <meta property="og:image" content="https://channaln.github.io/images/cluster_vs_proxy.png">
+ <meta property="og:site_name" content="Channa Sandaruwan">
+ <meta property="article:author" content="Channa Sandaruwan">
+ <meta property="article:published_time" content="2023-10-26">
+ <meta name="twitter:card" content="summary_large_image">
+ <meta name="twitter:title" content="Mod proxy balancer and mod cluster Which One Should You Use?">
+ <meta name="twitter:description" content="A deep dive into the architecture, trade-offs, and configuration of two popular Apache HTTP Server load balancing modules.">
+ <meta name="twitter:image" content="https://channaln.github.io/images/cluster_vs_proxy.png">
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000&family=Inter:wght@300;400;450;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;0,700&family=Source+Sans+3:ital,wght@0,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="../css/minimal.css">
+ <link rel="stylesheet" href="../css/glass.css">
 </head>
 <body class="page-root">
 
-  <header class="header is-scrolled">
-    <div class="container">
-      <a href="../index.html" class="logo">channa<span>.dev</span></a>
-      <nav>
-        <ul class="nav-links">
-          <li><a href="../index.html">Home</a></li>
-          <li><a href="../experience.html">Experience</a></li>
-          <li><a href="../blog_list.html" aria-current="page">Blog</a></li>
-          <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+ <header class="header is-scrolled">
+ <div class="container">
+ <a href="../index.html" class="logo">channa<span>.dev</span></a>
+ <nav>
+ <ul class="nav-links">
+ <li><a href="../index.html">Home</a></li>
+ <li><a href="../experience.html">Experience</a></li>
+ <li><a href="../blog_list.html" aria-current="page">Blog</a></li>
+ <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a></li>
+ </ul>
+ </nav>
+ </div>
+ </header>
 
-  <main class="page-main">
-    <div class="container">
-      <div class="post-wrap glass-panel">
+ <main class="page-main">
+ <div class="container">
+ <div class="post-wrap glass-panel">
 
-        <a href="../blog_list.html" class="post-back">← Back to Blog</a>
+ <a href="../blog_list.html" class="post-back">← Back to Blog</a>
 
-        <div class="post-header">
-          <h1 class="post-title">Mod proxy balancer and mod cluster Which One Should You Use?</h1>
-          <p class="post-meta">Oct 26, 2023 · Channa Sandaruwan · <span class="post-meta-topic">Apache load balancing</span></p>
-        </div>
+ <div class="post-header">
+ <h1 class="post-title">Mod proxy balancer and mod cluster Which One Should You Use?</h1>
+ <p class="post-meta">Oct 26, 2023 · Channa Sandaruwan · <span class="post-meta-topic">Apache load balancing</span></p>
+ </div>
 
-        <div class="post-content">
+ <div class="post-content">
 
-          <p>When setting up load balancing in front of a JBoss EAP or Tomcat cluster, Apache HTTP Server gives you two built-in paths: <strong>mod_proxy_balancer</strong> (the classic approach) and <strong>mod_cluster</strong> (the JBoss-native, dynamic approach). Both distribute traffic across backend nodes, but their architectures are fundamentally different — and picking the wrong one will hurt you at scale or during maintenance windows.</p>
+ <p>When setting up load balancing in front of a JBoss EAP or Tomcat cluster, Apache HTTP Server gives you two built-in paths: <strong>mod_proxy_balancer</strong> (the classic approach) and <strong>mod_cluster</strong> (the JBoss-native, dynamic approach). Both distribute traffic across backend nodes, but their architectures are fundamentally different and picking the wrong one will hurt you at scale or during maintenance windows.</p>
 
-          <h2>How mod_proxy_balancer Works</h2>
+ <h2>How mod_proxy_balancer Works</h2>
 
-          <p>With <code>mod_proxy_balancer</code>, the entire configuration lives in Apache. You list your backend workers statically, choose a balancing algorithm, and Apache does the rest. The backend servers have zero knowledge that a load balancer exists in front of them.</p>
+ <p>With <code>mod_proxy_balancer</code>, the entire configuration lives in Apache. You list your backend workers statically, choose a balancing algorithm, and Apache does the rest. The backend servers have zero knowledge that a load balancer exists in front of them.</p>
 
-          <p>Three balancing algorithms are available:</p>
-          <ul>
-            <li><strong>byrequests</strong> (default) — distributes request counts equally over time.</li>
-            <li><strong>bytraffic</strong> — distributes by bytes transferred; useful when response sizes vary dramatically.</li>
-            <li><strong>bybusyness</strong> — routes to whichever worker currently has the fewest active requests. The best choice for most application servers.</li>
-          </ul>
+ <p>Three balancing algorithms are available:</p>
+ <ul>
+ <li><strong>byrequests</strong> (default) distributes request counts equally over time.</li>
+ <li><strong>bytraffic</strong> distributes by bytes transferred; useful when response sizes vary dramatically.</li>
+ <li><strong>bybusyness</strong> routes to whichever worker currently has the fewest active requests. The best choice for most application servers.</li>
+ </ul>
 
-          <div class="code-block"><pre><code>&lt;Proxy "balancer://mycluster"&gt;
-    BalancerMember http://node1:8080 route=node1
-    BalancerMember http://node2:8080 route=node2
-    BalancerMember http://node3:8080 route=node3
-    ProxySet lbmethod=bybusyness
+ <div class="code-block"><pre><code>&lt;Proxy "balancer://mycluster"&gt;
+ BalancerMember http://node1:8080 route=node1
+ BalancerMember http://node2:8080 route=node2
+ BalancerMember http://node3:8080 route=node3
+ ProxySet lbmethod=bybusyness
 &lt;/Proxy&gt;
 
-ProxyPass        "/" "balancer://mycluster/"
+ProxyPass "/" "balancer://mycluster/"
 ProxyPassReverse "/" "balancer://mycluster/"
 
 # Sticky sessions via JSESSIONID route
 Header add Set-Cookie "ROUTEID=.%{BALANCER_WORKER_ROUTE}e; path=/" env=BALANCER_ROUTE_CHANGED</code></pre></div>
 
-          <h2>How mod_cluster Works</h2>
+ <h2>How mod_cluster Works</h2>
 
-          <p><code>mod_cluster</code> inverts the model entirely. Rather than Apache knowing about the backends, each JBoss EAP or Tomcat node advertises itself to Apache on startup using <strong>MCMP</strong> (Mod-Cluster Management Protocol). When a new node comes up, it registers — and when it shuts down gracefully, it de-registers, draining existing sessions before leaving the pool. Apache's config never needs to change.</p>
+ <p><code>mod_cluster</code> inverts the model entirely. Rather than Apache knowing about the backends, each JBoss EAP or Tomcat node advertises itself to Apache on startup using <strong>MCMP</strong> (Mod-Cluster Management Protocol). When a new node comes up, it registers and when it shuts down gracefully, it de-registers, draining existing sessions before leaving the pool. Apache's config never needs to change.</p>
 
-          <p>The load metrics that influence routing decisions come directly from the JVM: active session count, system CPU load, and heap usage. This means Apache makes routing decisions based on what the backend actually knows about its own health, not just a request counter.</p>
+ <p>The load metrics that influence routing decisions come directly from the JVM: active session count, system CPU load, and heap usage. This means Apache makes routing decisions based on what the backend actually knows about its own health, not just a request counter.</p>
 
-          <div class="code-block"><pre><code>&lt;!-- JBoss EAP standalone.xml — mod_cluster subsystem --&gt;
+ <div class="code-block"><pre><code>&lt;!-- JBoss EAP standalone.xml mod_cluster subsystem --&gt;
 &lt;subsystem xmlns="urn:jboss:domain:modcluster:5.0"&gt;
-    &lt;proxy name="default"
-           advertise="true"
-           advertise-socket="modcluster"
-           proxies="main-proxy"&gt;
-        &lt;dynamic-load-provider&gt;
-            &lt;load-metric type="busyness" weight="2"/&gt;
-            &lt;load-metric type="heap"     weight="1"/&gt;
-        &lt;/dynamic-load-provider&gt;
-    &lt;/proxy&gt;
+ &lt;proxy name="default"
+ advertise="true"
+ advertise-socket="modcluster"
+ proxies="main-proxy"&gt;
+ &lt;dynamic-load-provider&gt;
+ &lt;load-metric type="busyness" weight="2"/&gt;
+ &lt;load-metric type="heap" weight="1"/&gt;
+ &lt;/dynamic-load-provider&gt;
+ &lt;/proxy&gt;
 &lt;/subsystem&gt;</code></pre></div>
 
-          <p>On the Apache side, you only need to enable MCMP reception — you don't list any backend workers:</p>
+ <p>On the Apache side, you only need to enable MCMP reception you don't list any backend workers:</p>
 
-          <div class="code-block"><pre><code>LoadModule advertise_module     modules/mod_advertise.so
-LoadModule manager_module       modules/mod_manager.so
+ <div class="code-block"><pre><code>LoadModule advertise_module modules/mod_advertise.so
+LoadModule manager_module modules/mod_manager.so
 LoadModule proxy_cluster_module modules/mod_proxy_cluster.so
 
 &lt;VirtualHost *:6666&gt;
-    &lt;Directory /&gt;
-        Require ip 10.0.0.0/8
-    &lt;/Directory&gt;
-    ManagerBalancerName  mycluster
-    AdvertiseFrequency   5
-    EnableMCPMReceive
+ &lt;Directory /&gt;
+ Require ip 10.0.0.0/8
+ &lt;/Directory&gt;
+ ManagerBalancerName mycluster
+ AdvertiseFrequency 5
+ EnableMCPMReceive
 &lt;/VirtualHost&gt;
 
 ProxyPass / balancer://mycluster/
 ProxyPassReverse / balancer://mycluster/</code></pre></div>
 
-          <h2>Side-by-Side Comparison</h2>
+ <h2>Side-by-Side Comparison</h2>
 
-          <table class="compare-table">
-            <thead>
-              <tr>
-                <th>Feature</th>
-                <th>mod_proxy_balancer</th>
-                <th>mod_cluster</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>Node discovery</td><td>Static — list in httpd.conf</td><td>Dynamic — nodes self-register via MCMP</td></tr>
-              <tr><td>Load metric source</td><td>Apache (request count / bytes)</td><td>JVM (sessions, CPU, heap)</td></tr>
-              <tr><td>Graceful drain on shutdown</td><td>Manual via balancer-manager</td><td>Automatic — node drains then leaves pool</td></tr>
-              <tr><td>Backend requirement</td><td>None — any HTTP server</td><td>mod_cluster connector on each backend</td></tr>
-              <tr><td>Hot reconfiguration</td><td>Requires httpd reload</td><td>Fully dynamic — no httpd restart</td></tr>
-              <tr><td>Sticky session routing</td><td>Header/cookie config required</td><td>Built-in, topology-aware</td></tr>
-              <tr><td>Best for</td><td>Any HTTP backend, mixed stacks</td><td>JBoss EAP / Tomcat clusters</td></tr>
-              <tr><td>Complexity</td><td>Low</td><td>Medium</td></tr>
-            </tbody>
-          </table>
+ <table class="compare-table">
+ <thead>
+ <tr>
+ <th>Feature</th>
+ <th>mod_proxy_balancer</th>
+ <th>mod_cluster</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr><td>Node discovery</td><td>Static list in httpd.conf</td><td>Dynamic nodes self-register via MCMP</td></tr>
+ <tr><td>Load metric source</td><td>Apache (request count / bytes)</td><td>JVM (sessions, CPU, heap)</td></tr>
+ <tr><td>Graceful drain on shutdown</td><td>Manual via balancer-manager</td><td>Automatic node drains then leaves pool</td></tr>
+ <tr><td>Backend requirement</td><td>None any HTTP server</td><td>mod_cluster connector on each backend</td></tr>
+ <tr><td>Hot reconfiguration</td><td>Requires httpd reload</td><td>Fully dynamic no httpd restart</td></tr>
+ <tr><td>Sticky session routing</td><td>Header/cookie config required</td><td>Built-in, topology-aware</td></tr>
+ <tr><td>Best for</td><td>Any HTTP backend, mixed stacks</td><td>JBoss EAP / Tomcat clusters</td></tr>
+ <tr><td>Complexity</td><td>Low</td><td>Medium</td></tr>
+ </tbody>
+ </table>
 
-          <h2>When to Use Each</h2>
+ <h2>When to Use Each</h2>
 
-          <p>Use <strong>mod_proxy_balancer</strong> when:</p>
-          <ul>
-            <li>Your backends are heterogeneous — Node.js, Python, Nginx, mixed technologies.</li>
-            <li>You want the simplest possible setup with minimal moving parts.</li>
-            <li>Your cluster size is fixed and rarely changes.</li>
-            <li>You're proxying to non-Java applications that don't support MCMP.</li>
-          </ul>
+ <p>Use <strong>mod_proxy_balancer</strong> when:</p>
+ <ul>
+ <li>Your backends are heterogeneous Node.js, Python, Nginx, mixed technologies.</li>
+ <li>You want the simplest possible setup with minimal moving parts.</li>
+ <li>Your cluster size is fixed and rarely changes.</li>
+ <li>You're proxying to non-Java applications that don't support MCMP.</li>
+ </ul>
 
-          <p>Use <strong>mod_cluster</strong> when:</p>
-          <ul>
-            <li>Your backends are JBoss EAP or Tomcat — this is what mod_cluster was designed for.</li>
-            <li>You scale nodes in and out dynamically (autoscaling, rolling deployments).</li>
-            <li>Graceful rolling restarts without dropped sessions are critical to your deployment pipeline.</li>
-            <li>You want routing decisions to reflect actual JVM health, not just request counts.</li>
-          </ul>
+ <p>Use <strong>mod_cluster</strong> when:</p>
+ <ul>
+ <li>Your backends are JBoss EAP or Tomcat this is what mod_cluster was designed for.</li>
+ <li>You scale nodes in and out dynamically (autoscaling, rolling deployments).</li>
+ <li>Graceful rolling restarts without dropped sessions are critical to your deployment pipeline.</li>
+ <li>You want routing decisions to reflect actual JVM health, not just request counts.</li>
+ </ul>
 
-          <blockquote>
-            In production at KUWAITNET, we use mod_cluster for all JBoss EAP environments. The automatic drain behaviour alone eliminated session loss during rolling upgrades — something we previously had to orchestrate manually with cron jobs and shell scripts.
-          </blockquote>
+ <blockquote>
+ In production at KUWAITNET, we use mod_cluster for all JBoss EAP environments. The automatic drain behaviour alone eliminated session loss during rolling upgrades something we previously had to orchestrate manually with cron jobs and shell scripts.
+ </blockquote>
 
-          <h2>Conclusion</h2>
+ <h2>Conclusion</h2>
 
-          <p>Both modules are solid and well-maintained. The decision really comes down to your backend: if it's a JBoss EAP or Tomcat cluster, mod_cluster's dynamic registration and JVM-aware load metrics are worth the slightly higher setup cost. If you're balancing a mixed or non-Java backend, mod_proxy_balancer's simplicity wins every time.</p>
+ <p>Both modules are solid and well-maintained. The decision really comes down to your backend: if it's a JBoss EAP or Tomcat cluster, mod_cluster's dynamic registration and JVM-aware load metrics are worth the slightly higher setup cost. If you're balancing a mixed or non-Java backend, mod_proxy_balancer's simplicity wins every time.</p>
 
-        </div>
-      </div>
-    </div>
-  </main>
+ </div>
+ </div>
+ </div>
+ </main>
 
-  <footer class="footer">
-    <div class="container">
-      <p>&copy; 2025 Channa Sandaruwan · Systems Engineer · Kuwait</p>
-    </div>
-  </footer>
+ <footer class="footer">
+ <div class="container">
+ <p>&copy; 2025 Channa Sandaruwan · Systems Engineer · Kuwait</p>
+ </div>
+ </footer>
 
 
-  <script src="../js/site-settings.js" defer></script>
-  <script src="../js/code-block-expand.js" defer></script>
+ <script src="../js/site-settings.js" defer></script>
+ <script src="../js/code-block-expand.js" defer></script>
 </body>
 </html>

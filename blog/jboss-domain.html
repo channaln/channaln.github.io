@@ -1,172 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="../js/theme-init.js"></script>
-  <title>JBoss Domain Mode A Comprehensive Guide Channa Sandaruwan</title>
-  <meta name="description" content="A comprehensive guide to JBoss EAP domain mode — architecture, domain controller, host controllers, server groups, domain.xml, host.xml, deployments, and rolling restarts.">
-  <meta name="author" content="Channa Sandaruwan">
-  <meta property="og:type" content="article">
-  <meta property="og:url" content="https://channaln.github.io/blog/jboss-domain.html">
-  <meta property="og:title" content="JBoss Domain Mode A Comprehensive Guide">
-  <meta property="og:description" content="A comprehensive guide to JBoss EAP domain mode — architecture, domain controller, host controllers, server groups, deployments, and rolling restarts.">
-  <meta property="og:image" content="https://channaln.github.io/images/profile.jpg">
-  <meta property="og:site_name" content="Channa Sandaruwan">
-  <meta property="article:author" content="Channa Sandaruwan">
-  <meta property="article:published_time" content="2023-10-26">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="JBoss Domain Mode A Comprehensive Guide">
-  <meta name="twitter:description" content="A comprehensive guide to JBoss EAP domain mode — architecture, domain controller, host controllers, server groups, deployments, and rolling restarts.">
-  <meta name="twitter:image" content="https://channaln.github.io/images/profile.jpg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000&family=Inter:wght@300;400;450;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;0,700&family=Source+Sans+3:ital,wght@0,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/minimal.css">
-  <link rel="stylesheet" href="../css/glass.css">
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <script src="../js/theme-init.js"></script>
+ <title>JBoss Domain Mode A Comprehensive Guide Channa Sandaruwan</title>
+ <meta name="description" content="A comprehensive guide to JBoss EAP domain mode architecture, domain controller, host controllers, server groups, domain.xml, host.xml, deployments, and rolling restarts.">
+ <meta name="author" content="Channa Sandaruwan">
+ <meta property="og:type" content="article">
+ <meta property="og:url" content="https://channaln.github.io/blog/jboss-domain.html">
+ <meta property="og:title" content="JBoss Domain Mode A Comprehensive Guide">
+ <meta property="og:description" content="A comprehensive guide to JBoss EAP domain mode architecture, domain controller, host controllers, server groups, deployments, and rolling restarts.">
+ <meta property="og:image" content="https://channaln.github.io/images/profile.jpg">
+ <meta property="og:site_name" content="Channa Sandaruwan">
+ <meta property="article:author" content="Channa Sandaruwan">
+ <meta property="article:published_time" content="2023-10-26">
+ <meta name="twitter:card" content="summary_large_image">
+ <meta name="twitter:title" content="JBoss Domain Mode A Comprehensive Guide">
+ <meta name="twitter:description" content="A comprehensive guide to JBoss EAP domain mode architecture, domain controller, host controllers, server groups, deployments, and rolling restarts.">
+ <meta name="twitter:image" content="https://channaln.github.io/images/profile.jpg">
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000&family=Inter:wght@300;400;450;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;0,700&family=Source+Sans+3:ital,wght@0,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="../css/minimal.css">
+ <link rel="stylesheet" href="../css/glass.css">
 </head>
 <body class="page-root">
 
-  <header class="header is-scrolled">
-    <div class="container">
-      <a href="../index.html" class="logo">channa<span>.dev</span></a>
-      <nav>
-        <ul class="nav-links">
-          <li><a href="../index.html">Home</a></li>
-          <li><a href="../experience.html">Experience</a></li>
-          <li><a href="../blog_list.html" aria-current="page">Blog</a></li>
-          <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+ <header class="header is-scrolled">
+ <div class="container">
+ <a href="../index.html" class="logo">channa<span>.dev</span></a>
+ <nav>
+ <ul class="nav-links">
+ <li><a href="../index.html">Home</a></li>
+ <li><a href="../experience.html">Experience</a></li>
+ <li><a href="../blog_list.html" aria-current="page">Blog</a></li>
+ <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a></li>
+ </ul>
+ </nav>
+ </div>
+ </header>
 
-  <main>
-    <div class="container">
-      <div class="post-wrap glass-panel">
+ <main>
+ <div class="container">
+ <div class="post-wrap glass-panel">
 
-        <a href="../blog_list.html" class="post-back">← Back to Blog</a>
+ <a href="../blog_list.html" class="post-back">← Back to Blog</a>
 
-        <div class="post-header">
-          <h1 class="post-title">JBoss Domain Mode A Comprehensive Guide</h1>
-          <p class="post-meta">Oct 26, 2023 · Channa Sandaruwan · <span class="post-meta-topic">JBoss EAP</span></p>
-        </div>
+ <div class="post-header">
+ <h1 class="post-title">JBoss Domain Mode A Comprehensive Guide</h1>
+ <p class="post-meta">Oct 26, 2023 · Channa Sandaruwan · <span class="post-meta-topic">JBoss EAP</span></p>
+ </div>
 
-        <div class="post-content">
+ <div class="post-content">
 
-          <p>Most JBoss EAP deployments start in standalone mode — one process, one config file, easy to reason about. Domain mode introduces a fundamentally different operational model. It exists specifically to solve one problem: <em>how do you manage many JBoss instances as a coherent unit without logging into each one individually?</em> When you have dozens of nodes, domain mode pays for its complexity many times over.</p>
+ <p>Most JBoss EAP deployments start in standalone mode one process, one config file, easy to reason about. Domain mode introduces a fundamentally different operational model. It exists specifically to solve one problem: <em>how do you manage many JBoss instances as a coherent unit without logging into each one individually?</em> When you have dozens of nodes, domain mode pays for its complexity many times over.</p>
 
-          <h2>Standalone vs Domain Mode</h2>
+ <h2>Standalone vs Domain Mode</h2>
 
-          <p>In standalone mode, each server is an island. It has its own <code>standalone.xml</code>, and to push a configuration change to ten servers you edit ten files. Domain mode introduces a single control point: the <strong>Domain Controller</strong>. All configuration lives centrally in <code>domain.xml</code>, and changes propagate automatically to all managed servers.</p>
+ <p>In standalone mode, each server is an island. It has its own <code>standalone.xml</code>, and to push a configuration change to ten servers you edit ten files. Domain mode introduces a single control point: the <strong>Domain Controller</strong>. All configuration lives centrally in <code>domain.xml</code>, and changes propagate automatically to all managed servers.</p>
 
-          <table class="compare-table">
-            <thead>
-              <tr><th>Aspect</th><th>Standalone Mode</th><th>Domain Mode</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Config files</td><td>standalone.xml per server</td><td>domain.xml (shared) + host.xml per host</td></tr>
-              <tr><td>Management</td><td>Per-server management port</td><td>Single domain controller entry point</td></tr>
-              <tr><td>Deployment</td><td>Per-server deploy command</td><td>Deploy once to a server group</td></tr>
-              <tr><td>Rolling restart</td><td>Manual orchestration</td><td>Built-in rolling-restart-servers command</td></tr>
-              <tr><td>Suitable for</td><td>Development, single-node production</td><td>Multi-server production clusters</td></tr>
-            </tbody>
-          </table>
+ <table class="compare-table">
+ <thead>
+ <tr><th>Aspect</th><th>Standalone Mode</th><th>Domain Mode</th></tr>
+ </thead>
+ <tbody>
+ <tr><td>Config files</td><td>standalone.xml per server</td><td>domain.xml (shared) + host.xml per host</td></tr>
+ <tr><td>Management</td><td>Per-server management port</td><td>Single domain controller entry point</td></tr>
+ <tr><td>Deployment</td><td>Per-server deploy command</td><td>Deploy once to a server group</td></tr>
+ <tr><td>Rolling restart</td><td>Manual orchestration</td><td>Built-in rolling-restart-servers command</td></tr>
+ <tr><td>Suitable for</td><td>Development, single-node production</td><td>Multi-server production clusters</td></tr>
+ </tbody>
+ </table>
 
-          <h2>Domain Mode Architecture</h2>
+ <h2>Domain Mode Architecture</h2>
 
-          <p>Three tiers make up the domain mode architecture:</p>
+ <p>Three tiers make up the domain mode architecture:</p>
 
-          <h3>Domain Controller (DC)</h3>
-          <p>The master process. It hosts <code>domain.xml</code> and its own <code>host.xml</code> (the master host configuration, sometimes called <code>host-master.xml</code>). All management operations — deployments, configuration changes, server restarts — flow through the DC. There is exactly one domain controller per domain.</p>
+ <h3>Domain Controller (DC)</h3>
+ <p>The master process. It hosts <code>domain.xml</code> and its own <code>host.xml</code> (the master host configuration, sometimes called <code>host-master.xml</code>). All management operations deployments, configuration changes, server restarts flow through the DC. There is exactly one domain controller per domain.</p>
 
-          <h3>Host Controller (HC)</h3>
-          <p>Runs on every physical or virtual machine that participates in the domain. Connects to the DC on startup, receives its configuration from <code>domain.xml</code>, and manages the JBoss server instances on its local host. Each host has its own <code>host.xml</code> (<code>host-slave.xml</code>), which defines which servers run on that machine and how to reach the domain controller.</p>
+ <h3>Host Controller (HC)</h3>
+ <p>Runs on every physical or virtual machine that participates in the domain. Connects to the DC on startup, receives its configuration from <code>domain.xml</code>, and manages the JBoss server instances on its local host. Each host has its own <code>host.xml</code> (<code>host-slave.xml</code>), which defines which servers run on that machine and how to reach the domain controller.</p>
 
-          <h3>Server Instance</h3>
-          <p>The actual JBoss EAP process. Each server belongs to a <strong>Server Group</strong> and receives its subsystem configuration (logging, datasources, security, messaging) from the profile assigned to that server group.</p>
+ <h3>Server Instance</h3>
+ <p>The actual JBoss EAP process. Each server belongs to a <strong>Server Group</strong> and receives its subsystem configuration (logging, datasources, security, messaging) from the profile assigned to that server group.</p>
 
-          <h3>Server Group</h3>
-          <p>A logical grouping of server instances that share a configuration profile and socket binding group. You deploy applications to a server group, and every server in that group receives the deployment automatically.</p>
+ <h3>Server Group</h3>
+ <p>A logical grouping of server instances that share a configuration profile and socket binding group. You deploy applications to a server group, and every server in that group receives the deployment automatically.</p>
 
-          <h2>Key Configuration Files</h2>
+ <h2>Key Configuration Files</h2>
 
-          <h3>domain.xml — Owned by the Domain Controller</h3>
+ <h3>domain.xml Owned by the Domain Controller</h3>
 
-          <div class="code-block"><pre><code>&lt;domain&gt;
-    &lt;!-- Profiles: named sets of subsystem configurations --&gt;
-    &lt;profiles&gt;
-        &lt;profile name="full"&gt;
-            &lt;subsystem xmlns="urn:jboss:domain:logging:8.0"&gt; ... &lt;/subsystem&gt;
-            &lt;subsystem xmlns="urn:jboss:domain:datasources:6.0"&gt; ... &lt;/subsystem&gt;
-            &lt;!-- ... more subsystems ... --&gt;
-        &lt;/profile&gt;
-    &lt;/profiles&gt;
+ <div class="code-block"><pre><code>&lt;domain&gt;
+ &lt;!-- Profiles: named sets of subsystem configurations --&gt;
+ &lt;profiles&gt;
+ &lt;profile name="full"&gt;
+ &lt;subsystem xmlns="urn:jboss:domain:logging:8.0"&gt; ... &lt;/subsystem&gt;
+ &lt;subsystem xmlns="urn:jboss:domain:datasources:6.0"&gt; ... &lt;/subsystem&gt;
+ &lt;!-- ... more subsystems ... --&gt;
+ &lt;/profile&gt;
+ &lt;/profiles&gt;
 
-    &lt;!-- Socket binding groups: port definitions --&gt;
-    &lt;socket-binding-groups&gt;
-        &lt;socket-binding-group name="full-sockets"
-                              default-interface="public"&gt;
-            &lt;socket-binding name="http"  port="${jboss.http.port:8080}"/&gt;
-            &lt;socket-binding name="https" port="${jboss.https.port:8443}"/&gt;
-        &lt;/socket-binding-group&gt;
-    &lt;/socket-binding-groups&gt;
+ &lt;!-- Socket binding groups: port definitions --&gt;
+ &lt;socket-binding-groups&gt;
+ &lt;socket-binding-group name="full-sockets"
+ default-interface="public"&gt;
+ &lt;socket-binding name="http" port="${jboss.http.port:8080}"/&gt;
+ &lt;socket-binding name="https" port="${jboss.https.port:8443}"/&gt;
+ &lt;/socket-binding-group&gt;
+ &lt;/socket-binding-groups&gt;
 
-    &lt;!-- Server groups: bind profile + socket-group + JVM settings --&gt;
-    &lt;server-groups&gt;
-        &lt;server-group name="main-server-group" profile="full"&gt;
-            &lt;jvm name="default"&gt;
-                &lt;heap size="512m" max-size="1024m"/&gt;
-                &lt;jvm-options&gt;
-                    &lt;option value="-XX:+UseG1GC"/&gt;
-                &lt;/jvm-options&gt;
-            &lt;/jvm&gt;
-            &lt;socket-binding-group ref="full-sockets"/&gt;
-        &lt;/server-group&gt;
-    &lt;/server-groups&gt;
+ &lt;!-- Server groups: bind profile + socket-group + JVM settings --&gt;
+ &lt;server-groups&gt;
+ &lt;server-group name="main-server-group" profile="full"&gt;
+ &lt;jvm name="default"&gt;
+ &lt;heap size="512m" max-size="1024m"/&gt;
+ &lt;jvm-options&gt;
+ &lt;option value="-XX:+UseG1GC"/&gt;
+ &lt;/jvm-options&gt;
+ &lt;/jvm&gt;
+ &lt;socket-binding-group ref="full-sockets"/&gt;
+ &lt;/server-group&gt;
+ &lt;/server-groups&gt;
 &lt;/domain&gt;</code></pre></div>
 
-          <h3>host.xml — Owned by Each Host Controller</h3>
+ <h3>host.xml Owned by Each Host Controller</h3>
 
-          <div class="code-block"><pre><code>&lt;host name="host1" xmlns="urn:jboss:domain:20.0"&gt;
+ <div class="code-block"><pre><code>&lt;host name="host1" xmlns="urn:jboss:domain:20.0"&gt;
 
-    &lt;!-- How to reach the domain controller --&gt;
-    &lt;domain-controller&gt;
-        &lt;remote host="${jboss.domain.master.address:DC_HOSTNAME}"
-                port="${jboss.domain.master.port:9990}"
-                authentication-context="hc-auth-context"/&gt;
-    &lt;/domain-controller&gt;
+ &lt;!-- How to reach the domain controller --&gt;
+ &lt;domain-controller&gt;
+ &lt;remote host="${jboss.domain.master.address:DC_HOSTNAME}"
+ port="${jboss.domain.master.port:9990}"
+ authentication-context="hc-auth-context"/&gt;
+ &lt;/domain-controller&gt;
 
-    &lt;!-- Servers running on this host --&gt;
-    &lt;servers&gt;
-        &lt;server name="server-one" group="main-server-group" auto-start="true"&gt;
-            &lt;socket-bindings port-offset="0"/&gt;
-        &lt;/server&gt;
-        &lt;server name="server-two" group="main-server-group" auto-start="true"&gt;
-            &lt;socket-bindings port-offset="150"/&gt;
-            &lt;!-- server-two uses ports 8080+150=8230, 8443+150=8593, etc. --&gt;
-        &lt;/server&gt;
-    &lt;/servers&gt;
+ &lt;!-- Servers running on this host --&gt;
+ &lt;servers&gt;
+ &lt;server name="server-one" group="main-server-group" auto-start="true"&gt;
+ &lt;socket-bindings port-offset="0"/&gt;
+ &lt;/server&gt;
+ &lt;server name="server-two" group="main-server-group" auto-start="true"&gt;
+ &lt;socket-bindings port-offset="150"/&gt;
+ &lt;!-- server-two uses ports 8080+150=8230, 8443+150=8593, etc. --&gt;
+ &lt;/server&gt;
+ &lt;/servers&gt;
 
 &lt;/host&gt;</code></pre></div>
 
-          <p>The <strong>port offset</strong> is critical when running multiple servers on the same host — it shifts every socket binding by that amount, preventing port conflicts without requiring a complete redefinition of the socket binding group.</p>
+ <p>The <strong>port offset</strong> is critical when running multiple servers on the same host it shifts every socket binding by that amount, preventing port conflicts without requiring a complete redefinition of the socket binding group.</p>
 
-          <h2>Starting a Domain</h2>
+ <h2>Starting a Domain</h2>
 
-          <div class="code-block"><pre><code># Start the domain controller (on the DC host)
+ <div class="code-block"><pre><code># Start the domain controller (on the DC host)
 ./domain.sh --host-config=host-master.xml
 
 # Start a host controller (on each slave host)
 ./domain.sh \
-  --host-config=host-slave.xml \
-  -Djboss.domain.master.address=DC_HOSTNAME</code></pre></div>
+ --host-config=host-slave.xml \
+ -Djboss.domain.master.address=DC_HOSTNAME</code></pre></div>
 
-          <h2>Deploying Applications</h2>
+ <h2>Deploying Applications</h2>
 
-          <p>With the domain running, deploy to a server group — all servers in the group receive the deployment automatically:</p>
+ <p>With the domain running, deploy to a server group all servers in the group receive the deployment automatically:</p>
 
-          <div class="code-block"><pre><code># Connect to domain controller CLI
+ <div class="code-block"><pre><code># Connect to domain controller CLI
 ./jboss-cli.sh --connect --controller=DC_HOST:9990
 
 # Deploy to a server group
@@ -178,22 +178,22 @@ deploy /path/to/myapp.war --server-groups=main-server-group
 # Undeploy from a server group
 undeploy myapp.war --server-groups=main-server-group</code></pre></div>
 
-          <h2>Rolling Restart</h2>
+ <h2>Rolling Restart</h2>
 
-          <p>One of domain mode's most valuable operational capabilities is the coordinated rolling restart. JBoss EAP restarts servers in the group sequentially, ensuring the application remains available throughout:</p>
+ <p>One of domain mode's most valuable operational capabilities is the coordinated rolling restart. JBoss EAP restarts servers in the group sequentially, ensuring the application remains available throughout:</p>
 
-          <div class="code-block"><pre><code># Rolling restart — restarts each server one at a time
+ <div class="code-block"><pre><code># Rolling restart restarts each server one at a time
 /server-group=main-server-group:rolling-restart-servers(blocking=true)
 
-# Reload all servers (faster — only applies config changes without full restart)
+# Reload all servers (faster only applies config changes without full restart)
 /server-group=main-server-group:reload-servers(blocking=false)
 
 # Restart a single server on a specific host
 /host=host1/server=server-one:restart()</code></pre></div>
 
-          <h2>Useful CLI Tips</h2>
+ <h2>Useful CLI Tips</h2>
 
-          <div class="code-block"><pre><code># Check status of all servers across the domain
+ <div class="code-block"><pre><code># Check status of all servers across the domain
 /host=*/server=*:read-resource(include-runtime=true)
 
 # Read all running server names on host1
@@ -205,33 +205,33 @@ undeploy myapp.war --server-groups=main-server-group</code></pre></div>
 # Add a system property to a server group (all servers inherit it)
 /server-group=main-server-group/system-property=my.prop:add(value="production")</code></pre></div>
 
-          <h2>When Domain Mode Is Worth It</h2>
+ <h2>When Domain Mode Is Worth It</h2>
 
-          <p>Domain mode earns its complexity when:</p>
-          <ul>
-            <li>You have <strong>3 or more JBoss EAP instances</strong> that need to stay in sync.</li>
-            <li>You need <strong>zero-downtime rolling deployments</strong> coordinated automatically.</li>
-            <li>You want to enforce a <strong>single source of truth</strong> for subsystem configuration — datasources, messaging, security, logging — across all nodes.</li>
-            <li>You're running JBoss alongside a load balancer (HAProxy, F5, or Apache with mod_cluster) and need graceful rolling upgrades without manual load balancer coordination.</li>
-          </ul>
+ <p>Domain mode earns its complexity when:</p>
+ <ul>
+ <li>You have <strong>3 or more JBoss EAP instances</strong> that need to stay in sync.</li>
+ <li>You need <strong>zero-downtime rolling deployments</strong> coordinated automatically.</li>
+ <li>You want to enforce a <strong>single source of truth</strong> for subsystem configuration datasources, messaging, security, logging across all nodes.</li>
+ <li>You're running JBoss alongside a load balancer (HAProxy, F5, or Apache with mod_cluster) and need graceful rolling upgrades without manual load balancer coordination.</li>
+ </ul>
 
-          <blockquote>
-            Domain mode and mod_cluster together create a self-managing cluster: nodes register with the load balancer automatically on startup, drain and deregister on shutdown, and rolling restarts are a single CLI command. That combination is what makes JBoss EAP production deployments genuinely manageable at scale.
-          </blockquote>
+ <blockquote>
+ Domain mode and mod_cluster together create a self-managing cluster: nodes register with the load balancer automatically on startup, drain and deregister on shutdown, and rolling restarts are a single CLI command. That combination is what makes JBoss EAP production deployments genuinely manageable at scale.
+ </blockquote>
 
-        </div>
-      </div>
-    </div>
-  </main>
+ </div>
+ </div>
+ </div>
+ </main>
 
-  <footer class="footer">
-    <div class="container">
-      <p>&copy; 2025 Channa Sandaruwan · Systems Engineer · Kuwait</p>
-    </div>
-  </footer>
+ <footer class="footer">
+ <div class="container">
+ <p>&copy; 2025 Channa Sandaruwan · Systems Engineer · Kuwait</p>
+ </div>
+ </footer>
 
 
-  <script src="../js/site-settings.js" defer></script>
-  <script src="../js/code-block-expand.js" defer></script>
+ <script src="../js/site-settings.js" defer></script>
+ <script src="../js/code-block-expand.js" defer></script>
 </body>
 </html>

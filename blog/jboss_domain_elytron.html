@@ -1,199 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="../js/theme-init.js"></script>
-  <title>Elytron in JBoss Domain Mode Security Realm Configuration Channa Sandaruwan</title>
-  <meta name="description" content="A deep dive into configuring Elytron security realms within JBoss EAP domain mode — covering domain.xml profiles, host.xml management security, and CLI configuration.">
-  <meta name="author" content="Channa Sandaruwan">
-  <meta property="og:type" content="article">
-  <meta property="og:url" content="https://channaln.github.io/blog/jboss_domain_elytron.html">
-  <meta property="og:title" content="Elytron in JBoss Domain Mode Security Realm Configuration">
-  <meta property="og:description" content="How to configure Elytron security realms within JBoss EAP domain mode — domain.xml profiles, host.xml management security, and CLI commands.">
-  <meta property="og:image" content="https://channaln.github.io/images/profile.jpg">
-  <meta property="og:site_name" content="Channa Sandaruwan">
-  <meta property="article:author" content="Channa Sandaruwan">
-  <meta property="article:published_time" content="2023-10-26">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Elytron in JBoss Domain Mode Security Realm Configuration">
-  <meta name="twitter:description" content="How to configure Elytron security realms within JBoss EAP domain mode — domain.xml profiles, host.xml management security, and CLI commands.">
-  <meta name="twitter:image" content="https://channaln.github.io/images/profile.jpg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000&family=Inter:wght@300;400;450;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;0,700&family=Source+Sans+3:ital,wght@0,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/minimal.css">
-  <link rel="stylesheet" href="../css/glass.css">
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <script src="../js/theme-init.js"></script>
+ <title>Elytron in JBoss Domain Mode Security Realm Configuration Channa Sandaruwan</title>
+ <meta name="description" content="A deep dive into configuring Elytron security realms within JBoss EAP domain mode covering domain.xml profiles, host.xml management security, and CLI configuration.">
+ <meta name="author" content="Channa Sandaruwan">
+ <meta property="og:type" content="article">
+ <meta property="og:url" content="https://channaln.github.io/blog/jboss_domain_elytron.html">
+ <meta property="og:title" content="Elytron in JBoss Domain Mode Security Realm Configuration">
+ <meta property="og:description" content="How to configure Elytron security realms within JBoss EAP domain mode domain.xml profiles, host.xml management security, and CLI commands.">
+ <meta property="og:image" content="https://channaln.github.io/images/profile.jpg">
+ <meta property="og:site_name" content="Channa Sandaruwan">
+ <meta property="article:author" content="Channa Sandaruwan">
+ <meta property="article:published_time" content="2023-10-26">
+ <meta name="twitter:card" content="summary_large_image">
+ <meta name="twitter:title" content="Elytron in JBoss Domain Mode Security Realm Configuration">
+ <meta name="twitter:description" content="How to configure Elytron security realms within JBoss EAP domain mode domain.xml profiles, host.xml management security, and CLI commands.">
+ <meta name="twitter:image" content="https://channaln.github.io/images/profile.jpg">
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000&family=Inter:wght@300;400;450;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;0,700&family=Source+Sans+3:ital,wght@0,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="../css/minimal.css">
+ <link rel="stylesheet" href="../css/glass.css">
 </head>
 <body class="page-root">
 
-  <header class="header is-scrolled">
-    <div class="container">
-      <a href="../index.html" class="logo">channa<span>.dev</span></a>
-      <nav>
-        <ul class="nav-links">
-          <li><a href="../index.html">Home</a></li>
-          <li><a href="../experience.html">Experience</a></li>
-          <li><a href="../blog_list.html" aria-current="page">Blog</a></li>
-          <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+ <header class="header is-scrolled">
+ <div class="container">
+ <a href="../index.html" class="logo">channa<span>.dev</span></a>
+ <nav>
+ <ul class="nav-links">
+ <li><a href="../index.html">Home</a></li>
+ <li><a href="../experience.html">Experience</a></li>
+ <li><a href="../blog_list.html" aria-current="page">Blog</a></li>
+ <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a></li>
+ </ul>
+ </nav>
+ </div>
+ </header>
 
-  <main>
-    <div class="container">
-      <div class="post-wrap glass-panel">
+ <main>
+ <div class="container">
+ <div class="post-wrap glass-panel">
 
-        <a href="../blog_list.html" class="post-back">← Back to Blog</a>
+ <a href="../blog_list.html" class="post-back">← Back to Blog</a>
 
-        <div class="post-header">
-          <h1 class="post-title">Elytron in JBoss Domain Mode Security Realm Configuration</h1>
-          <p class="post-meta">Oct 26, 2023 · Channa Sandaruwan · <span class="post-meta-topic">JBoss EAP</span></p>
-        </div>
+ <div class="post-header">
+ <h1 class="post-title">Elytron in JBoss Domain Mode Security Realm Configuration</h1>
+ <p class="post-meta">Oct 26, 2023 · Channa Sandaruwan · <span class="post-meta-topic">JBoss EAP</span></p>
+ </div>
 
-        <div class="post-content">
+ <div class="post-content">
 
-          <p>Configuring Elytron in standalone mode is reasonably well documented. Doing the same in domain mode adds complexity that catches many engineers off guard — security configuration is split between <code>domain.xml</code> and <code>host.xml</code>, and the rules for which belongs where are not immediately obvious. This article explains the split, walks through adding an Elytron realm to a domain profile, and shows how to manage it via CLI.</p>
+ <p>Configuring Elytron in standalone mode is reasonably well documented. Doing the same in domain mode adds complexity that catches many engineers off guard security configuration is split between <code>domain.xml</code> and <code>host.xml</code>, and the rules for which belongs where are not immediately obvious. This article explains the split, walks through adding an Elytron realm to a domain profile, and shows how to manage it via CLI.</p>
 
-          <h2>Where Security Lives in Domain Mode</h2>
+ <h2>Where Security Lives in Domain Mode</h2>
 
-          <p>The first thing to understand is the responsibility boundary:</p>
+ <p>The first thing to understand is the responsibility boundary:</p>
 
-          <ul>
-            <li><strong><code>domain.xml</code></strong> — contains profiles. The Elytron subsystem inside a profile controls security for <em>applications</em> running on servers in server groups that use that profile. This is where you define realms, security domains, and HTTP authentication factories.</li>
-            <li><strong><code>host.xml</code></strong> — contains host-specific configuration. The management security realm (which controls access to the CLI and admin console) lives here, separately from application security. Each host controller has its own management realm configuration.</li>
-          </ul>
+ <ul>
+ <li><strong><code>domain.xml</code></strong> contains profiles. The Elytron subsystem inside a profile controls security for <em>applications</em> running on servers in server groups that use that profile. This is where you define realms, security domains, and HTTP authentication factories.</li>
+ <li><strong><code>host.xml</code></strong> contains host-specific configuration. The management security realm (which controls access to the CLI and admin console) lives here, separately from application security. Each host controller has its own management realm configuration.</li>
+ </ul>
 
-          <p>This separation means you can run the same application security configuration across all nodes (since all servers in a server group share a profile in <code>domain.xml</code>), while each host's management access is controlled independently.</p>
+ <p>This separation means you can run the same application security configuration across all nodes (since all servers in a server group share a profile in <code>domain.xml</code>), while each host's management access is controlled independently.</p>
 
-          <h2>Elytron in a Domain Profile (domain.xml)</h2>
+ <h2>Elytron in a Domain Profile (domain.xml)</h2>
 
-          <p>Open <code>domain.xml</code> and locate the profile your server group uses (commonly <code>full</code> or <code>full-ha</code>). Within that profile, find or create the Elytron subsystem:</p>
+ <p>Open <code>domain.xml</code> and locate the profile your server group uses (commonly <code>full</code> or <code>full-ha</code>). Within that profile, find or create the Elytron subsystem:</p>
 
-          <div class="code-block"><pre><code>&lt;!-- domain.xml — inside &lt;profile name="full"&gt; --&gt;
+ <div class="code-block"><pre><code>&lt;!-- domain.xml inside &lt;profile name="full"&gt; --&gt;
 &lt;subsystem xmlns="urn:wildfly:elytron:16.0"&gt;
 
-    &lt;security-realms&gt;
-        &lt;properties-realm name="ApplicationRealm"&gt;
-            &lt;users-properties
-                path="application-users.properties"
-                relative-to="jboss.domain.config.dir"
-                digest-realm-name="ApplicationRealm"/&gt;
-            &lt;groups-properties
-                path="application-roles.properties"
-                relative-to="jboss.domain.config.dir"/&gt;
-        &lt;/properties-realm&gt;
-    &lt;/security-realms&gt;
+ &lt;security-realms&gt;
+ &lt;properties-realm name="ApplicationRealm"&gt;
+ &lt;users-properties
+ path="application-users.properties"
+ relative-to="jboss.domain.config.dir"
+ digest-realm-name="ApplicationRealm"/&gt;
+ &lt;groups-properties
+ path="application-roles.properties"
+ relative-to="jboss.domain.config.dir"/&gt;
+ &lt;/properties-realm&gt;
+ &lt;/security-realms&gt;
 
-    &lt;security-domains&gt;
-        &lt;security-domain name="ApplicationDomain"
-                         default-realm="ApplicationRealm"
-                         permission-mapper="default-permission-mapper"&gt;
-            &lt;realm name="ApplicationRealm" role-decoder="groups-to-roles"/&gt;
-        &lt;/security-domain&gt;
-    &lt;/security-domains&gt;
+ &lt;security-domains&gt;
+ &lt;security-domain name="ApplicationDomain"
+ default-realm="ApplicationRealm"
+ permission-mapper="default-permission-mapper"&gt;
+ &lt;realm name="ApplicationRealm" role-decoder="groups-to-roles"/&gt;
+ &lt;/security-domain&gt;
+ &lt;/security-domains&gt;
 
-    &lt;http&gt;
-        &lt;http-authentication-factory name="application-http-authentication"
-                                     http-server-mechanism-factory="global"
-                                     security-domain="ApplicationDomain"&gt;
-            &lt;mechanism-configuration&gt;
-                &lt;mechanism mechanism-name="BASIC"&gt;
-                    &lt;mechanism-realm realm-name="ApplicationRealm"/&gt;
-                &lt;/mechanism&gt;
-                &lt;mechanism mechanism-name="FORM"/&gt;
-            &lt;/mechanism-configuration&gt;
-        &lt;/http-authentication-factory&gt;
-    &lt;/http&gt;
+ &lt;http&gt;
+ &lt;http-authentication-factory name="application-http-authentication"
+ http-server-mechanism-factory="global"
+ security-domain="ApplicationDomain"&gt;
+ &lt;mechanism-configuration&gt;
+ &lt;mechanism mechanism-name="BASIC"&gt;
+ &lt;mechanism-realm realm-name="ApplicationRealm"/&gt;
+ &lt;/mechanism&gt;
+ &lt;mechanism mechanism-name="FORM"/&gt;
+ &lt;/mechanism-configuration&gt;
+ &lt;/http-authentication-factory&gt;
+ &lt;/http&gt;
 
 &lt;/subsystem&gt;</code></pre></div>
 
-          <p>Because this lives inside a profile, every server in every server group that uses the <code>full</code> profile will automatically have this security configuration. You don't need to configure each server individually.</p>
+ <p>Because this lives inside a profile, every server in every server group that uses the <code>full</code> profile will automatically have this security configuration. You don't need to configure each server individually.</p>
 
-          <h2>Adding a New Realm via CLI</h2>
+ <h2>Adding a New Realm via CLI</h2>
 
-          <p>Connect to the domain controller's management port and use the profile path prefix for all commands:</p>
+ <p>Connect to the domain controller's management port and use the profile path prefix for all commands:</p>
 
-          <div class="code-block"><pre><code># Connect to domain controller
+ <div class="code-block"><pre><code># Connect to domain controller
 ./jboss-cli.sh --connect --controller=DC_HOST:9990
 
 # Add a new properties realm to the 'full' profile
 /profile=full/subsystem=elytron/properties-realm=MyRealm:add(\
-  users-properties={path=my-users.properties, \
-    relative-to=jboss.domain.config.dir, \
-    digest-realm-name=MyRealm}, \
-  groups-properties={path=my-roles.properties, \
-    relative-to=jboss.domain.config.dir})
+ users-properties={path=my-users.properties, \
+ relative-to=jboss.domain.config.dir, \
+ digest-realm-name=MyRealm}, \
+ groups-properties={path=my-roles.properties, \
+ relative-to=jboss.domain.config.dir})
 
 # Create a security domain using the new realm
 /profile=full/subsystem=elytron/security-domain=MyDomain:add(\
-  default-realm=MyRealm, \
-  permission-mapper=default-permission-mapper, \
-  realms=[{realm=MyRealm, role-decoder=groups-to-roles}])
+ default-realm=MyRealm, \
+ permission-mapper=default-permission-mapper, \
+ realms=[{realm=MyRealm, role-decoder=groups-to-roles}])
 
 # Create an HTTP authentication factory
 /profile=full/subsystem=elytron/http-authentication-factory=my-http-auth:add(\
-  http-server-mechanism-factory=global, \
-  security-domain=MyDomain, \
-  mechanism-configurations=[{\
-    mechanism-name=FORM},{\
-    mechanism-name=BASIC, \
-    mechanism-realm-configurations=[{realm-name=MyRealm}]}])</code></pre></div>
+ http-server-mechanism-factory=global, \
+ security-domain=MyDomain, \
+ mechanism-configurations=[{\
+ mechanism-name=FORM},{\
+ mechanism-name=BASIC, \
+ mechanism-realm-configurations=[{realm-name=MyRealm}]}])</code></pre></div>
 
-          <h2>Management Interface Security (host.xml)</h2>
+ <h2>Management Interface Security (host.xml)</h2>
 
-          <p>The management interface security is configured in <code>host.xml</code> per host controller. By default it uses a legacy security realm, but you can migrate it to Elytron:</p>
+ <p>The management interface security is configured in <code>host.xml</code> per host controller. By default it uses a legacy security realm, but you can migrate it to Elytron:</p>
 
-          <div class="code-block"><pre><code>&lt;!-- host.xml — management interfaces --&gt;
+ <div class="code-block"><pre><code>&lt;!-- host.xml management interfaces --&gt;
 &lt;management-interfaces&gt;
-    &lt;http-interface http-authentication-factory="management-http-authentication"&gt;
-        &lt;http-upgrade enabled="true"
-                      sasl-authentication-factory="management-sasl-authentication"/&gt;
-        &lt;socket interface="management" port="${jboss.management.http.port:9990}"/&gt;
-    &lt;/http-interface&gt;
+ &lt;http-interface http-authentication-factory="management-http-authentication"&gt;
+ &lt;http-upgrade enabled="true"
+ sasl-authentication-factory="management-sasl-authentication"/&gt;
+ &lt;socket interface="management" port="${jboss.management.http.port:9990}"/&gt;
+ &lt;/http-interface&gt;
 &lt;/management-interfaces&gt;</code></pre></div>
 
-          <p>The management authentication factories (<code>management-http-authentication</code> and <code>management-sasl-authentication</code>) are also defined in the Elytron subsystem in <code>host.xml</code>, separate from the profile-level configuration in <code>domain.xml</code>.</p>
+ <p>The management authentication factories (<code>management-http-authentication</code> and <code>management-sasl-authentication</code>) are also defined in the Elytron subsystem in <code>host.xml</code>, separate from the profile-level configuration in <code>domain.xml</code>.</p>
 
-          <h2>Propagating Changes to Running Servers</h2>
+ <h2>Propagating Changes to Running Servers</h2>
 
-          <p>After modifying a profile's Elytron configuration, servers that use that profile will need to reload to pick up the changes. In domain mode, you can reload all servers in a server group with a single command:</p>
+ <p>After modifying a profile's Elytron configuration, servers that use that profile will need to reload to pick up the changes. In domain mode, you can reload all servers in a server group with a single command:</p>
 
-          <div class="code-block"><pre><code># Check which servers are in reload-required state
+ <div class="code-block"><pre><code># Check which servers are in reload-required state
 /server-group=main-server-group:read-children-resources(child-type=deployment)
 
-# Reload all servers in the group (non-blocking — servers restart one by one)
+# Reload all servers in the group (non-blocking servers restart one by one)
 /server-group=main-server-group:reload-servers(blocking=false)
 
 # Or reload a specific server on a specific host
 /host=host1/server=server-one:reload()</code></pre></div>
 
-          <h2>Common Pitfalls</h2>
+ <h2>Common Pitfalls</h2>
 
-          <ul>
-            <li><strong>Wrong config file:</strong> If your realm change has no effect, double-check which file it's in. Application security goes in <code>domain.xml</code> (profile), not <code>host.xml</code>.</li>
-            <li><strong>Properties files must exist on each host:</strong> If you use <code>properties-realm</code> with <code>relative-to=jboss.domain.config.dir</code>, the properties files must be present on every host controller's config directory — they are not distributed automatically by the domain controller.</li>
-            <li><strong>Profile changes don't reload automatically:</strong> Always explicitly reload the server group after Elytron configuration changes, otherwise servers continue using the old configuration from their last startup.</li>
-          </ul>
+ <ul>
+ <li><strong>Wrong config file:</strong> If your realm change has no effect, double-check which file it's in. Application security goes in <code>domain.xml</code> (profile), not <code>host.xml</code>.</li>
+ <li><strong>Properties files must exist on each host:</strong> If you use <code>properties-realm</code> with <code>relative-to=jboss.domain.config.dir</code>, the properties files must be present on every host controller's config directory they are not distributed automatically by the domain controller.</li>
+ <li><strong>Profile changes don't reload automatically:</strong> Always explicitly reload the server group after Elytron configuration changes, otherwise servers continue using the old configuration from their last startup.</li>
+ </ul>
 
-          <blockquote>
-            For production domain setups with LDAP integration, define a separate profile for production (e.g., <code>full-prod</code>) that uses your LDAP realm, and keep a <code>full-dev</code> profile with properties-based realms for development and testing. Server groups can reference different profiles with zero code changes.
-          </blockquote>
+ <blockquote>
+ For production domain setups with LDAP integration, define a separate profile for production (e.g., <code>full-prod</code>) that uses your LDAP realm, and keep a <code>full-dev</code> profile with properties-based realms for development and testing. Server groups can reference different profiles with zero code changes.
+ </blockquote>
 
-        </div>
-      </div>
-    </div>
-  </main>
+ </div>
+ </div>
+ </div>
+ </main>
 
-  <footer class="footer">
-    <div class="container">
-      <p>&copy; 2025 Channa Sandaruwan · Systems Engineer · Kuwait</p>
-    </div>
-  </footer>
+ <footer class="footer">
+ <div class="container">
+ <p>&copy; 2025 Channa Sandaruwan · Systems Engineer · Kuwait</p>
+ </div>
+ </footer>
 
 
-  <script src="../js/site-settings.js" defer></script>
-  <script src="../js/code-block-expand.js" defer></script>
+ <script src="../js/site-settings.js" defer></script>
+ <script src="../js/code-block-expand.js" defer></script>
 </body>
 </html>
