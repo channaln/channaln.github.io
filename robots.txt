@@ -2,3 +2,5 @@
 User-agent: *
 Disallow: /admin.html
 Disallow: /post-view.html
+
+Sitemap: https://channaln.github.io/sitemap.xml

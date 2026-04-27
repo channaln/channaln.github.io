@@ -130,6 +130,62 @@
     }
   }
 
+  var HAMBURGER_SVG = '<svg class="nav-menu-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>';
+  var CLOSE_SVG = '<svg class="nav-menu-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>';
+
+  function initMobileNav() {
+    var container = document.querySelector('.header .container');
+    if (!container || document.getElementById('nav-menu-btn')) return;
+
+    var header = document.querySelector('.header');
+    var navList = container.querySelector('.nav-links');
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.id = 'nav-menu-btn';
+    btn.className = 'nav-menu-btn';
+    btn.setAttribute('aria-label', 'Open navigation');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.innerHTML = HAMBURGER_SVG;
+
+    function closeMenu() {
+      header.classList.remove('nav-open');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', 'Open navigation');
+      btn.innerHTML = HAMBURGER_SVG;
+      document.body.style.overflow = '';
+    }
+
+    btn.addEventListener('click', function () {
+      var isOpen = header.classList.toggle('nav-open');
+      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      btn.setAttribute('aria-label', isOpen ? 'Close navigation' : 'Open navigation');
+      btn.innerHTML = isOpen ? CLOSE_SVG : HAMBURGER_SVG;
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+    });
+
+    if (navList) {
+      navList.addEventListener('click', function (e) {
+        if (e.target.tagName === 'A') closeMenu();
+      });
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && header.classList.contains('nav-open')) {
+        closeMenu();
+        btn.focus();
+      }
+    });
+
+    document.addEventListener('click', function (e) {
+      if (header.classList.contains('nav-open') && !header.contains(e.target)) {
+        closeMenu();
+      }
+    });
+
+    container.appendChild(btn);
+  }
+
   window.channaApplySiteSettings = apply;
   window.channaSaveSiteTheme = saveTheme;
   window.channaReadSiteSettings = read;
@@ -137,6 +193,7 @@
   function boot() {
     apply();
     initThemeControl();
+    initMobileNav();
     bindSystemThemeListener();
   }
 

@@ -62,26 +62,15 @@
     return t;
   }
 
-  function homeStoryCard(post) {
+  function homeFeedItem(post) {
     var href = hrefFor(post);
     var r = post.readMin != null ? post.readMin : 5;
-    var tags = topicTags(post);
     var title = displayTitle(post.title);
     return (
-      '<a class="story-card story-from-admin" href="' + esc(href) + '">' +
-      '<div class="story-meta">' +
-      '<img class="story-avatar" src="images/profile.jpg" alt="Channa">' +
-      '<span class="story-author">Channa Sandaruwan</span>' +
-      '<span class="story-sep">·</span>' +
-      '<span class="story-date">' + esc(post.date || "") + "</span>" +
-      '<span class="story-sep">·</span>' +
-      '<span class="story-date">' + esc(String(r)) + " min read</span>" +
-      "</div>" +
-      '<div class="story-body"><div class="story-content">' +
-      "<div class=\"story-title\">" + esc(title) + "</div>" +
-      '<div class="story-excerpt">' + esc(post.excerpt || "") + "</div>" +
-      (tags ? '<div class="story-footer">' + tags + "</div>" : "") +
-      "</div></div></a>"
+      '<li><a class="home-feed-item" href="' + esc(href) + '">' +
+      '<span class="home-feed-item-title">' + esc(title) + '</span>' +
+      '<span class="home-feed-item-meta">' + esc(post.date || '') + ' · ' + esc(String(r)) + ' min read</span>' +
+      '</a></li>'
     );
   }
 
@@ -108,11 +97,11 @@
   }
 
   function runHome() {
-    var el = document.querySelector(".stories");
+    var el = document.querySelector(".home-feed-list");
     if (!el) return;
     var extra = loadPosts().filter(isListedPost);
     for (var i = extra.length - 1; i >= 0; i--) {
-      el.insertAdjacentHTML("afterbegin", homeStoryCard(extra[i]));
+      el.insertAdjacentHTML("afterbegin", homeFeedItem(extra[i]));
     }
   }
 

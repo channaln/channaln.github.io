@@ -4,21 +4,37 @@
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1">
  <script src="../js/theme-init.js"></script>
- <title>Elytron in JBoss Domain Mode Security Realm Configuration Channa Sandaruwan</title>
+ <title>Elytron in JBoss Domain Mode: Security Realm Configuration — Channa Sandaruwan</title>
  <meta name="description" content="A deep dive into configuring Elytron security realms within JBoss EAP domain mode covering domain.xml profiles, host.xml management security, and CLI configuration.">
  <meta name="author" content="Channa Sandaruwan">
  <meta property="og:type" content="article">
  <meta property="og:url" content="https://channaln.github.io/blog/jboss_domain_elytron.html">
- <meta property="og:title" content="Elytron in JBoss Domain Mode Security Realm Configuration">
+ <meta property="og:title" content="Elytron in JBoss Domain Mode: Security Realm Configuration">
  <meta property="og:description" content="How to configure Elytron security realms within JBoss EAP domain mode domain.xml profiles, host.xml management security, and CLI commands.">
  <meta property="og:image" content="https://channaln.github.io/images/profile.jpg">
  <meta property="og:site_name" content="Channa Sandaruwan">
  <meta property="article:author" content="Channa Sandaruwan">
- <meta property="article:published_time" content="2023-10-26">
+ <meta property="article:published_time" content="2023-10-12">
  <meta name="twitter:card" content="summary_large_image">
- <meta name="twitter:title" content="Elytron in JBoss Domain Mode Security Realm Configuration">
+ <meta name="twitter:title" content="Elytron in JBoss Domain Mode: Security Realm Configuration">
  <meta name="twitter:description" content="How to configure Elytron security realms within JBoss EAP domain mode domain.xml profiles, host.xml management security, and CLI commands.">
  <meta name="twitter:image" content="https://channaln.github.io/images/profile.jpg">
+ <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f7fb">
+ <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#050506">
+ <link rel="canonical" href="https://channaln.github.io/blog/jboss_domain_elytron.html">
+ <script type="application/ld+json">
+ {
+   "@context": "https://schema.org",
+   "@type": "BlogPosting",
+   "headline": "Elytron in JBoss Domain Mode: Security Realm Configuration",
+   "description": "Configuring Elytron in JBoss domain mode — the security configuration split between domain.xml and host.xml, adding realms via CLI, and common pitfalls.",
+   "url": "https://channaln.github.io/blog/jboss_domain_elytron.html",
+   "datePublished": "2023-10-12",
+   "author": { "@type": "Person", "name": "Channa Sandaruwan", "url": "https://channaln.github.io" },
+   "publisher": { "@type": "Person", "name": "Channa Sandaruwan" },
+   "image": "https://channaln.github.io/images/profile.jpg"
+ }
+ </script>
  <link rel="preconnect" href="https://fonts.googleapis.com">
  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000&family=Inter:wght@300;400;450;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;0,700&family=Source+Sans+3:ital,wght@0,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900&display=swap" rel="stylesheet">
@@ -35,7 +51,7 @@
  <li><a href="../index.html">Home</a></li>
  <li><a href="../experience.html">Experience</a></li>
  <li><a href="../blog_list.html" aria-current="page">Blog</a></li>
- <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a></li>
+ <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener" class="nav-cta">LinkedIn ↗</a></li>
  </ul>
  </nav>
  </div>
@@ -48,7 +64,7 @@
  <a href="../blog_list.html" class="post-back">← Back to Blog</a>
 
  <div class="post-header">
- <h1 class="post-title">Elytron in JBoss Domain Mode Security Realm Configuration</h1>
+ <h1 class="post-title">Elytron in JBoss Domain Mode: Security Realm Configuration</h1>
  <p class="post-meta">Oct 26, 2023 · Channa Sandaruwan · <span class="post-meta-topic">JBoss EAP</span></p>
  </div>
 
@@ -188,7 +204,13 @@
 
  <footer class="footer">
  <div class="container">
- <p>&copy; 2025 Channa Sandaruwan · Systems Engineer · Kuwait</p>
+ <p>&copy; 2026 Channa Sandaruwan · Systems Engineer · Kuwait</p>
+ <nav class="footer-links">
+   <a href="../index.html">Home</a>
+   <a href="../blog_list.html">Blog</a>
+   <a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a>
+   <a href="https://github.com/channaln" target="_blank" rel="noopener">GitHub</a>
+ </nav>
  </div>
  </footer>
 

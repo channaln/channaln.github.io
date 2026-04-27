@@ -518,7 +518,7 @@ body.experience-page .stack-cat::after {
 .blog-list li:hover .bl-date { color: var(--t2); }
 .bl-date-col { flex-shrink: 0; width: 80px; padding-top: 4px; text-align: right; }
 .bl-date { font-size: 12px; color: var(--t3); line-height: 1.5; transition: color 0.2s ease; }
-.bl-tag { font-size: calc(11px * 0.7); color: var(--ac); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+.bl-tag { font-size: 11px; color: var(--ac); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
 .bl-title { font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--t1); letter-spacing: -0.01em; line-height: 1.35; margin-bottom: 6px; transition: color 0.2s ease; }
 .bl-excerpt { font-size: 14px; color: var(--t2); line-height: 1.7; }
 
@@ -747,7 +747,7 @@ body.experience-page .section-glass h2.sec-title {
 .post-meta { font-size: 13px; color: var(--t3); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .post-meta .author-thumb { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
 /* Article page only — topic is half the meta line (13px → ~6.5px); Stories / home use .story-tag at full 12px */
-.post-meta-topic { font-size: 50%; color: var(--t2); font-weight: 500; letter-spacing: 0.02em; }
+.post-meta-topic { font-size: 11px; color: var(--t2); font-weight: 500; letter-spacing: 0.02em; }
 .post-header .post-meta { line-height: 1.5; }
 
 /* Post body — justified; narrow pieces reset below */
@@ -1075,6 +1075,26 @@ html[data-theme="dark"] .code-expand-backdrop {
 .fade-in { opacity: 0; transform: translateY(16px); transition: opacity 0.5s ease, transform 0.5s ease; }
 .fade-in.visible { opacity: 1; transform: none; }
 
+/* === MOBILE NAV — hamburger button (hidden on desktop, injected by site-settings.js) === */
+.nav-menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--t1);
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease;
+}
+.nav-menu-btn:hover { background: var(--bg3); }
+.nav-menu-btn:focus-visible { outline: 2px solid var(--ac); outline-offset: 2px; }
+
 /* === RESPONSIVE === */
 @media (prefers-reduced-motion: reduce) {
   .btn,
@@ -1091,7 +1111,54 @@ html[data-theme="dark"] .code-expand-backdrop {
   }
 }
 @media (max-width: 700px) {
-  .nav-links li:not(:last-child):not(.nav-theme-item) { display: none; }
+  /* Hide all nav links; hamburger replaces them */
+  .nav-links li:not(.nav-theme-item) { display: none; }
+  .nav-menu-btn { display: inline-flex; }
+
+  /* Dropdown when menu is open */
+  .header.nav-open .nav-links {
+    position: fixed;
+    inset: 65px 0 auto 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border-bottom: 1px solid var(--bd);
+    padding: 4px 0 16px;
+    z-index: 199;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  }
+  .header.nav-open .nav-links li:not(.nav-theme-item) {
+    display: flex !important;
+  }
+  .header.nav-open .nav-links li:not(.nav-theme-item) > a:not(.nav-cta) {
+    display: block;
+    padding: 14px 20px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--t1);
+    border-bottom: 1px solid var(--bd);
+    width: 100%;
+    box-sizing: border-box;
+    transition: background 0.12s ease;
+  }
+  .header.nav-open .nav-links li:not(.nav-theme-item) > a:not(.nav-cta):hover {
+    background: var(--bg2);
+  }
+  .header.nav-open .nav-links li:has(> .nav-cta) {
+    padding: 12px 20px 0;
+  }
+  .header.nav-open .nav-links .nav-cta {
+    display: inline-flex !important;
+    font-size: 14px !important;
+    padding: 10px 20px !important;
+  }
+  .header.nav-open .nav-links .nav-theme-item {
+    display: none !important;
+  }
+
   .hero .container { gap: 20px; }
   .hero-photo { width: 80px; height: 80px; }
   .blog-list li a { gap: 16px; flex-direction: column; }
@@ -1333,4 +1400,18 @@ html[data-theme="dark"] .compare-table td {
 
 html[data-theme="dark"] .compare-table tr:hover td {
   background: var(--bg2);
+}
+
+html[data-theme="dark"] .nav-menu-btn { color: var(--t1); }
+html[data-theme="dark"] .nav-menu-btn:hover { background: var(--bg3); }
+
+@media (max-width: 700px) {
+  html[data-theme="dark"] .header.nav-open .nav-links {
+    background: rgba(10, 11, 14, 0.98);
+    border-bottom-color: var(--bd);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  }
+  html[data-theme="dark"] .header.nav-open .nav-links li:not(.nav-theme-item) > a:not(.nav-cta):hover {
+    background: var(--bg2);
+  }
 }

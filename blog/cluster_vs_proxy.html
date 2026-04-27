@@ -4,21 +4,37 @@
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1">
  <script src="../js/theme-init.js"></script>
- <title>Mod proxy balancer and mod cluster Which One Should You Use? Channa Sandaruwan</title>
+ <title>mod_proxy_balancer vs mod_cluster: Which One Should You Use? — Channa Sandaruwan</title>
  <meta name="description" content="A deep dive into the architecture, trade-offs, and configuration of mod_proxy_balancer and mod_cluster two Apache HTTP Server load balancing modules.">
  <meta name="author" content="Channa Sandaruwan">
  <meta property="og:type" content="article">
  <meta property="og:url" content="https://channaln.github.io/blog/cluster_vs_proxy.html">
- <meta property="og:title" content="Mod proxy balancer and mod cluster Which One Should You Use?">
+ <meta property="og:title" content="mod_proxy_balancer vs mod_cluster: Which One Should You Use?">
  <meta property="og:description" content="A deep dive into the architecture, trade-offs, and configuration of two popular Apache HTTP Server load balancing modules.">
  <meta property="og:image" content="https://channaln.github.io/images/cluster_vs_proxy.png">
  <meta property="og:site_name" content="Channa Sandaruwan">
  <meta property="article:author" content="Channa Sandaruwan">
- <meta property="article:published_time" content="2023-10-26">
+ <meta property="article:published_time" content="2023-10-20">
  <meta name="twitter:card" content="summary_large_image">
- <meta name="twitter:title" content="Mod proxy balancer and mod cluster Which One Should You Use?">
+ <meta name="twitter:title" content="mod_proxy_balancer vs mod_cluster: Which One Should You Use?">
  <meta name="twitter:description" content="A deep dive into the architecture, trade-offs, and configuration of two popular Apache HTTP Server load balancing modules.">
  <meta name="twitter:image" content="https://channaln.github.io/images/cluster_vs_proxy.png">
+ <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f7fb">
+ <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#050506">
+ <link rel="canonical" href="https://channaln.github.io/blog/cluster_vs_proxy.html">
+ <script type="application/ld+json">
+ {
+   "@context": "https://schema.org",
+   "@type": "BlogPosting",
+   "headline": "mod_proxy_balancer vs mod_cluster: Which One Should You Use?",
+   "description": "A deep dive into the architecture, trade-offs, and configuration of mod_proxy_balancer and mod_cluster — two Apache HTTP Server load balancing modules.",
+   "url": "https://channaln.github.io/blog/cluster_vs_proxy.html",
+   "datePublished": "2023-10-20",
+   "author": { "@type": "Person", "name": "Channa Sandaruwan", "url": "https://channaln.github.io" },
+   "publisher": { "@type": "Person", "name": "Channa Sandaruwan" },
+   "image": "https://channaln.github.io/images/cluster_vs_proxy.png"
+ }
+ </script>
  <link rel="preconnect" href="https://fonts.googleapis.com">
  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000&family=Inter:wght@300;400;450;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;0,700&family=Source+Sans+3:ital,wght@0,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900&display=swap" rel="stylesheet">
@@ -35,7 +51,7 @@
  <li><a href="../index.html">Home</a></li>
  <li><a href="../experience.html">Experience</a></li>
  <li><a href="../blog_list.html" aria-current="page">Blog</a></li>
- <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a></li>
+ <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener" class="nav-cta">LinkedIn ↗</a></li>
  </ul>
  </nav>
  </div>
@@ -48,7 +64,7 @@
  <a href="../blog_list.html" class="post-back">← Back to Blog</a>
 
  <div class="post-header">
- <h1 class="post-title">Mod proxy balancer and mod cluster Which One Should You Use?</h1>
+ <h1 class="post-title">mod_proxy_balancer vs mod_cluster: Which One Should You Use?</h1>
  <p class="post-meta">Oct 26, 2023 · Channa Sandaruwan · <span class="post-meta-topic">Apache load balancing</span></p>
  </div>
 
@@ -172,7 +188,13 @@ ProxyPassReverse / balancer://mycluster/</code></pre></div>
 
  <footer class="footer">
  <div class="container">
- <p>&copy; 2025 Channa Sandaruwan · Systems Engineer · Kuwait</p>
+ <p>&copy; 2026 Channa Sandaruwan · Systems Engineer · Kuwait</p>
+ <nav class="footer-links">
+   <a href="../index.html">Home</a>
+   <a href="../blog_list.html">Blog</a>
+   <a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a>
+   <a href="https://github.com/channaln" target="_blank" rel="noopener">GitHub</a>
+ </nav>
  </div>
  </footer>
 
