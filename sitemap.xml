@@ -16,6 +16,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://channaln.github.io/blog/acs-scanner-v4-db-odf-csi-infra-node.html</loc>
+    <lastmod>2026-04-30</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://channaln.github.io/blog/jboss-domain.html</loc>
     <lastmod>2023-10-08</lastmod>
     <changefreq>yearly</changefreq>

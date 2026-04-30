@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <script src="../js/theme-init.js"></script>
+ <title>ACS Scanner V4 DB on Infra Nodes: The ODF CSI Plugin Trap — Channa Sandaruwan</title>
+ <meta name="description" content="A practical OpenShift troubleshooting story: ACS Scanner V4 DB was stuck in ContainerCreating because the ODF RBD CSI plugin was not running on the tainted infra node.">
+ <meta name="author" content="Channa Sandaruwan">
+ <meta property="og:type" content="article">
+ <meta property="og:url" content="https://channaln.github.io/blog/acs-scanner-v4-db-odf-csi-infra-node.html">
+ <meta property="og:title" content="ACS Scanner V4 DB on Infra Nodes: The ODF CSI Plugin Trap">
+ <meta property="og:description" content="Why ACS Scanner V4 DB can fail to mount an ODF PVC on tainted infra nodes, and how CSI plugin tolerations fix it.">
+ <meta property="og:image" content="https://channaln.github.io/images/profile.jpg">
+ <meta property="og:site_name" content="Channa Sandaruwan">
+ <meta property="article:author" content="Channa Sandaruwan">
+ <meta property="article:published_time" content="2026-04-30">
+ <meta name="twitter:card" content="summary_large_image">
+ <meta name="twitter:title" content="ACS Scanner V4 DB on Infra Nodes: The ODF CSI Plugin Trap">
+ <meta name="twitter:description" content="Why ACS Scanner V4 DB can fail to mount an ODF PVC on tainted infra nodes, and how CSI plugin tolerations fix it.">
+ <meta name="twitter:image" content="https://channaln.github.io/images/profile.jpg">
+ <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f7fb">
+ <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#050506">
+ <link rel="canonical" href="https://channaln.github.io/blog/acs-scanner-v4-db-odf-csi-infra-node.html">
+ <script type="application/ld+json">
+ {
+   "@context": "https://schema.org",
+   "@type": "BlogPosting",
+   "headline": "ACS Scanner V4 DB on Infra Nodes: The ODF CSI Plugin Trap",
+   "description": "A practical OpenShift troubleshooting story: ACS Scanner V4 DB was stuck in ContainerCreating because the ODF RBD CSI plugin was not running on the tainted infra node.",
+   "url": "https://channaln.github.io/blog/acs-scanner-v4-db-odf-csi-infra-node.html",
+   "datePublished": "2026-04-30",
+   "author": { "@type": "Person", "name": "Channa Sandaruwan", "url": "https://channaln.github.io" },
+   "publisher": { "@type": "Person", "name": "Channa Sandaruwan" },
+   "image": "https://channaln.github.io/images/profile.jpg"
+ }
+ </script>
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000&family=Inter:wght@300;400;450;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;0,700&family=Source+Sans+3:ital,opsz,wght@0,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="../css/minimal.css">
+ <link rel="stylesheet" href="../css/glass.css">
+</head>
+<body class="page-root">
+
+ <header class="header is-scrolled">
+ <div class="container">
+ <a href="../index.html" class="logo">channa<span>.dev</span></a>
+ <nav>
+ <ul class="nav-links">
+ <li><a href="../index.html">Home</a></li>
+ <li><a href="../experience.html">Experience</a></li>
+ <li><a href="../blog_list.html" aria-current="page">Blog</a></li>
+ <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener" class="nav-cta">LinkedIn ↗</a></li>
+ </ul>
+ </nav>
+ </div>
+ </header>
+
+ <main>
+ <div class="container">
+ <div class="post-wrap glass-panel">
+
+ <a href="../blog_list.html" class="post-back">← Back to Blog</a>
+
+ <div class="post-header">
+ <h1 class="post-title">ACS Scanner V4 DB on Infra Nodes: The ODF CSI Plugin Trap</h1>
+ <p class="post-meta">Apr 30, 2026 · Channa Sandaruwan · <span class="post-meta-topic">OpenShift Storage</span></p>
+ </div>
+
+ <div class="post-content">
+
+ <p>Some OpenShift issues look like an application problem at first. The pod is stuck, the operator is waiting, and the error message points at a PVC. But the real problem is hidden one layer lower: the node where the pod landed is not ready to consume that storage.</p>
+
+ <p>I recently hit this in an OpenShift 4.18 cluster with a dedicated node layout:</p>
+
+ <ul>
+ <li>6 worker nodes</li>
+ <li>2 infra nodes</li>
+ <li>4 ODF storage nodes</li>
+ <li>Infra nodes tainted for infrastructure workloads</li>
+ <li>Storage nodes tainted for ODF</li>
+ <li>Ingress, ACM, and ACS workloads required to run only on infra nodes</li>
+ </ul>
+
+ <p>The installation order was straightforward: ODF first, then ACM, then ACS. ACS Central was configured with node placement and tolerations so the workloads could run on the infra nodes. That part looked correct.</p>
+
+ <p>Then Scanner V4 DB got stuck.</p>
+
+ <h2>The Symptom</h2>
+
+ <p>The Scanner V4 DB pod stayed in <code>ContainerCreating</code>. The pod was scheduled on an infra node, but the PVC mount failed with this error:</p>
+
+ <div class="code-block"><pre><code>MountVolume.MountDevice failed for volume
+"pvc-f3d4be76-e415-4600-a12f-82410bcdd277":
+kubernetes.io/csi: attacher.MountDevice failed
+to create newCsiDriverClient: driver name
+openshift-storage.rbd.csi.ceph.com not found
+in the list of registered CSI drivers</code></pre></div>
+
+ <p>At first glance, this looks like an ACS installation problem or a PVC problem. But the important clue is this part:</p>
+
+ <div class="code-block"><pre><code>driver name openshift-storage.rbd.csi.ceph.com not found</code></pre></div>
+
+ <p>That means the pod landed on a node where the required CSI driver was not registered.</p>
+
+ <h2>The Real Problem</h2>
+
+ <p>The ACS workload was allowed to run on the infra node because the ACS tolerations were configured.</p>
+
+ <p>But the ODF RBD CSI plugin was not running on that infra node.</p>
+
+ <p>That is the trap.</p>
+
+ <p>When a pod uses an ODF-backed PVC, the node running the pod must have the required CSI plugin available. It is not enough for ODF to be healthy on the storage nodes. The consumer node also needs the CSI plugin DaemonSet running locally.</p>
+
+ <p>In this case, the infra node had a custom taint. The ODF CSI plugin DaemonSet did not tolerate that taint by default, so the <code>csi-rbdplugin</code> pod was never scheduled there.</p>
+
+ <div class="code-block"><pre><code>ACS Scanner V4 DB scheduled on infra node
+        +
+ODF PVC required
+        +
+ODF RBD CSI plugin missing on infra node
+        =
+PVC mount failure</code></pre></div>
+
+ <h2>Why It Was Easy To Miss</h2>
+
+ <p>The scheduling requirement was valid: ACS, ACM, and ingress had to run on infra nodes.</p>
+
+ <p>The ACS tolerations were also valid: they allowed the ACS pods to land where they were supposed to land.</p>
+
+ <p>But storage has its own placement requirement. A workload using a PVC needs the storage driver on the same node. So whenever we force a persistent workload onto tainted infra nodes, we must also ask: can the CSI plugin run there?</p>
+
+ <h2>What To Check</h2>
+
+ <p>First, check where the failing Scanner V4 DB pod is scheduled:</p>
+
+ <div class="code-block"><pre><code>oc get pod -n stackrox -o wide | grep scanner</code></pre></div>
+
+ <p>Then check whether the ODF RBD CSI plugin is running on that same node:</p>
+
+ <div class="code-block"><pre><code>oc get pods -n openshift-storage -o wide | grep csi-rbdplugin</code></pre></div>
+
+ <p>Check the pod events:</p>
+
+ <div class="code-block"><pre><code>oc describe pod -n stackrox &lt;scanner-v4-db-pod-name&gt;</code></pre></div>
+
+ <p>And confirm the node taints:</p>
+
+ <div class="code-block"><pre><code>oc describe node &lt;infra-node-name&gt; | grep -i taint -A2</code></pre></div>
+
+ <h2>The Fix</h2>
+
+ <p>The fix is to allow the ODF CSI plugin DaemonSet to tolerate the infra node taint.</p>
+
+ <p>Edit the rook-ceph operator config map:</p>
+
+ <div class="code-block"><pre><code>oc edit configmap rook-ceph-operator-config -n openshift-storage</code></pre></div>
+
+ <p>Add the toleration under <code>CSI_PLUGIN_TOLERATIONS</code>.</p>
+
+ <p>Example for an infra role taint:</p>
+
+ <div class="code-block"><pre><code>data:
+  CSI_PLUGIN_TOLERATIONS: |
+    - key: node-role.kubernetes.io/infra
+      operator: Exists
+      effect: NoSchedule
+    - key: node.ocs.openshift.io/storage
+      operator: Equal
+      value: "true"
+      effect: NoSchedule</code></pre></div>
+
+ <p>One important detail: <code>operator: Equal</code> must include the value you expect. For the usual ODF storage taint, this is correct:</p>
+
+ <div class="code-block"><pre><code>- key: node.ocs.openshift.io/storage
+  operator: Equal
+  value: "true"
+  effect: NoSchedule</code></pre></div>
+
+ <p>If you only want to tolerate the key regardless of value, use <code>Exists</code>:</p>
+
+ <div class="code-block"><pre><code>- key: node.ocs.openshift.io/storage
+  operator: Exists
+  effect: NoSchedule</code></pre></div>
+
+ <p>Using <code>operator: Equal</code> without a value is not the right shape because there is no value to compare.</p>
+
+ <p>If your cluster uses a custom infra taint, match the real key and value:</p>
+
+ <div class="code-block"><pre><code>data:
+  CSI_PLUGIN_TOLERATIONS: |
+    - key: nodetype
+      operator: Equal
+      value: "infra"
+      effect: NoSchedule
+    - key: node.ocs.openshift.io/storage
+      operator: Equal
+      value: "true"
+      effect: NoSchedule</code></pre></div>
+
+ <p>If the plugin pods do not appear automatically, restart the rook-ceph operator pod:</p>
+
+ <div class="code-block"><pre><code>oc delete pod -n openshift-storage -l app=rook-ceph-operator</code></pre></div>
+
+ <h2>Validation</h2>
+
+ <p>After the change, verify the RBD CSI plugin is running on the infra nodes:</p>
+
+ <div class="code-block"><pre><code>oc get pods -n openshift-storage -o wide | grep csi-rbdplugin</code></pre></div>
+
+ <p>Then check the Scanner V4 DB pod again:</p>
+
+ <div class="code-block"><pre><code>oc get pods -n stackrox -o wide | grep scanner</code></pre></div>
+
+ <p>The pod should move past <code>ContainerCreating</code> once the PVC can be mounted.</p>
+
+ <h2>Why This DaemonSet Matters</h2>
+
+ <p>The <code>csi-rbdplugin</code> DaemonSet is not just another storage pod. It is the node-side part of the CSI driver. It registers the RBD CSI driver on the node and performs the mount work when a pod on that node uses an ODF RBD PVC.</p>
+
+ <p>That is why the node role does not matter as much as the workload placement.</p>
+
+ <p>If a pod can run on a node and that pod can mount an ODF PVC, then that node needs the ODF CSI node plugin. It can be a normal worker node, an infra node, or any other worker-role node. The node does not need to be an ODF storage node, but it does need the CSI plugin to consume ODF storage.</p>
+
+ <p>This is the key difference:</p>
+
+ <ul>
+ <li>Storage nodes run the ODF storage services.</li>
+ <li>Consumer nodes run application pods that use ODF PVCs.</li>
+ <li>CSI node plugins must run on consumer nodes so the volumes can be mounted.</li>
+ </ul>
+
+ <p>So yes, in a normal cluster where workloads can run on all workers, the CSI plugin should be available on all workers. In a cluster with tainted infra nodes, the CSI plugin also needs the toleration for those taints if ACS, ACM, ingress, or any other persistent workload is forced to run there.</p>
+
+ <h2>Lesson Learned</h2>
+
+ <p>This was not only an ACS issue, and it was not only an ODF issue. It was a placement design issue.</p>
+
+ <p>When we design OpenShift clusters with dedicated infra and storage nodes, we usually think about where the application pods should run. But for persistent workloads, we also need to think about where the storage plugins must run.</p>
+
+ <blockquote>
+ If a tainted node will run pods that consume ODF PVCs, the ODF CSI plugin must tolerate that taint and run on that node.
+ </blockquote>
+
+ <p>That one check can save a lot of time when troubleshooting <code>ContainerCreating</code> pods with CSI mount errors.</p>
+
+ </div>
+ </div>
+ </div>
+ </main>
+
+ <footer class="footer">
+ <div class="container">
+ <p>&copy; 2026 Channa Sandaruwan · Systems Engineer · Kuwait</p>
+ <nav class="footer-links">
+   <a href="../index.html">Home</a>
+   <a href="../blog_list.html">Blog</a>
+   <a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a>
+   <a href="https://github.com/channaln" target="_blank" rel="noopener">GitHub</a>
+ </nav>
+ </div>
+ </footer>
+
+ <script src="../js/site-settings.js" defer></script>
+ <script src="../js/code-block-expand.js" defer></script>
+</body>
+</html>
