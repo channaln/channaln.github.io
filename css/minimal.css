@@ -1415,3 +1415,18 @@ html[data-theme="dark"] .nav-menu-btn:hover { background: var(--bg3); }
     background: var(--bg2);
   }
 }
+
+
+.post-cover {
+  margin: 28px 0 34px;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.24);
+}
+
+.post-cover img {
+  display: block;
+  width: 100%;
+  height: auto;
+}

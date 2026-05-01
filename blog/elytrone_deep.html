@@ -5,20 +5,23 @@
  <meta name="viewport" content="width=device-width, initial-scale=1">
  <script src="../js/theme-init.js"></script>
  <title>Elytron Security Realm: What It Is and Why It Matters — Channa Sandaruwan</title>
- <meta name="description" content="An in-depth look at the Elytron security subsystem in JBoss EAP why Red Hat replaced PicketBox, how its components fit together, and how to configure a basic security realm.">
+ <meta name="description" content="An in-depth look at the Elytron security subsystem in JBoss EAP and how the SecurityRealm to SecurityDomain flow works.">
  <meta name="author" content="Channa Sandaruwan">
  <meta property="og:type" content="article">
  <meta property="og:url" content="https://channaln.github.io/blog/elytrone_deep.html">
  <meta property="og:title" content="Elytron Security Realm: What It Is and Why It Matters">
- <meta property="og:description" content="An in-depth look at the Elytron security subsystem in JBoss EAP why it replaced PicketBox, how its composable components work, and how to configure it.">
- <meta property="og:image" content="https://channaln.github.io/images/profile.jpg">
+ <meta property="og:description" content="An in-depth look at the Elytron security subsystem in JBoss EAP and how the SecurityRealm to SecurityDomain flow works.">
+ <meta property="og:image" content="https://channaln.github.io/images/post/elytron-security-realm-og.png">
+ <meta property="og:image:width" content="1200">
+ <meta property="og:image:height" content="630">
+ <meta property="og:image:type" content="image/png">
  <meta property="og:site_name" content="Channa Sandaruwan">
  <meta property="article:author" content="Channa Sandaruwan">
  <meta property="article:published_time" content="2023-10-16">
  <meta name="twitter:card" content="summary_large_image">
  <meta name="twitter:title" content="Elytron Security Realm: What It Is and Why It Matters">
- <meta name="twitter:description" content="An in-depth look at the Elytron security subsystem in JBoss EAP why it replaced PicketBox, how its composable components work, and how to configure it.">
- <meta name="twitter:image" content="https://channaln.github.io/images/profile.jpg">
+ <meta name="twitter:description" content="An in-depth look at the Elytron security subsystem in JBoss EAP and how the SecurityRealm to SecurityDomain flow works.">
+ <meta name="twitter:image" content="https://channaln.github.io/images/post/elytron-security-realm-og.png">
  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f7fb">
  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#050506">
  <link rel="canonical" href="https://channaln.github.io/blog/elytrone_deep.html">
@@ -27,12 +30,12 @@
    "@context": "https://schema.org",
    "@type": "BlogPosting",
    "headline": "Elytron Security Realm: What It Is and Why It Matters",
-   "description": "An in-depth look at the Elytron security subsystem — why Red Hat replaced PicketBox, how the composable SecurityRealm → SecurityDomain → AuthenticationFactory pipeline works.",
+   "description": "An in-depth look at the Elytron security subsystem in JBoss EAP and how the SecurityRealm to SecurityDomain flow works.",
    "url": "https://channaln.github.io/blog/elytrone_deep.html",
    "datePublished": "2023-10-16",
    "author": { "@type": "Person", "name": "Channa Sandaruwan", "url": "https://channaln.github.io" },
    "publisher": { "@type": "Person", "name": "Channa Sandaruwan" },
-   "image": "https://channaln.github.io/images/profile.jpg"
+   "image": "https://channaln.github.io/images/post/elytron-security-realm-og.png"
  }
  </script>
  <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -67,6 +70,10 @@
  <h1 class="post-title">Elytron Security Realm: What It Is and Why It Matters</h1>
  <p class="post-meta">Oct 26, 2023 · Channa Sandaruwan · <span class="post-meta-topic">Security</span></p>
  </div>
+
+ <figure class="post-cover">
+ <img src="../images/post/elytron-security-realm-og.png" alt="Social preview image for Elytron Security Realm: What It Is and Why It Matters" loading="eager">
+ </figure>
 
  <div class="post-content">
 
