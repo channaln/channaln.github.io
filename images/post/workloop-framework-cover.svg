@@ -75,7 +75,9 @@
 
   <g>
     <path d="M556 414C647 472 803 486 952 434" stroke="#D2694D" stroke-width="12" stroke-linecap="round"/>
+    <animate attributeName="opacity" values="0.75;1;0.75" dur="4s" repeatCount="indefinite"/>
     <path d="M930 412L965 430L935 455" stroke="#D2694D" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    <animateTransform attributeName="transform" type="translate" values="0 0;4 -2;0 0" dur="3.2s" repeatCount="indefinite"/>
     <text x="748" y="520" text-anchor="middle" fill="#495767" font-family="DM Sans, Arial, sans-serif" font-size="24" font-weight="700">Review and repeat on the next real task</text>
   </g>
 </svg>
