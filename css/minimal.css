@@ -49,6 +49,10 @@ body {
   min-width: 0;
   overflow-x: hidden;
 }
+
+body.page-home {
+  --home-header-offset: 65px;
+}
 img { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
 
@@ -133,6 +137,12 @@ body.page-root:not(.blog-list-page):not(.page-home):not(.experience-page) .heade
   align-items: center;
   gap: 28px;
 }
+body.page-home .hero {
+  min-height: 100svh;
+  justify-content: center;
+  padding-top: calc(var(--home-header-offset) + 36px);
+  padding-bottom: 48px;
+}
 .hero .container {
   display: flex;
   align-items: center;
@@ -198,6 +208,7 @@ body.page-root:not(.blog-list-page):not(.page-home):not(.experience-page) .heade
 /* === SECTIONS === */
 .section { width: 100%; max-width: 100%; padding: 80px 0; border-top: 1px solid var(--bd); text-align: justify; display: flex; flex-direction: column; align-items: center; }
 .section.section--latest-writing { align-items: flex-start; text-align: justify; }
+body.page-home .section.section--latest-writing { padding-top: 72px !important; }
 .container.container--align-left { align-items: flex-start; }
 /* Match hero card width; center the glass panel on the page like the Channa block */
 .section--latest-writing .container--align-left .glass-panel.hero-glass.home-feed {
@@ -1111,6 +1122,12 @@ html[data-theme="dark"] .code-expand-backdrop {
   }
 }
 @media (max-width: 700px) {
+  body.page-home .hero {
+    min-height: 100dvh;
+    padding-top: calc(var(--home-header-offset) + 28px);
+    padding-bottom: 40px;
+  }
+
   /* Hide all nav links; hamburger replaces them */
   .nav-links li:not(.nav-theme-item) { display: none; }
   .nav-menu-btn { display: inline-flex; }
