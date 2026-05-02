@@ -4,13 +4,13 @@
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1">
  <script src="../js/theme-init.js"></script>
- <title>When OpenShift Storage Placement Breaks ACS Scanner V4 DB — Channa Sandaruwan</title>
- <meta name="description" content="A real OpenShift 4.18 troubleshooting story: ACS Scanner V4 DB was scheduled on a tainted infra node, but the ODF RBD CSI plugin was missing there, so the PVC mount failed.">
+ <title>Unable to mount OCS backed PV to pods in RHOCP 4 — Channa Sandaruwan</title>
+ <meta name="description" content="How to troubleshoot RHOCP 4 pods stuck in ContainerCreating when OCS or ODF backed PVCs fail because the Ceph CSI node plugin is not running on the selected node.">
  <meta name="author" content="Channa Sandaruwan">
  <meta property="og:type" content="article">
  <meta property="og:url" content="https://channaln.github.io/blog/acs-scanner-v4-db-odf-csi-infra-node.html">
- <meta property="og:title" content="When OpenShift Storage Placement Breaks ACS Scanner V4 DB">
- <meta property="og:description" content="A real OpenShift 4.18 troubleshooting story: ACS Scanner V4 DB was scheduled on a tainted infra node, but the ODF RBD CSI plugin was missing there, so the PVC mount failed.">
+ <meta property="og:title" content="Unable to mount OCS backed PV to pods in RHOCP 4">
+ <meta property="og:description" content="Pods can remain in ContainerCreating when OCS or ODF backed PVCs land on nodes where the Ceph CSI node plugin is not registered.">
  <meta property="og:image" content="https://channaln.github.io/images/post/acs-scanner-v4-db-odf-csi-infra-node-og.png">
  <meta property="og:image:width" content="1200">
  <meta property="og:image:height" content="630">
@@ -19,9 +19,11 @@
  <meta property="article:author" content="Channa Sandaruwan">
  <meta property="article:published_time" content="2026-04-30">
  <meta name="twitter:card" content="summary_large_image">
- <meta name="twitter:title" content="When OpenShift Storage Placement Breaks ACS Scanner V4 DB">
- <meta name="twitter:description" content="A real OpenShift 4.18 troubleshooting story: ACS Scanner V4 DB was scheduled on a tainted infra node, but the ODF RBD CSI plugin was missing there, so the PVC mount failed.">
+ <meta property="og:image:alt" content="Illustration of an RHOCP pod failing to mount an OCS backed persistent volume because the Ceph CSI plugin is missing on the node.">
+ <meta name="twitter:title" content="Unable to mount OCS backed PV to pods in RHOCP 4">
+ <meta name="twitter:description" content="Pods can remain in ContainerCreating when OCS or ODF backed PVCs land on nodes where the Ceph CSI node plugin is not registered.">
  <meta name="twitter:image" content="https://channaln.github.io/images/post/acs-scanner-v4-db-odf-csi-infra-node-og.png">
+ <meta name="twitter:image:alt" content="Illustration of an RHOCP pod failing to mount an OCS backed persistent volume because the Ceph CSI plugin is missing on the node.">
  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f7fb">
  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#050506">
  <link rel="canonical" href="https://channaln.github.io/blog/acs-scanner-v4-db-odf-csi-infra-node.html">
@@ -29,8 +31,8 @@
  {
    "@context": "https://schema.org",
    "@type": "BlogPosting",
-   "headline": "When OpenShift Storage Placement Breaks ACS Scanner V4 DB",
-   "description": "A real OpenShift 4.18 troubleshooting story: ACS Scanner V4 DB was scheduled on a tainted infra node, but the ODF RBD CSI plugin was missing there, so the PVC mount failed.",
+   "headline": "Unable to mount OCS backed PV to pods in RHOCP 4",
+   "description": "How to troubleshoot RHOCP 4 pods stuck in ContainerCreating when OCS or ODF backed PVCs fail because the Ceph CSI node plugin is not running on the selected node.",
    "url": "https://channaln.github.io/blog/acs-scanner-v4-db-odf-csi-infra-node.html",
    "datePublished": "2026-04-30",
    "author": { "@type": "Person", "name": "Channa Sandaruwan", "url": "https://channaln.github.io" },
@@ -67,17 +69,19 @@
  <a href="../blog_list.html" class="post-back">← Back to Blog</a>
 
  <div class="post-header">
- <h1 class="post-title">When OpenShift Storage Placement Breaks ACS Scanner V4 DB</h1>
+ <h1 class="post-title">Unable to mount OCS backed PV to pods in RHOCP 4</h1>
  <p class="post-meta">Apr 30, 2026 · Channa Sandaruwan · <span class="post-meta-topic">OpenShift Storage</span></p>
  </div>
 
  <figure class="post-cover">
- <img src="../images/post/acs-scanner-v4-db-odf-csi-infra-node-og.png" alt="Social preview image for When OpenShift Storage Placement Breaks ACS Scanner V4 DB" loading="eager">
+ <img src="../images/post/acs-scanner-v4-db-odf-csi-infra-node-og.png" alt="Illustration of an RHOCP pod failing to mount an OCS backed persistent volume because the Ceph CSI plugin is missing on the node" loading="eager">
  </figure>
 
  <div class="post-content">
 
- <p>Some OpenShift issues look like an application problem at first. The pod is stuck, the operator is waiting, and the error message points at a PVC. But the real problem is hidden one layer lower: the node where the pod landed is not ready to consume that storage.</p>
+ <p>Some OpenShift storage issues look like an application problem at first. The pod is stuck in <code>ContainerCreating</code>, the operator is waiting, and the error message points at a PVC. But the real problem can be one layer lower: the node where the pod landed does not have the OCS or ODF CSI node plugin registered.</p>
+
+ <p>Red Hat documents this exact failure pattern in the solution <a href="https://access.redhat.com/solutions/6047841" target="_blank" rel="noopener">Unable to mount OCS backed PV to pods in RHOCP 4</a>. The important lesson is simple: a pod can only mount an OCS-backed PV on a node where the required Ceph CSI plugin is running.</p>
 
  <p>I recently hit this in an OpenShift 4.18 cluster with a dedicated node layout:</p>
 
@@ -90,13 +94,13 @@
  <li>Ingress, ACM, and ACS workloads required to run only on infra nodes</li>
  </ul>
 
- <p>The installation order was straightforward: ODF first, then ACM, then ACS. ACS Central was configured with node placement and tolerations so the workloads could run on the infra nodes. That part looked correct.</p>
+ <p>The installation order was straightforward: ODF first, then ACM, then ACS. ACS Central was configured with node placement and tolerations so the workloads could run on the infra nodes. That part looked correct, but the same pattern can affect any workload using an OCS or ODF StorageClass, including logging, monitoring, ACM, ACS, or a custom application.</p>
 
  <p>Then Scanner V4 DB got stuck.</p>
 
  <h2>The Symptom</h2>
 
- <p>The Scanner V4 DB pod stayed in <code>ContainerCreating</code>. The pod was scheduled on an infra node, but the PVC mount failed with this error:</p>
+ <p>The pod using the OCS-backed PVC stayed in <code>ContainerCreating</code>. In my case it was an ACS Scanner V4 DB pod scheduled on an infra node, but Red Hat's example shows the same issue with a Loki compactor pod. The PVC mount failed with this RBD CSI error:</p>
 
  <div class="code-block"><pre><code>MountVolume.MountDevice failed for volume
 "pvc-f3d4be76-e415-4600-a12f-82410bcdd277":
@@ -105,7 +109,12 @@ to create newCsiDriverClient: driver name
 openshift-storage.rbd.csi.ceph.com not found
 in the list of registered CSI drivers</code></pre></div>
 
- <p>At first glance, this looks like an ACS installation problem or a PVC problem. But the important clue is this part:</p>
+ <p>For CephFS-backed volumes, the same class of problem can appear with the CephFS driver instead:</p>
+
+ <div class="code-block"><pre><code>driver name openshift-storage.cephfs.csi.ceph.com not found
+in the list of registered CSI drivers</code></pre></div>
+
+ <p>At first glance, this looks like an application installation problem or a broken PVC. But the important clue is this part:</p>
 
  <div class="code-block"><pre><code>driver name openshift-storage.rbd.csi.ceph.com not found</code></pre></div>
 
@@ -113,21 +122,21 @@ in the list of registered CSI drivers</code></pre></div>
 
  <h2>The Real Problem</h2>
 
- <p>The ACS workload was allowed to run on the infra node because the ACS tolerations were configured.</p>
+ <p>The workload was allowed to run on the infra node because the application tolerations were configured.</p>
 
- <p>But the ODF RBD CSI plugin was not running on that infra node.</p>
+ <p>But the OCS or ODF CSI node plugin was not running on that infra node.</p>
 
  <p>That is the trap.</p>
 
- <p>When a pod uses an ODF-backed PVC, the node running the pod must have the required CSI plugin available. It is not enough for ODF to be healthy on the storage nodes. The consumer node also needs the CSI plugin DaemonSet running locally.</p>
+ <p>When a pod uses an OCS-backed or ODF-backed PVC, the node running the pod must have the required CSI plugin available. It is not enough for the storage cluster to be healthy on the storage nodes. The consumer node also needs the CSI plugin DaemonSet running locally.</p>
 
- <p>In this case, the infra node had a custom taint. The ODF CSI plugin DaemonSet did not tolerate that taint by default, so the <code>csi-rbdplugin</code> pod was never scheduled there.</p>
+ <p>In this case, the infra node had a custom taint. The OCS or ODF CSI plugin DaemonSet did not tolerate that taint by default, so the required CSI node plugin pod was never scheduled there.</p>
 
- <div class="code-block"><pre><code>ACS Scanner V4 DB scheduled on infra node
+ <div class="code-block"><pre><code>PVC-consuming pod scheduled on tainted infra node
         +
-ODF PVC required
+OCS or ODF PVC required
         +
-ODF RBD CSI plugin missing on infra node
+Ceph CSI plugin missing on infra node
         =
 PVC mount failure</code></pre></div>
 
@@ -135,23 +144,25 @@ PVC mount failure</code></pre></div>
 
  <p>The scheduling requirement was valid: ACS, ACM, and ingress had to run on infra nodes.</p>
 
- <p>The ACS tolerations were also valid: they allowed the ACS pods to land where they were supposed to land.</p>
+ <p>The application tolerations were also valid: they allowed the pods to land where they were supposed to land.</p>
 
  <p>But storage has its own placement requirement. A workload using a PVC needs the storage driver on the same node. So whenever we force a persistent workload onto tainted infra nodes, we must also ask: can the CSI plugin run there?</p>
 
  <h2>What To Check</h2>
 
- <p>First, check where the failing Scanner V4 DB pod is scheduled:</p>
+ <p>First, check where the failing pod is scheduled:</p>
 
- <div class="code-block"><pre><code>oc get pod -n stackrox -o wide | grep scanner</code></pre></div>
+ <div class="code-block"><pre><code>oc get pod -n &lt;namespace&gt; &lt;pod-name&gt; -o wide</code></pre></div>
 
- <p>Then check whether the ODF RBD CSI plugin is running on that same node:</p>
+ <p>Then check whether the RBD and CephFS CSI node plugins are running on that same node:</p>
 
- <div class="code-block"><pre><code>oc get pods -n openshift-storage -o wide | grep csi-rbdplugin</code></pre></div>
+ <div class="code-block"><pre><code>oc get pod -l app=csi-rbdplugin -n openshift-storage -o wide
+oc get pod -l app=csi-cephfsplugin -n openshift-storage -o wide</code></pre></div>
 
  <p>Check the pod events:</p>
 
- <div class="code-block"><pre><code>oc describe pod -n stackrox &lt;scanner-v4-db-pod-name&gt;</code></pre></div>
+ <div class="code-block"><pre><code>oc get events -n &lt;namespace&gt; | grep &lt;pod-name&gt;
+oc describe pod -n &lt;namespace&gt; &lt;pod-name&gt;</code></pre></div>
 
  <p>And confirm the node taints:</p>
 
@@ -159,13 +170,13 @@ PVC mount failure</code></pre></div>
 
  <h2>The Fix</h2>
 
- <p>The fix is to allow the ODF CSI plugin DaemonSet to tolerate the infra node taint.</p>
+ <p>The fix is to configure the OCS or ODF CSI component placement so the CSI node plugin can run on the nodes where PVC-consuming pods are allowed to run.</p>
 
  <p>Edit the rook-ceph operator config map:</p>
 
  <div class="code-block"><pre><code>oc edit configmap rook-ceph-operator-config -n openshift-storage</code></pre></div>
 
- <p>Add the toleration under <code>CSI_PLUGIN_TOLERATIONS</code>.</p>
+ <p>Add the required node taint toleration under <code>CSI_PLUGIN_TOLERATIONS</code>. Keep the storage toleration that is already present in the config map.</p>
 
  <p>Example for an infra role taint:</p>
 
@@ -213,19 +224,20 @@ PVC mount failure</code></pre></div>
 
  <h2>Validation</h2>
 
- <p>After the change, verify the RBD CSI plugin is running on the infra nodes:</p>
+ <p>After the change, verify the CSI node plugins are running on the infra nodes or whichever tainted nodes run PVC-consuming pods:</p>
 
- <div class="code-block"><pre><code>oc get pods -n openshift-storage -o wide | grep csi-rbdplugin</code></pre></div>
+ <div class="code-block"><pre><code>oc get pod -l app=csi-rbdplugin -n openshift-storage -o wide
+oc get pod -l app=csi-cephfsplugin -n openshift-storage -o wide</code></pre></div>
 
- <p>Then check the Scanner V4 DB pod again:</p>
+ <p>Then check the application pod again:</p>
 
- <div class="code-block"><pre><code>oc get pods -n stackrox -o wide | grep scanner</code></pre></div>
+ <div class="code-block"><pre><code>oc get pod -n &lt;namespace&gt; &lt;pod-name&gt; -o wide</code></pre></div>
 
  <p>The pod should move past <code>ContainerCreating</code> once the PVC can be mounted.</p>
 
  <h2>Why This DaemonSet Matters</h2>
 
- <p>The <code>csi-rbdplugin</code> DaemonSet is not just another storage pod. It is the node-side part of the CSI driver. It registers the RBD CSI driver on the node and performs the mount work when a pod on that node uses an ODF RBD PVC.</p>
+ <p>The <code>csi-rbdplugin</code> and <code>csi-cephfsplugin</code> DaemonSets are not just storage pods. They are the node-side part of the CSI drivers. They register the Ceph CSI drivers on the node and perform the mount work when a pod on that node uses an OCS or ODF backed PVC.</p>
 
  <p>That is why the node role does not matter as much as the workload placement.</p>
 
@@ -236,10 +248,14 @@ PVC mount failure</code></pre></div>
  <ul>
  <li>Storage nodes run the ODF storage services.</li>
  <li>Consumer nodes run application pods that use ODF PVCs.</li>
- <li>CSI node plugins must run on consumer nodes so the volumes can be mounted.</li>
+ <li>CSI node plugins must run on consumer nodes so RBD or CephFS volumes can be mounted.</li>
  </ul>
 
- <p>So yes, in a normal cluster where workloads can run on all workers, the CSI plugin should be available on all workers. In a cluster with tainted infra nodes, the CSI plugin also needs the toleration for those taints if ACS, ACM, ingress, or any other persistent workload is forced to run there.</p>
+ <p>So yes, in a normal cluster where workloads can run on all workers, the CSI plugin should be available on all workers. In a cluster with tainted infra nodes, the CSI plugin also needs the toleration for those taints if ACS, ACM, logging, monitoring, ingress, or any other persistent workload is forced to run there.</p>
+
+ <h2>Reference</h2>
+
+ <p>Red Hat Customer Portal solution: <a href="https://access.redhat.com/solutions/6047841" target="_blank" rel="noopener">Unable to mount OCS backed PV to pods in RHOCP 4</a>. The Red Hat solution explains that <code>csi-cephfsplugin</code> and <code>csi-rbdplugin</code> must run on OpenShift nodes where pods need to mount PVs using an OCS StorageClass, and that tainted nodes require matching CSI component tolerations in <code>rook-ceph-operator-config</code>.</p>
 
  <h2>Lesson Learned</h2>
 
@@ -248,7 +264,7 @@ PVC mount failure</code></pre></div>
  <p>When we design OpenShift clusters with dedicated infra and storage nodes, we usually think about where the application pods should run. But for persistent workloads, we also need to think about where the storage plugins must run.</p>
 
  <blockquote>
- If a tainted node will run pods that consume ODF PVCs, the ODF CSI plugin must tolerate that taint and run on that node.
+ If a tainted node will run pods that consume OCS or ODF PVCs, the Ceph CSI node plugin must tolerate that taint and run on that node.
  </blockquote>
 
  <p>That one check can save a lot of time when troubleshooting <code>ContainerCreating</code> pods with CSI mount errors.</p>
