@@ -1398,6 +1398,15 @@ html[data-theme="dark"] .compare-table td {
   color: #c5cad3;
 }
 
+html[data-theme="dark"] .compare-table th {
+  color: #161b22;
+  background: #dbe3ec;
+}
+
+html[data-theme="dark"] .compare-table td:first-child {
+  color: #eef2f7;
+}
+
 html[data-theme="dark"] .compare-table tr:hover td {
   background: var(--bg2);
 }
