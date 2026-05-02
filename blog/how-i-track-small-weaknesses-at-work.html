@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <script src="../js/theme-init.js"></script>
+ <title>How I Track Small Weaknesses at Work — Channa Sandaruwan</title>
+ <meta name="description" content="A personal framework for tracking small weaknesses in products, follow-ups, technical work, and soft skills, based on what I kept noticing in day-to-day engineering work.">
+ <meta name="author" content="Channa Sandaruwan">
+ <meta property="og:type" content="article">
+ <meta property="og:url" content="https://channaln.github.io/blog/how-i-track-small-weaknesses-at-work.html">
+ <meta property="og:title" content="How I Track Small Weaknesses at Work">
+ <meta property="og:description" content="The perspective and framework I now use to track product gaps, follow-up gaps, work gaps, and soft-skill gaps in day-to-day engineering work.">
+ <meta property="og:image" content="https://channaln.github.io/images/post/using-weakness-tracking-as-a-technical-growth-system-og.png">
+ <meta property="og:image:url" content="https://channaln.github.io/images/post/using-weakness-tracking-as-a-technical-growth-system-og.png">
+ <meta property="og:image:secure_url" content="https://channaln.github.io/images/post/using-weakness-tracking-as-a-technical-growth-system-og.png">
+ <meta property="og:image:width" content="1200">
+ <meta property="og:image:height" content="630">
+ <meta property="og:image:type" content="image/png">
+ <meta name="image" content="https://channaln.github.io/images/post/using-weakness-tracking-as-a-technical-growth-system-og.png">
+ <meta itemprop="image" content="https://channaln.github.io/images/post/using-weakness-tracking-as-a-technical-growth-system-og.png">
+ <meta property="og:site_name" content="Channa Sandaruwan">
+ <meta property="article:author" content="Channa Sandaruwan">
+ <meta property="article:published_time" content="2026-05-02">
+ <meta name="twitter:card" content="summary_large_image">
+ <meta property="og:image:alt" content="Illustration of issue signals becoming a structured growth system with review cards, markers, and an upward path.">
+ <meta name="twitter:title" content="How I Track Small Weaknesses at Work">
+ <meta name="twitter:description" content="The perspective and framework I now use to track product gaps, follow-up gaps, work gaps, and soft-skill gaps in day-to-day engineering work.">
+ <meta name="twitter:image" content="https://channaln.github.io/images/post/using-weakness-tracking-as-a-technical-growth-system-og.png">
+ <meta name="twitter:image:alt" content="Illustration of issue signals becoming a structured growth system with review cards, markers, and an upward path.">
+ <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f7fb">
+ <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#050506">
+ <link rel="canonical" href="https://channaln.github.io/blog/how-i-track-small-weaknesses-at-work.html">
+ <link rel="image_src" href="https://channaln.github.io/images/post/using-weakness-tracking-as-a-technical-growth-system-og.png">
+ <script type="application/ld+json">
+ {
+   "@context": "https://schema.org",
+   "@type": "BlogPosting",
+   "headline": "How I Track Small Weaknesses at Work",
+   "description": "A personal framework for tracking small weaknesses in products, follow-ups, technical work, and soft skills, based on what I kept noticing in day-to-day engineering work.",
+   "url": "https://channaln.github.io/blog/how-i-track-small-weaknesses-at-work.html",
+   "datePublished": "2026-05-02",
+   "author": { "@type": "Person", "name": "Channa Sandaruwan", "url": "https://channaln.github.io" },
+   "publisher": { "@type": "Person", "name": "Channa Sandaruwan" },
+   "image": "https://channaln.github.io/images/post/using-weakness-tracking-as-a-technical-growth-system-og.png"
+ }
+ </script>
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000&family=Inter:wght@300;400;450;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;0,700&family=Source+Sans+3:ital,opsz,wght@0,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="../css/minimal.css">
+ <link rel="stylesheet" href="../css/glass.css">
+</head>
+<body class="page-root">
+
+ <header class="header is-scrolled">
+ <div class="container">
+ <a href="../index.html" class="logo">channa<span>.dev</span></a>
+ <nav>
+ <ul class="nav-links">
+ <li><a href="../index.html">Home</a></li>
+ <li><a href="../experience.html">Experience</a></li>
+ <li><a href="../blog_list.html" aria-current="page">Blog</a></li>
+ <li><a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener" class="nav-cta">LinkedIn ↗</a></li>
+ </ul>
+ </nav>
+ </div>
+ </header>
+
+ <main>
+ <div class="container">
+ <div class="post-wrap glass-panel">
+
+ <a href="../blog_list.html" class="post-back">← Back to Blog</a>
+
+ <div class="post-header">
+ <h1 class="post-title">How I Track Small Weaknesses at Work</h1>
+ <p class="post-meta">May 2, 2026 · Channa Sandaruwan · <span class="post-meta-topic">Engineering Learning</span></p>
+ </div>
+
+ <figure class="post-cover">
+ <img src="../images/post/workloop-framework-cover.svg" alt="Professional illustration of a workflow for tracking product gaps, work gaps, follow-up gaps, and soft-skill gaps" loading="eager">
+ </figure>
+
+ <div class="post-content">
+
+ <p>For some time now, I have noticed that the things that slow me down at work are not always big failures. Most of the time, they are small repeated weaknesses that keep coming back in different forms.</p>
+
+ <p>Sometimes it is product confusion. Sometimes it is a follow-up that should have been closed earlier. Sometimes it is not technical at all. It is just that I explained something badly, or I left a task without turning it into a real next action.</p>
+
+ <p>What stayed with me is that these things rarely look serious in isolation. But over time they waste energy, slow down work, and create the feeling that I am learning without actually reducing the same pattern.</p>
+
+ <p>That is why I stopped thinking about weakness tracking like a habit. I started thinking about it like work.</p>
+
+ <blockquote>
+ A useful weakness tracking system should help you catch what went wrong, understand what kind of weakness it is, decide what to change, and check later whether it actually improved.
+ </blockquote>
+
+ <h2>Why You Need A Weakness Tracking Framework</h2>
+
+ <p>What I kept seeing in my days is that weaknesses do not arrive in one clean category. They move across products, tasks, ownership, follow-ups, and communication.</p>
+
+ <p>For example:</p>
+
+ <ul>
+ <li>you do not understand a product behavior well enough to troubleshoot it fast</li>
+ <li>you know the work, but your execution flow is messy</li>
+ <li>you had the right next action, but you did not return to it</li>
+ <li>you understood the issue, but explained it badly to another person</li>
+ </ul>
+
+ <p>I used to treat all of these as the same kind of weakness. That was the mistake. Once everything gets grouped into one bucket, the response becomes vague too. And when the response is vague, improvement stays vague.</p>
+
+ <p>So I wanted a framework that fits daily engineering life, not just learning in theory. It should help with:</p>
+
+ <ul>
+ <li>product knowledge gaps</li>
+ <li>work execution gaps</li>
+ <li>follow-up and tracking gaps</li>
+ <li>soft-skill and communication gaps</li>
+ </ul>
+
+ <h2>What The Framework Should Give You</h2>
+
+ <p>What I wanted from the framework was not reflection by itself. I wanted practical benefits:</p>
+
+ <ul>
+ <li>it makes repeated weakness patterns visible</li>
+ <li>it separates technical gaps from behavior gaps</li>
+ <li>it improves follow-through instead of only self-awareness</li>
+ <li>it helps you build better product understanding over time</li>
+ <li>it gives you a way to review whether the weakness is shrinking or not</li>
+ </ul>
+
+ <p>The idea I ended up with is simple: if a weakness is real, it should leave evidence in work. If it leaves evidence, I should be able to track it. And if I can track it, I should be able to respond to it in a clear way instead of just feeling bad about it.</p>
+
+ <h2>The Workloop Framework</h2>
+
+ <p>I call this framework <strong>Workloop</strong>.</p>
+
+ <p>The name is simple on purpose. I did not want something that sounded smart. I wanted something that described what should happen. A weakness at work should move through a loop. It should not stay as a one-time observation or a passing frustration.</p>
+
+ <p>The flow looks like this:</p>
+
+ <ul>
+ <li><strong>Signal:</strong> what happened that shows a weakness</li>
+ <li><strong>Scope:</strong> what type of weakness it is</li>
+ <li><strong>Cause:</strong> why it happened</li>
+ <li><strong>Action:</strong> what you will change</li>
+ <li><strong>Review:</strong> whether the weakness reduced later</li>
+ </ul>
+
+ <figure class="post-cover">
+ <img src="../images/post/workloop-framework-flow.svg" alt="Workloop flowchart showing Signal, Scope, Cause, Action, and Review" loading="lazy">
+ </figure>
+
+ <p>It looks simple, but that is exactly why I like it. Each step forces one kind of clarity.</p>
+
+ <h2>How The Workloop Flows In Daily Work</h2>
+
+ <h3>Signal</h3>
+
+ <p>This is the moment where something shows you there is a gap.</p>
+
+ <p>The signal could be:</p>
+
+ <ul>
+ <li>a slow incident response</li>
+ <li>a repeated mistake in a product area</li>
+ <li>a project that stalled because the next action was unclear</li>
+ <li>a message or meeting where your explanation was weak</li>
+ <li>a follow-up you forgot even though you knew it mattered</li>
+ </ul>
+
+ <p>The important part is that the signal comes from real work, not from a vague mood.</p>
+
+ <h3>Scope</h3>
+
+ <p>This is where I try to classify the weakness correctly.</p>
+
+ <p>Not every weakness is technical. Some are about products. Some are about process. Some are about behavior. Some are about communication.</p>
+
+ <p>The easiest way I can explain this is:
+ <strong>Scope tells me where the weakness showed up.</strong>
+ <strong>Cause tells me what mechanism produced it.</strong>
+ </p>
+
+ <p>That means scope is the surface location of the issue, while cause is the engine behind it. If I mix those two together, the action step becomes weak immediately.</p>
+
+ <table class="compare-table">
+ <thead>
+ <tr>
+ <th>Weakness Scope</th>
+ <th>What It Usually Means</th>
+ <th>Example</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td>Product gap</td>
+ <td>You do not understand the product or component deeply enough yet</td>
+ <td>You keep misreading how a platform feature behaves</td>
+ </tr>
+ <tr>
+ <td>Work gap</td>
+ <td>You know the area, but your execution flow is weak</td>
+ <td>You troubleshoot in the wrong order and lose time</td>
+ </tr>
+ <tr>
+ <td>Follow-up gap</td>
+ <td>You identified the right action, but did not return and close it</td>
+ <td>A next step stayed open for days without movement</td>
+ </tr>
+ <tr>
+ <td>Soft-skill gap</td>
+ <td>The issue was clarity, ownership, prioritization, or communication</td>
+ <td>You had the right idea but explained it badly</td>
+ </tr>
+ </tbody>
+ </table>
+
+ <p>This step matters because wrong scope creates wrong action. If the problem is follow-up, reading more product docs will not fix it. If the problem is product understanding, creating another reminder will not fix it either.</p>
+
+ <h3>Cause</h3>
+
+ <p>Now ask what actually failed. For me, this is usually the hardest step in the whole framework.</p>
+
+ <p>The reason it is hard is simple: the same signal can come from completely different causes.</p>
+
+ <p>Take one example: a customer issue took too long to understand.</p>
+
+ <p>That can mean at least four different things:</p>
+
+ <ul>
+ <li>you did not understand the product deeply enough</li>
+ <li>you understood the product, but your troubleshooting order was weak</li>
+ <li>you had the right idea, but got distracted and changed direction too early</li>
+ <li>you had enough information, but the issue was explained badly between people</li>
+ </ul>
+
+ <p>On the surface, all of those look like the same weakness. But the fix for each one is different. If the real cause is product understanding, you need better product notes. If the cause is process, you need a better check order. If the cause is attention or prioritization, you need a different working habit. If the cause is communication, you need a better summary method.</p>
+
+ <p>That is why I think cause identification deserves more care than people usually give it. If you get the cause wrong, the action step will look active but still fail to reduce the same pattern.</p>
+
+ <p>Was it:</p>
+
+ <ul>
+ <li>missing knowledge</li>
+ <li>a weak process</li>
+ <li>a bad assumption</li>
+ <li>poor prioritization</li>
+ <li>rushed communication</li>
+ </ul>
+
+ <p>This is the step that stops weakness tracking from becoming emotional. You are not writing “I am weak at this.” You are identifying the mechanism of failure.</p>
+
+ <p>A simple test I like here is this: if I changed only one thing, what would most likely reduce this problem next time? The answer usually points toward the real cause.</p>
+
+ <h3>Action</h3>
+
+ <p>This is where I think most systems fail. They create a feeling, but not a change.</p>
+
+ <p>The action should be small, clear, and specific. One correction. One behavior change. One review habit. One product map. One follow-up rule.</p>
+
+ <p>What helped me most here was to stop treating every action as the same kind of response. Different causes need different kinds of fixes.</p>
+
+ <table class="compare-table">
+ <thead>
+ <tr>
+ <th>Cause Type</th>
+ <th>Best First Action</th>
+ <th>What That Usually Looks Like</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td>Missing knowledge</td>
+ <td>Build understanding</td>
+ <td>Create a product note, diagram, or short explanation in your own words</td>
+ </tr>
+ <tr>
+ <td>Weak process</td>
+ <td>Tighten the sequence</td>
+ <td>Write a checklist, check order, template, or troubleshooting path</td>
+ </tr>
+ <tr>
+ <td>Bad assumption</td>
+ <td>Add a verification step</td>
+ <td>Force one explicit check before you continue with the next action</td>
+ </tr>
+ <tr>
+ <td>Poor prioritization</td>
+ <td>Reduce competing attention</td>
+ <td>Turn the work into one visible next action with a clear review point</td>
+ </tr>
+ <tr>
+ <td>Rushed communication</td>
+ <td>Improve structure</td>
+ <td>Use a short format such as problem, impact, and next action</td>
+ </tr>
+ </tbody>
+ </table>
+
+ <p>Examples:</p>
+
+ <ul>
+ <li>build a short troubleshooting order for one recurring incident type</li>
+ <li>create a one-page product note for a component you keep misunderstanding</li>
+ <li>rewrite project notes so each one ends with a single next action</li>
+ <li>create a daily follow-up check for open actions</li>
+ <li>practice summarizing technical issues in three short clear sentences</li>
+ </ul>
+
+ <h3>Review</h3>
+
+ <p>This is what makes the framework a loop.</p>
+
+ <p>If you do not come back later, you never find out whether the weakness is shrinking or just moving around. Review means checking the next similar situation and asking one question: did the new method help?</p>
+
+ <p>For day-to-day work, I think review should happen in two ways:</p>
+
+ <ul>
+ <li>immediately after the next similar situation</li>
+ <li>as a short weekly review of open weakness entries</li>
+ </ul>
+
+ <p>The immediate review tells you whether the new action helped in real conditions. The weekly review helps you notice whether a weakness is still repeating, whether it moved to another area, or whether the action was too weak to matter.</p>
+
+ <p>That means the review step does not need a complicated ritual. In most cases, it can be as simple as:</p>
+
+ <ul>
+ <li>did the same issue happen again?</li>
+ <li>if yes, was it weaker, faster, or clearer this time?</li>
+ <li>if no, should I close this entry or keep watching it for another week?</li>
+ </ul>
+
+ <p>If the weakness is clearly smaller, keep the method. If the weakness is unchanged or just changed shape, the framework loops again and the cause or action step needs another pass.</p>
+
+ <p>I also think every weakness entry needs a closure rule, otherwise the framework slowly turns into a storage place for unfinished self-criticism.</p>
+
+ <p>The simplest closure rule is this:</p>
+
+ <ul>
+ <li>close the entry after two or three successful repeats in similar situations</li>
+ <li>or close it after one full review cycle with no recurrence in relevant work</li>
+ <li>if it returns later, open a new entry instead of carrying old guilt forward forever</li>
+ </ul>
+
+ <p>That one rule matters more than it looks. It keeps the framework honest, lightweight, and focused on improvement instead of accumulation.</p>
+
+ <h2>How Workloop Helps In Different Areas</h2>
+
+ <p>One reason I keep liking this framework is that it is not limited to one type of weakness.</p>
+
+ <table class="compare-table">
+ <thead>
+ <tr>
+ <th>Area</th>
+ <th>What Workloop Helps You Track</th>
+ <th>Typical Response</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td>Products</td>
+ <td>Repeated confusion about features, behavior, architecture, or dependencies</td>
+ <td>Create focused product notes, diagrams, and test cases</td>
+ </tr>
+ <tr>
+ <td>Daily work</td>
+ <td>Execution gaps, messy troubleshooting, repeated rework</td>
+ <td>Tighten process order, checklists, or review steps</td>
+ </tr>
+ <tr>
+ <td>Follow-ups</td>
+ <td>Tasks identified correctly but not closed</td>
+ <td>Add next-action tracking and scheduled review points</td>
+ </tr>
+ <tr>
+ <td>Soft skills</td>
+ <td>Weak explanation, unclear ownership, poor prioritization</td>
+ <td>Practice concise summaries, expectation setting, and better handoff habits</td>
+ </tr>
+ </tbody>
+ </table>
+
+ <p>This is also why I see it as different from simple habit tracking. Habit tracking usually asks whether I repeated a behavior. Workloop asks what failed, why it failed, what changed, and whether the result got better later.</p>
+
+ <h2>Why This Is Better Than Simple Habit Tracking</h2>
+
+ <p>I still think habit tracking is useful for consistency, but it is weak at diagnosis.</p>
+
+ <p>If you track a habit like “study every day,” you may become more consistent without getting better at the thing that keeps failing in work. Weakness tracking needs a different structure because workplace improvement is event-driven. It starts when something breaks, slows down, or becomes unclear.</p>
+
+ <p>That means scientific weakness tracking should focus on:</p>
+
+ <ul>
+ <li>observable signals</li>
+ <li>clear classification</li>
+ <li>small corrective actions</li>
+ <li>later review in real work</li>
+ </ul>
+
+ <p>That shift is important. You are no longer asking, “Did I do my habit?” You are asking, “Did this weakness show up again, and did my new method reduce it?”</p>
+
+ <h2>What The Science Adds After The Framework</h2>
+
+ <p>Once I started thinking this way, the research made much more sense to me. It did not feel like abstract learning science anymore. It felt like a better explanation for why some corrections actually reduce a weakness and others do not.</p>
+
+ <p>Anders Ericsson’s work on deliberate practice helps explain why vague awareness is not enough. Improvement comes more reliably when the task is narrow, feedback exists, and the learner gets repeated chances to refine performance.<sup><a href="#ref-ericsson-2008">1</a></sup><sup><a href="#ref-ericsson-1993">2</a></sup></p>
+
+ <p>What I found especially useful is the feedback research. Hattie and Timperley argue that useful feedback works best when it is about the task, the process, and self-regulation, not just about the person.<sup><a href="#ref-hattie-timperley-2007">7</a></sup> That matches Workloop closely: the framework is not asking whether I am “good” or “bad.” It asks what failed and what changed.</p>
+
+ <p>Zimmerman’s work on self-regulated learning, and Butler and Winne’s model of feedback, helped me understand why the review step matters so much.<sup><a href="#ref-zimmerman-2002">5</a></sup><sup><a href="#ref-butler-winne-1995">6</a></sup> If I never return to the weakness after the action step, I cannot tell whether the loop changed my performance or only gave me temporary motivation.</p>
+
+ <p>Retrieval and spacing research also support the review step. Karpicke and Roediger show that bringing knowledge back out is a powerful part of learning, not just storing it once.<sup><a href="#ref-karpicke-roediger-2008">8</a></sup> Reviews on distributed practice point in the same direction: learning holds better when it is revisited over time instead of handled in one burst.<sup><a href="#ref-trumble-2024">9</a></sup><sup><a href="#ref-distributed-practice-2025">10</a></sup> That matches what I have seen in work too. A weakness usually does not disappear because I understood it once. It gets smaller only when I meet it again with a better response.</p>
+
+ <p>Software engineering research makes the idea even more practical. Fagerholm and colleagues show how much software work depends on cognition, knowledge, memory, and reasoning.<sup><a href="#ref-fagerholm-2022">11</a></sup> Johnson and Senges show that workplace learning for engineers often happens through practice-based contribution, not isolated classroom learning.<sup><a href="#ref-google-apprenticeship-2010">12</a></sup></p>
+
+ <p>That is exactly why I now think weakness tracking should live inside work, products, follow-ups, and communication instead of only inside personal habit systems.</p>
+
+ <h2>What A Small Real Version Looks Like</h2>
+
+ <p>If you want a usable version of this framework, keep one small table like this.</p>
+
+ <p>The point is not to write a perfect self-analysis. The point is to capture a real situation in simple words that help you act better next time.</p>
+
+ <p>If I were starting this today, I would keep it in the same place where I already manage work notes. In my case, that makes the most sense in Obsidian as a simple table or note that I can review during the week. A spreadsheet or Notion page can work too, but the important thing is that the framework should live close to your daily work, not in a separate system you never open.</p>
+
+ <p>Here are examples that almost anyone in day-to-day work can understand:</p>
+
+ <table class="compare-table">
+ <thead>
+ <tr>
+ <th>Signal</th>
+ <th>Scope</th>
+ <th>Evidence</th>
+ <th>Action</th>
+ <th>Review</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td>A customer issue took too long to understand</td>
+ <td>Work gap</td>
+ <td>You jumped between ideas, checked things in a random order, and changed direction late</td>
+ <td>Write a fixed troubleshooting order for this type of issue and use it next time</td>
+ <td>Check whether the next similar issue is isolated faster and with less confusion</td>
+ </tr>
+ <tr>
+ <td>A task stayed open even though you already knew what to do</td>
+ <td>Follow-up gap</td>
+ <td>The work note had status, but no clear next move or review point</td>
+ <td>Rewrite the note so it ends with one clear next action and one check-back time</td>
+ <td>Check whether the task moves within one working day</td>
+ </tr>
+ <tr>
+ <td>You keep getting confused about the same product or feature</td>
+ <td>Product gap</td>
+ <td>The same concept needed repeated explanation across tickets or meetings</td>
+ <td>Create a one-page product note with the main behavior, limits, and common failure cases</td>
+ <td>Check whether the next task in that area needs less explanation or less rework</td>
+ </tr>
+ <tr>
+ <td>You explained something in a meeting, but people still left confused</td>
+ <td>Soft-skill gap</td>
+ <td>You knew the topic, but the explanation was too long, too vague, or not structured</td>
+ <td>Practice a shorter explanation using problem, impact, and next action</td>
+ <td>Watch whether the next conversation needs less back-and-forth clarification</td>
+ </tr>
+ <tr>
+ <td>You promised a follow-up to a teammate or client and forgot it</td>
+ <td>Follow-up gap</td>
+ <td>The commitment stayed in chat or memory instead of entering your work system</td>
+ <td>Capture every promise immediately as a tracked next action before leaving the conversation</td>
+ <td>Check whether open promises reduce during the next week</td>
+ </tr>
+ <tr>
+ <td>You keep doing rework on the same type of deliverable</td>
+ <td>Work gap</td>
+ <td>The quality check is happening too late, after the work is already written or built</td>
+ <td>Create a short pre-send or pre-submit review checklist for that deliverable type</td>
+ <td>Check whether revision cycles become shorter over the next few submissions</td>
+ </tr>
+ </tbody>
+ </table>
+
+ <p>That is enough to start. The framework does not need to be big. It needs to be honest, clear, and close to the next real piece of work.</p>
+
+ <h2>Final Thought</h2>
+
+ <p>What I like about this approach is that it lets me treat weakness as a work signal, not a personal label.</p>
+
+ <p>If the weakness is about products, Workloop helps you build better product understanding. If it is about execution, it helps you fix the flow. If it is about follow-through, it helps you close the loop. If it is about soft skills, it helps you see where clarity or ownership broke down.</p>
+
+ <p>That is why I think weakness tracking should be part of real engineering work. Not because it sounds reflective, but because it gives you a structured way to improve the parts of work that keep costing you time.</p>
+
+ <h2>References</h2>
+
+ <ol>
+ <li id="ref-ericsson-2008">Ericsson, K. Anders. <a href="https://www.elaborer.org/cours/A24/lectures/Ericsson2008.pdf" target="_blank" rel="noopener">“Deliberate Practice and Acquisition of Expert Performance: A General Overview”</a>. <em>Academic Emergency Medicine</em>, 2008.</li>
+ <li id="ref-ericsson-1993">Ericsson, K. Anders, Ralf Th. Krampe, and Clemens Tesch-Römer. <a href="https://gwern.net/doc/psychology/writing/1993-ericsson.pdf" target="_blank" rel="noopener">“The Role of Deliberate Practice in the Acquisition of Expert Performance”</a>. <em>Psychological Review</em>, 1993.</li>
+ <li id="ref-statpearls-medical-simulation">Myrick, Kelsey, and colleagues. <a href="https://www.ncbi.nlm.nih.gov/books/NBK554558/" target="_blank" rel="noopener">“Deliberate Practice in Medical Simulation”</a>. <em>StatPearls</em>, NCBI Bookshelf.</li>
+ <li id="ref-macnamara-2014">Macnamara, Brooke N., David Z. Hambrick, and Frederick L. Oswald. <a href="https://repository.rice.edu/items/90295c5c-0240-4812-9c3b-5cb69a46372b" target="_blank" rel="noopener">“Deliberate Practice and Performance in Music, Games, Sports, Education, and Professions: A Meta-Analysis”</a>. <em>Psychological Science</em>, 2014.</li>
+ <li id="ref-zimmerman-2002">Zimmerman, Barry J. <a href="https://bibliotecadigital.mineduc.cl/handle/20.500.12365/17402" target="_blank" rel="noopener">“Becoming a Self-Regulated Learner: An Overview”</a>. <em>Theory Into Practice</em>, 2002.</li>
+ <li id="ref-butler-winne-1995">Butler, Deborah L., and Philip H. Winne. <a href="https://www.researchgate.net/publication/243774262_Feedback_and_Self-Regulated_Learning_A_Theoretical_Synthesis" target="_blank" rel="noopener">“Feedback and Self-Regulated Learning: A Theoretical Synthesis”</a>. <em>Review of Educational Research</em>, 1995.</li>
+ <li id="ref-hattie-timperley-2007">Hattie, John, and Helen Timperley. <a href="https://assess.ucr.edu/sites/g/files/rcwecm2336/files/2019-02/hattietimperley_2007.pdf" target="_blank" rel="noopener">“The Power of Feedback”</a>. <em>Review of Educational Research</em>, 2007.</li>
+ <li id="ref-karpicke-roediger-2008">Karpicke, Jeffrey D., and Henry L. Roediger III. <a href="https://howtoeigo.net/research/wp-content/uploads/2019/08/Karpicke-Roediger-2008-The-critical-importance-of-retrieval-for-learning..pdf" target="_blank" rel="noopener">“The Critical Importance of Retrieval for Learning”</a>. <em>Science</em>, 2008.</li>
+ <li id="ref-trumble-2024">Trumble, Emma, Jason Lodge, Allison Mandrusiak, and Roma Forbes. <a href="https://link.springer.com/article/10.1007/s10459-023-10274-3" target="_blank" rel="noopener">“Systematic Review of Distributed Practice and Retrieval Practice in Health Professions Education”</a>. <em>Advances in Health Sciences Education</em>, 2024.</li>
+ <li id="ref-distributed-practice-2025">Kang, Steven and colleagues. <a href="https://www.mdpi.com/2076-328X/15/6/771" target="_blank" rel="noopener">“The Distributed Practice Effect on Classroom Learning: A Meta-Analytic Review of Applied Research”</a>. <em>Behavioral Sciences</em>, 2025.</li>
+ <li id="ref-fagerholm-2022">Fagerholm, Fabian, Michael Felderer, Davide Fucci, and colleagues. <a href="https://arxiv.org/abs/2201.05551" target="_blank" rel="noopener">“Cognition in Software Engineering: A Taxonomy and Survey of a Half-Century of Research”</a>. arXiv, 2022.</li>
+ <li id="ref-google-apprenticeship-2010">Johnson, Maggie, and Max Senges. <a href="https://research.google/pubs/learning-to-be-a-software-engineer-in-a-complex-organization-a-case-study-focusing-on-apprenticeshippractice-based-learning-for-getting-new-engineers-productive-in-contributing-to-the-google-codebase/" target="_blank" rel="noopener">“Learning to Be a Software Engineer in a Complex Organization”</a>. <em>Journal of Workplace Learning</em>, 2010.</li>
+ <li id="ref-scott-ghinea-2013">Scott, Michael James, and Gheorghita Ghinea. <a href="https://arxiv.org/abs/1311.0390" target="_blank" rel="noopener">“Educating Programmers: A Reflection on Barriers to Deliberate Practice”</a>. HEA STEM Conference / arXiv, 2013.</li>
+ <li id="ref-stack-overflow-2024">Stack Overflow. <a href="https://survey.stackoverflow.co/2024/developer-profile/" target="_blank" rel="noopener">Developer Profile, 2024 Developer Survey</a>. Accessed May 2, 2026.</li>
+ <li id="ref-panadero-2017">Panadero, Ernesto. <a href="https://colab.ws/articles/10.3389%2Ffpsyg.2017.00422" target="_blank" rel="noopener">“A Review of Self-Regulated Learning: Six Models and Four Directions for Research”</a>. <em>Frontiers in Psychology</em>, 2017.</li>
+ </ol>
+
+ </div>
+ </div>
+ </div>
+ </main>
+
+ <footer class="footer">
+ <div class="container">
+ <p>&copy; 2026 Channa Sandaruwan · Systems Engineer · Kuwait</p>
+ <nav class="footer-links">
+   <a href="../index.html">Home</a>
+   <a href="../blog_list.html">Blog</a>
+   <a href="https://www.linkedin.com/in/channas" target="_blank" rel="noopener">LinkedIn</a>
+   <a href="https://github.com/channaln" target="_blank" rel="noopener">GitHub</a>
+ </nav>
+ </div>
+ </footer>
+
+ <script src="../js/site-settings.js" defer></script>
+</body>
+</html>
