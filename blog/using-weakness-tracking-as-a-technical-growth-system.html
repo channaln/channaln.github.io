@@ -4,13 +4,13 @@
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1">
  <script src="../js/theme-init.js"></script>
- <title>Using Weakness Tracking as a Technical Growth System — Channa Sandaruwan</title>
- <meta name="description" content="A practical way to turn repeated engineering friction into evidence, skill actions, and measurable growth instead of vague self-improvement goals.">
+ <title>The TRACE Loop: A Research-Backed Framework for Engineering Skill Growth — Channa Sandaruwan</title>
+ <meta name="description" content="A research-backed framework that combines deliberate practice, self-regulated learning, feedback, retrieval practice, and current developer data to help engineers improve from real work.">
  <meta name="author" content="Channa Sandaruwan">
  <meta property="og:type" content="article">
  <meta property="og:url" content="https://channaln.github.io/blog/using-weakness-tracking-as-a-technical-growth-system.html">
- <meta property="og:title" content="Using Weakness Tracking as a Technical Growth System">
- <meta property="og:description" content="Use repeated blockers, empty next actions, and delayed follow-up as evidence, then convert them into weekly practice that actually improves execution.">
+ <meta property="og:title" content="The TRACE Loop: A Research-Backed Framework for Engineering Skill Growth">
+ <meta property="og:description" content="Why simple weakness tracking is not enough, and how engineers can combine evidence, feedback, spaced practice, and reflection to improve from real work.">
  <meta property="og:image" content="https://channaln.github.io/images/post/using-weakness-tracking-as-a-technical-growth-system-og.png">
  <meta property="og:image:url" content="https://channaln.github.io/images/post/using-weakness-tracking-as-a-technical-growth-system-og.png">
  <meta property="og:image:secure_url" content="https://channaln.github.io/images/post/using-weakness-tracking-as-a-technical-growth-system-og.png">
@@ -24,8 +24,8 @@
  <meta property="article:published_time" content="2026-05-02">
  <meta name="twitter:card" content="summary_large_image">
  <meta property="og:image:alt" content="Illustration of issue signals becoming a structured growth system with review cards, markers, and an upward path.">
- <meta name="twitter:title" content="Using Weakness Tracking as a Technical Growth System">
- <meta name="twitter:description" content="Use repeated blockers, empty next actions, and delayed follow-up as evidence, then convert them into weekly practice that actually improves execution.">
+ <meta name="twitter:title" content="The TRACE Loop: A Research-Backed Framework for Engineering Skill Growth">
+ <meta name="twitter:description" content="Why simple weakness tracking is not enough, and how engineers can combine evidence, feedback, spaced practice, and reflection to improve from real work.">
  <meta name="twitter:image" content="https://channaln.github.io/images/post/using-weakness-tracking-as-a-technical-growth-system-og.png">
  <meta name="twitter:image:alt" content="Illustration of issue signals becoming a structured growth system with review cards, markers, and an upward path.">
  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f7fb">
@@ -36,8 +36,8 @@
  {
    "@context": "https://schema.org",
    "@type": "BlogPosting",
-   "headline": "Using Weakness Tracking as a Technical Growth System",
-   "description": "A practical way to turn repeated engineering friction into evidence, skill actions, and measurable growth instead of vague self-improvement goals.",
+   "headline": "The TRACE Loop: A Research-Backed Framework for Engineering Skill Growth",
+   "description": "A research-backed framework that combines deliberate practice, self-regulated learning, feedback, retrieval practice, and current developer data to help engineers improve from real work.",
    "url": "https://channaln.github.io/blog/using-weakness-tracking-as-a-technical-growth-system.html",
    "datePublished": "2026-05-02",
    "author": { "@type": "Person", "name": "Channa Sandaruwan", "url": "https://channaln.github.io" },
@@ -74,8 +74,8 @@
  <a href="../blog_list.html" class="post-back">← Back to Blog</a>
 
  <div class="post-header">
- <h1 class="post-title">Using Weakness Tracking as a Technical Growth System</h1>
- <p class="post-meta">May 2, 2026 · Channa Sandaruwan · <span class="post-meta-topic">Engineering Growth</span></p>
+ <h1 class="post-title">The TRACE Loop: A Research-Backed Framework for Engineering Skill Growth</h1>
+ <p class="post-meta">May 2, 2026 · Channa Sandaruwan · <span class="post-meta-topic">Engineering Learning</span></p>
  </div>
 
  <figure class="post-cover">
@@ -84,189 +84,218 @@
 
  <div class="post-content">
 
- <p>Most engineers say they want to improve, but their learning system is too vague to produce real change.</p>
+ <p>Most “improvement systems” for engineers fail for a simple reason: they record frustration, but they do not create better practice.</p>
 
- <p>They read articles, watch videos, bookmark courses, and collect notes. But when the same blocker shows up again a week later, nothing in the workflow has changed. The problem is not usually motivation. The problem is that weakness is not being captured in a useful form.</p>
+ <p>A missed handoff, a messy incident, a weak code review, or a debugging session that spirals for hours can all feel like signs that you need to “get better.” But the research on expertise, feedback, self-regulated learning, and skill retention says something more specific. Improvement is not caused by vague awareness of weakness. It comes from structured work on a narrow performance gap, supported by feedback, repetition, reflection, and enough spacing to make the learning stick.</p>
 
- <p>That is why I started thinking about weakness tracking as a practical technical growth system instead of a self-criticism exercise.</p>
+ <p>That is the gap this article tries to close. Instead of treating weakness tracking as self-criticism, I want to treat it as an engineering learning loop grounded in evidence.</p>
 
- <p>The idea is simple:</p>
+ <blockquote>
+ Weakness tracking becomes useful only when it stops being a diary of friction and starts becoming a system for corrective practice.
+ </blockquote>
 
- <ol>
- <li>Notice repeated friction in real work.</li>
- <li>Capture the evidence.</li>
- <li>Name the weakness clearly.</li>
- <li>Convert it into one practice action.</li>
- <li>Review it weekly until the signal changes.</li>
- </ol>
+ <h2>Why Simple Weakness Tracking Usually Fails</h2>
 
- <p>This works better than random learning because it starts from actual failure points instead of theoretical interests.</p>
+ <p>There is nothing wrong with writing down that you missed a follow-up, misunderstood a storage issue, or needed the same concept explained twice. The problem is that most personal tracking systems stop there.</p>
 
- <h2>1. What Counts As A Real Weakness Signal</h2>
-
- <p>Not every mistake deserves a tracker entry.</p>
-
- <p>A useful weakness signal is something that repeats, slows execution, or forces extra explanation. In my current system, the signals I care about are things like:</p>
+ <p>In practice, weak systems usually fail in one of four ways:</p>
 
  <ul>
- <li>missed scheduled tasks</li>
- <li>repeated blockers</li>
- <li>project notes without next actions</li>
- <li>unclear technical notes</li>
- <li>delayed follow-up</li>
- <li>topics that require repeated explanation</li>
+ <li>they record feelings instead of observable evidence</li>
+ <li>they name broad traits instead of narrow performance gaps</li>
+ <li>they add intentions instead of creating practice conditions</li>
+ <li>they never revisit the issue after the first reflection</li>
  </ul>
 
- <p>These are better than vague labels like "I need to be better at productivity" because they are observable.</p>
+ <p>That failure mode matters because expertise research does not support the idea that people improve just by noticing that they are weak somewhere. Anders Ericsson’s work on deliberate practice argues almost the opposite: improvement requires tightly defined goals, full concentration, informative feedback, and repeated opportunities to refine performance beyond its current level.<sup><a href="#ref-ericsson-2008">1</a></sup><sup><a href="#ref-ericsson-1993">2</a></sup></p>
 
- <p>For example, if project notes keep getting created without a concrete next action, that is not just a documentation issue. It is an execution weakness. The work exists, but momentum dies because there is no obvious next move.</p>
+ <p>So if your “weakness tracker” does not eventually create a better task, a better drill, a better review cycle, or a better feedback loop, it is not yet a growth system. It is just a log.</p>
 
- <p>That is the kind of weakness worth tracking.</p>
+ <h2>What The Research Actually Supports</h2>
 
- <h2>2. Capture Evidence, Not Feelings</h2>
+ <p>The strongest version of this idea starts with deliberate practice, but it should not end there.</p>
 
- <p>The most important rule is this: track evidence, not mood.</p>
+ <p>Ericsson’s general overview of deliberate practice describes four conditions that repeatedly show up when performance improves: a well-defined goal, motivation to improve, feedback, and repeated chances for gradual refinement.<sup><a href="#ref-ericsson-2008">1</a></sup> In medical simulation literature, those same ideas get translated into highly practical terms: measurable objectives, micro-skills, low-risk repetition, and real-time actionable coaching.<sup><a href="#ref-statpearls-medical-simulation">3</a></sup></p>
 
- <p>Bad weakness tracking sounds like this:</p>
+ <p>But it is also important to be technically accurate about the limits of deliberate practice. A widely cited meta-analysis by Brooke Macnamara, David Hambrick, and Frederick Oswald found that deliberate practice explains meaningful variance in performance, but not all of it. Their estimates were much lower in professional domains than in games, music, or sports.<sup><a href="#ref-macnamara-2014">4</a></sup> That matters for engineers because software work is not a violin studio. Performance depends on mentoring, tooling, task design, cognitive load, domain context, team practices, and access to representative work.</p>
+
+ <p>That is where self-regulated learning research becomes useful. Barry Zimmerman’s overview frames learning as a cycle of forethought, performance, and self-reflection, while Butler and Winne argue that feedback is not just an add-on to learning; it is built into self-regulation itself.<sup><a href="#ref-zimmerman-2002">5</a></sup><sup><a href="#ref-butler-winne-1995">6</a></sup> John Hattie and Helen Timperley refine the feedback side even further: the most useful feedback is aimed at the task, the process, and self-regulation, whereas feedback aimed only at the self as a person is usually weak.<sup><a href="#ref-hattie-timperley-2007">7</a></sup></p>
+
+ <p>Retention research adds another layer. Jeffrey Karpicke and Henry Roediger showed that repeated retrieval has stronger effects on delayed recall than repeated study alone.<sup><a href="#ref-karpicke-roediger-2008">8</a></sup> More recent reviews on distributed and retrieval practice continue to show benefits when learning is spaced and revisited over time rather than massed in one intense burst.<sup><a href="#ref-trumble-2024">9</a></sup><sup><a href="#ref-distributed-practice-2025">10</a></sup></p>
+
+ <p>Finally, software engineering research gives this discussion a more realistic home. Fabian Fagerholm and colleagues surveyed 311 papers on cognition in software engineering and found the field heavily shaped by knowledge, memory, reasoning, and cognitive load.<sup><a href="#ref-fagerholm-2022">11</a></sup> Maggie Johnson and Max Senges’ Google case study shows that apprenticeship and practice-based learning are not side topics in engineering work; they are core mechanisms for turning new engineers into effective contributors.<sup><a href="#ref-google-apprenticeship-2010">12</a></sup> Michael Scott and Gheorghita Ghinea make a parallel point from programming education: misconceptions and weak feedback can create barriers that stop practice before it compounds.<sup><a href="#ref-scott-ghinea-2013">13</a></sup></p>
+
+ <p>Put together, the evidence suggests a stronger conclusion than “track your weaknesses.” A useful growth system for engineers needs five properties:</p>
 
  <ul>
- <li>I am bad at follow-through</li>
- <li>I need to be more disciplined</li>
- <li>I should be more organized</li>
+ <li>a concrete signal from real work</li>
+ <li>evidence that reduces ambiguity</li>
+ <li>a diagnosis of the actual gap</li>
+ <li>a focused corrective practice step</li>
+ <li>a later return to the skill under realistic conditions</li>
  </ul>
 
- <p>That language is too broad to improve.</p>
+ <h2>The TRACE Loop</h2>
 
- <p>Useful weakness tracking sounds like this:</p>
+ <p>I call that structure the <strong>TRACE Loop</strong>:</p>
 
  <ul>
- <li>NBK and Burugan Bank project notes exist, but next actions are empty</li>
- <li>reminder workflow exists, but cross-device behavior is still unverified</li>
- <li>some note naming is inconsistent, which reduces search clarity</li>
+ <li><strong>Trigger:</strong> catch a concrete breakdown in real work</li>
+ <li><strong>Record:</strong> preserve evidence before memory smooths it over</li>
+ <li><strong>Analyze:</strong> identify whether the gap was task knowledge, process, judgment, or self-regulation</li>
+ <li><strong>Corrective Practice:</strong> run a small, focused drill with feedback</li>
+ <li><strong>Extend:</strong> revisit the same skill later with spacing and a more realistic context</li>
  </ul>
 
- <p>Now the weakness is visible and testable.</p>
+ <figure class="post-cover">
+ <img src="../images/post/trace-loop-framework.svg" alt="TRACE Loop diagram showing Trigger, Record, Analyze, Corrective Practice, and Extend in a circular improvement cycle" loading="lazy">
+ </figure>
 
- <p>This changes the tone of self-review. Instead of judging yourself, you are collecting operational facts about where your system breaks down.</p>
+ <h3>Trigger</h3>
 
- <h2>3. Turn The Weakness Into A Skill Action</h2>
+ <p>The trigger is not a vague sense that you were “not good enough.” It is a concrete event: a slow incident response, repeated rework after code review, a runbook you could not follow under pressure, or a design discussion where you could not explain the tradeoff clearly.</p>
 
- <p>Weakness tracking becomes valuable only when it feeds a skill system.</p>
+ <h3>Record</h3>
 
- <p>Each repeated weakness should create one practical next action. Not five. Not a full life redesign. Just one action that is small enough to repeat.</p>
+ <p>This is where most systems get sloppy. The record should keep evidence, not mood. Save the error message, the PR comments, the broken assumption, the command sequence, the timeline, or the exact question that exposed the gap. That makes later analysis far more accurate.</p>
 
- <p>Examples:</p>
+ <h3>Analyze</h3>
 
- <ul>
- <li>Weakness: project notes have no next actions</li>
- <li>Skill action: update every active project with one current next step each morning</li>
- <li>Weakness: reminders exist but are not trusted across devices</li>
- <li>Skill action: run one end-to-end reminder test and document the result</li>
- <li>Weakness: technical notes need repeated cleanup</li>
- <li>Skill action: improve one note per week with clearer structure and references</li>
- </ul>
+ <p>Analysis means asking what actually failed. Was it a missing fact? A weak debugging process? Inadequate monitoring? A bad mental model? Or a self-regulation issue such as rushing, not checking assumptions, or failing to return after feedback? Hattie and Timperley’s distinction between task, process, and self-regulation is useful here because it prevents everything from collapsing into “I need to try harder.”<sup><a href="#ref-hattie-timperley-2007">7</a></sup></p>
 
- <p>This is where growth becomes measurable. You are not promising to "get better." You are changing one part of the workflow that created the weakness.</p>
+ <h3>Corrective Practice</h3>
 
- <h2>4. Review Weekly, Not Emotionally</h2>
+ <p>This is the most important step. The corrective action should be smaller than the original failure. Do not “practice Kubernetes.” Practice one specific thing: reproducing the PVC mount path, reading scheduler events in order, designing a clearer rollback checklist, or summarizing a production issue in three accurate paragraphs. The task should be narrow enough that you can repeat it and inspect it.</p>
 
- <p>Weakness tracking works best on a schedule.</p>
+ <h3>Extend</h3>
 
- <p>If you review only when frustrated, the system turns into emotional logging. If you review weekly, you start seeing patterns across real work.</p>
+ <p>One successful repetition is not enough. Retrieval and spaced practice research strongly suggest that re-encountering the skill later matters for retention.<sup><a href="#ref-karpicke-roediger-2008">8</a></sup><sup><a href="#ref-trumble-2024">9</a></sup> In engineering terms, that means bringing the same micro-skill back into a later incident review, code review, design note, onboarding task, or dry-run simulation.</p>
 
- <p>A good weekly review asks:</p>
+ <h2>How To Use TRACE In Real Engineering Work</h2>
 
- <ul>
- <li>Which weakness signals repeated this week?</li>
- <li>Which ones disappeared?</li>
- <li>Which action actually helped?</li>
- <li>Which weakness needs a new practice instead of more intention?</li>
- </ul>
-
- <p>This is also where skill tracking and weakness tracking should connect.</p>
-
- <p>The weakness tracker should hold the evidence. The skills tracker should hold the practice response. The weekly review should decide whether the practice is working.</p>
-
- <p>That creates a loop:</p>
-
- <ol>
- <li>Work creates friction.</li>
- <li>Friction becomes evidence.</li>
- <li>Evidence becomes a weakness entry.</li>
- <li>Weakness becomes a skill action.</li>
- <li>Weekly review checks whether the signal changed.</li>
- </ol>
-
- <p>That loop is much stronger than passive learning because it is tied to the work you are already doing.</p>
-
- <h2>5. Why This Matters For Engineers</h2>
-
- <p>Engineers often improve fastest when the feedback is concrete.</p>
-
- <p>A failed deployment, an unclear runbook, a missed handoff, a vague project note, or a repeated troubleshooting gap all contain useful learning data. But that data usually gets wasted because the team fixes the immediate issue and moves on.</p>
-
- <p>Weakness tracking creates a small memory for those signals.</p>
-
- <p>It helps answer questions like:</p>
-
- <ul>
- <li>What kinds of problems do I keep repeating?</li>
- <li>Where does my execution system break down?</li>
- <li>Which skill gap is actually costing time right now?</li>
- <li>What should I practice next based on evidence, not preference?</li>
- </ul>
-
- <p>That makes learning more honest and more efficient.</p>
-
- <h2>6. One Practical Starting Point</h2>
-
- <p>If you want to try this without overbuilding it, start with three columns:</p>
-
- <ul>
- <li>observation</li>
- <li>evidence</li>
- <li>improvement action</li>
- </ul>
-
- <p>That is enough.</p>
-
- <p>You do not need a complicated framework. You need a simple habit of noticing repeated failure points and turning them into practice.</p>
-
- <p>Here is what that can look like in practice:</p>
+ <p>TRACE works best when the unit of improvement is small, testable, and close to production reality. Here is a more practical version of the loop:</p>
 
  <table class="compare-table">
  <thead>
  <tr>
- <th>Observation</th>
- <th>Evidence</th>
- <th>Improvement Action</th>
+ <th>Work Signal</th>
+ <th>Likely Gap</th>
+ <th>Corrective Practice</th>
+ <th>Extension Test</th>
  </tr>
  </thead>
  <tbody>
  <tr>
- <td>Project notes need clearer next actions</td>
- <td>Active project notes were created with empty next-action sections</td>
- <td>Add one concrete next step to each active project during daily review</td>
+ <td>Incident took too long to isolate</td>
+ <td>Weak process model for evidence gathering</td>
+ <td>Re-run the timeline and classify which commands, logs, and metrics mattered</td>
+ <td>Use the same sequence on the next similar incident or simulation</td>
  </tr>
  <tr>
- <td>Reminder system needs validation</td>
- <td>Reminder exists but cross-device behavior is not yet confirmed</td>
- <td>Run one phone/Mac reminder test and record the result</td>
+ <td>PR feedback keeps repeating</td>
+ <td>Missing design or communication heuristic</td>
+ <td>Rewrite one review response and one commit explanation using the reviewer’s logic</td>
+ <td>Check whether the next PR avoids the same comment class</td>
+ </tr>
+ <tr>
+ <td>Runbook failed under pressure</td>
+ <td>Documentation is descriptive, not executable</td>
+ <td>Convert one runbook into a timed dry run with missing-step notes</td>
+ <td>Ask another engineer or future-you to execute it cold</td>
+ </tr>
+ <tr>
+ <td>Onboarding to a codebase felt slow</td>
+ <td>No apprenticeship path or guided exploration</td>
+ <td>Create a map of one subsystem: entrypoints, ownership, logs, common failure modes</td>
+ <td>Reuse the map when the next related task arrives</td>
  </tr>
  </tbody>
  </table>
 
- <p>That is already a real growth system.</p>
+ <p>This is also why a personal growth system should live near the work itself. The best input is not a motivational notebook. It is the artifact trail that real engineering already produces: alerts, tickets, PRs, postmortems, docs, and review comments.</p>
 
- <h2>7. Make It Part Of The Way You Work</h2>
+ <h2>What Current Developer Data Suggests</h2>
 
- <p>The goal of weakness tracking is not to build a list of personal flaws or keep a diary of everything that went wrong.</p>
+ <p>Recent survey data also supports the idea that developer learning is embedded in work, not isolated from it. In Stack Overflow’s 2024 Developer Survey, <strong>83.9%</strong> of respondents said they use technical documentation to learn how to code, <strong>80.3%</strong> use Stack Overflow, and <strong>37%</strong> use AI tools for learning.<sup><a href="#ref-stack-overflow-2024">14</a></sup> The same survey reports that <strong>38%</strong> of respondents have been coding for 15 years or more, which means a useful learning framework cannot assume novice-only classroom conditions.</p>
 
- <p>The real value is in shortening the distance between friction and improvement. Something slows you down, you capture the evidence, you adjust the practice, and you check later whether the signal changed.</p>
+ <figure class="post-cover">
+ <img src="../images/post/developer-learning-landscape-2024.svg" alt="Bar chart of 2024 developer learning resources with technical documentation and Stack Overflow leading the list" loading="lazy">
+ </figure>
 
- <p>When the system is working, weaknesses stop feeling personal and start becoming useful. They turn into cleaner execution, better follow-through, clearer notes, and stronger technical judgment.</p>
+ <p>The practical conclusion is that engineers need learning loops that fit documentation-heavy, interruption-prone environments. That makes TRACE less about grand career plans and more about turning friction from ordinary work into reusable skill growth.</p>
 
- <p>That is why this kind of tracking is worth keeping simple. It should not create extra overhead. It should help you work better, learn faster, and notice patterns early enough to do something about them.</p>
+ <h2>Where This Approach Breaks Down</h2>
+
+ <p>Even a well-designed framework will fail if the practice conditions are wrong.</p>
+
+ <ul>
+ <li><strong>Too broad:</strong> “Get better at architecture” is not a practice target.</li>
+ <li><strong>No external signal:</strong> if nobody or nothing checks the work, the loop becomes self-confirming.</li>
+ <li><strong>No spacing:</strong> one successful retry can create false confidence.</li>
+ <li><strong>Only self-level feedback:</strong> praise or blame without task/process information rarely improves performance.<sup><a href="#ref-hattie-timperley-2007">7</a></sup></li>
+ <li><strong>No apprenticeship path:</strong> some engineering skills improve faster when modeled by stronger practitioners, not only through solitary repetition.<sup><a href="#ref-google-apprenticeship-2010">12</a></sup></li>
+ </ul>
+
+ <p>This is also where the limits of deliberate practice matter. In professional work, performance depends on systems, teammates, tooling, and opportunities, not just personal effort.<sup><a href="#ref-macnamara-2014">4</a></sup> A growth framework should make those dependencies visible instead of blaming the individual for every slow result.</p>
+
+ <h2>A Small Framework You Can Actually Run</h2>
+
+ <p>If you want a minimal version of this article to use tomorrow, keep one small table with four fields:</p>
+
+ <table class="compare-table">
+ <thead>
+ <tr>
+ <th>Trigger</th>
+ <th>Evidence</th>
+ <th>Corrective Practice</th>
+ <th>Next Re-test</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td>PVC mount incident took too long to isolate</td>
+ <td>Pod events, missing CSI node plugin, delayed hypothesis change</td>
+ <td>Reconstruct the troubleshooting path and practice the check order</td>
+ <td>Repeat in the next storage-related issue review</td>
+ </tr>
+ <tr>
+ <td>Project note stalled after creation</td>
+ <td>Status existed but no executable next action</td>
+ <td>Rewrite the note so the next action is concrete, time-bound, and testable</td>
+ <td>Check whether the project moves within 24 hours</td>
+ </tr>
+ </tbody>
+ </table>
+
+ <p>That is enough to start. The important thing is not the size of the tracker. It is whether the loop changes later behavior.</p>
+
+ <h2>Make The Loop Small Enough To Repeat</h2>
+
+ <p>The most useful thing I took from the research is that improvement is rarely driven by dramatic reinvention. It is usually driven by repeated, specific, well-observed corrections.</p>
+
+ <p>That makes weakness tracking worth keeping, but only in a stricter form. Capture the signal. Preserve the evidence. Diagnose the real gap. Practice one thing on purpose. Revisit it later under more realistic conditions.</p>
+
+ <p>That is the version of “working on your weaknesses” that actually behaves like engineering.</p>
+
+ <h2>References</h2>
+
+ <ol>
+ <li id="ref-ericsson-2008">Ericsson, K. Anders. <a href="https://www.elaborer.org/cours/A24/lectures/Ericsson2008.pdf" target="_blank" rel="noopener">“Deliberate Practice and Acquisition of Expert Performance: A General Overview”</a>. <em>Academic Emergency Medicine</em>, 2008.</li>
+ <li id="ref-ericsson-1993">Ericsson, K. Anders, Ralf Th. Krampe, and Clemens Tesch-Römer. <a href="https://gwern.net/doc/psychology/writing/1993-ericsson.pdf" target="_blank" rel="noopener">“The Role of Deliberate Practice in the Acquisition of Expert Performance”</a>. <em>Psychological Review</em>, 1993.</li>
+ <li id="ref-statpearls-medical-simulation">Myrick, Kelsey, and colleagues. <a href="https://www.ncbi.nlm.nih.gov/books/NBK554558/" target="_blank" rel="noopener">“Deliberate Practice in Medical Simulation”</a>. <em>StatPearls</em>, NCBI Bookshelf.</li>
+ <li id="ref-macnamara-2014">Macnamara, Brooke N., David Z. Hambrick, and Frederick L. Oswald. <a href="https://repository.rice.edu/items/90295c5c-0240-4812-9c3b-5cb69a46372b" target="_blank" rel="noopener">“Deliberate Practice and Performance in Music, Games, Sports, Education, and Professions: A Meta-Analysis”</a>. <em>Psychological Science</em>, 2014.</li>
+ <li id="ref-zimmerman-2002">Zimmerman, Barry J. <a href="https://bibliotecadigital.mineduc.cl/handle/20.500.12365/17402" target="_blank" rel="noopener">“Becoming a Self-Regulated Learner: An Overview”</a>. <em>Theory Into Practice</em>, 2002.</li>
+ <li id="ref-butler-winne-1995">Butler, Deborah L., and Philip H. Winne. <a href="https://www.researchgate.net/publication/243774262_Feedback_and_Self-Regulated_Learning_A_Theoretical_Synthesis" target="_blank" rel="noopener">“Feedback and Self-Regulated Learning: A Theoretical Synthesis”</a>. <em>Review of Educational Research</em>, 1995.</li>
+ <li id="ref-hattie-timperley-2007">Hattie, John, and Helen Timperley. <a href="https://assess.ucr.edu/sites/g/files/rcwecm2336/files/2019-02/hattietimperley_2007.pdf" target="_blank" rel="noopener">“The Power of Feedback”</a>. <em>Review of Educational Research</em>, 2007.</li>
+ <li id="ref-karpicke-roediger-2008">Karpicke, Jeffrey D., and Henry L. Roediger III. <a href="https://howtoeigo.net/research/wp-content/uploads/2019/08/Karpicke-Roediger-2008-The-critical-importance-of-retrieval-for-learning..pdf" target="_blank" rel="noopener">“The Critical Importance of Retrieval for Learning”</a>. <em>Science</em>, 2008.</li>
+ <li id="ref-trumble-2024">Trumble, Emma, Jason Lodge, Allison Mandrusiak, and Roma Forbes. <a href="https://link.springer.com/article/10.1007/s10459-023-10274-3" target="_blank" rel="noopener">“Systematic Review of Distributed Practice and Retrieval Practice in Health Professions Education”</a>. <em>Advances in Health Sciences Education</em>, 2024.</li>
+ <li id="ref-distributed-practice-2025">Kang, Steven and colleagues. <a href="https://www.mdpi.com/2076-328X/15/6/771" target="_blank" rel="noopener">“The Distributed Practice Effect on Classroom Learning: A Meta-Analytic Review of Applied Research”</a>. <em>Behavioral Sciences</em>, 2025.</li>
+ <li id="ref-fagerholm-2022">Fagerholm, Fabian, Michael Felderer, Davide Fucci, and colleagues. <a href="https://arxiv.org/abs/2201.05551" target="_blank" rel="noopener">“Cognition in Software Engineering: A Taxonomy and Survey of a Half-Century of Research”</a>. arXiv, 2022.</li>
+ <li id="ref-google-apprenticeship-2010">Johnson, Maggie, and Max Senges. <a href="https://research.google/pubs/learning-to-be-a-software-engineer-in-a-complex-organization-a-case-study-focusing-on-apprenticeshippractice-based-learning-for-getting-new-engineers-productive-in-contributing-to-the-google-codebase/" target="_blank" rel="noopener">“Learning to Be a Software Engineer in a Complex Organization”</a>. <em>Journal of Workplace Learning</em>, 2010.</li>
+ <li id="ref-scott-ghinea-2013">Scott, Michael James, and Gheorghita Ghinea. <a href="https://arxiv.org/abs/1311.0390" target="_blank" rel="noopener">“Educating Programmers: A Reflection on Barriers to Deliberate Practice”</a>. HEA STEM Conference / arXiv, 2013.</li>
+ <li id="ref-stack-overflow-2024">Stack Overflow. <a href="https://survey.stackoverflow.co/2024/developer-profile/" target="_blank" rel="noopener">Developer Profile, 2024 Developer Survey</a>. Accessed May 2, 2026.</li>
+ <li id="ref-panadero-2017">Panadero, Ernesto. <a href="https://colab.ws/articles/10.3389%2Ffpsyg.2017.00422" target="_blank" rel="noopener">“A Review of Self-Regulated Learning: Six Models and Four Directions for Research”</a>. <em>Frontiers in Psychology</em>, 2017.</li>
+ </ol>
 
  </div>
  </div>

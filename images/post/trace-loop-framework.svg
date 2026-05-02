@@ -1,0 +1,69 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">TRACE Loop framework diagram</title>
+  <desc id="desc">A circular framework with five steps: Trigger, Record, Analyze, Corrective Practice, and Extend.</desc>
+  <defs>
+    <linearGradient id="bg" x1="80" y1="40" x2="1120" y2="720" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F6E7CF"/>
+      <stop offset="0.55" stop-color="#E6EEF5"/>
+      <stop offset="1" stop-color="#DCE8D8"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="270" y1="120" x2="950" y2="620" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D55E45"/>
+      <stop offset="0.33" stop-color="#DD8B2F"/>
+      <stop offset="0.66" stop-color="#3D728A"/>
+      <stop offset="1" stop-color="#4E8D5B"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#122033" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="760" rx="32" fill="url(#bg)"/>
+  <circle cx="600" cy="380" r="228" stroke="url(#ring)" stroke-width="34" opacity="0.95"/>
+  <circle cx="600" cy="380" r="122" fill="#FFFDF8" filter="url(#shadow)"/>
+
+  <g filter="url(#shadow)">
+    <rect x="500" y="52" width="200" height="96" rx="22" fill="#FFF8EF"/>
+    <rect x="865" y="214" width="228" height="96" rx="22" fill="#FFF3E7"/>
+    <rect x="820" y="556" width="230" height="104" rx="22" fill="#EEF7FA"/>
+    <rect x="150" y="556" width="230" height="104" rx="22" fill="#EFF6EE"/>
+    <rect x="105" y="214" width="228" height="96" rx="22" fill="#FDF1EC"/>
+  </g>
+
+  <g font-family="DM Sans, Arial, sans-serif" fill="#17202D">
+    <text x="600" y="92" text-anchor="middle" font-size="30" font-weight="700">Trigger</text>
+    <text x="600" y="122" text-anchor="middle" font-size="18">Catch a concrete breakdown</text>
+
+    <text x="979" y="254" text-anchor="middle" font-size="30" font-weight="700">Record</text>
+    <text x="979" y="284" text-anchor="middle" font-size="18">Keep evidence, not mood</text>
+
+    <text x="935" y="598" text-anchor="middle" font-size="30" font-weight="700">Analyze</text>
+    <text x="935" y="628" text-anchor="middle" font-size="18">Find the skill or process gap</text>
+
+    <text x="265" y="598" text-anchor="middle" font-size="30" font-weight="700">Corrective Practice</text>
+    <text x="265" y="628" text-anchor="middle" font-size="18">Run a small focused drill</text>
+
+    <text x="219" y="254" text-anchor="middle" font-size="30" font-weight="700">Extend</text>
+    <text x="219" y="284" text-anchor="middle" font-size="18">Repeat later in real work</text>
+  </g>
+
+  <g font-family="DM Sans, Arial, sans-serif" fill="#17202D">
+    <text x="600" y="356" text-anchor="middle" font-size="56" font-weight="800" letter-spacing="0.08em">TRACE</text>
+    <text x="600" y="394" text-anchor="middle" font-size="24" font-weight="600">A loop for engineering skill growth</text>
+    <text x="600" y="428" text-anchor="middle" font-size="17">Grounded in deliberate practice, feedback, self-regulation,</text>
+    <text x="600" y="451" text-anchor="middle" font-size="17">retrieval practice, and spaced follow-up.</text>
+  </g>
+
+  <g stroke="#17202D" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M699 149C780 175 844 215 893 272"/>
+    <path d="M915 243L900 279L864 266"/>
+    <path d="M971 327C979 408 960 485 918 550"/>
+    <path d="M951 530L916 558L888 523"/>
+    <path d="M792 645C708 685 590 694 459 662"/>
+    <path d="M493 692L450 660L482 619"/>
+    <path d="M311 547C254 476 226 393 235 318"/>
+    <path d="M202 338L236 312L260 350"/>
+    <path d="M275 224C334 172 404 138 482 126"/>
+    <path d="M456 95L486 126L455 156"/>
+  </g>
+</svg>
