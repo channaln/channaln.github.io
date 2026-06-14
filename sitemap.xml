@@ -16,6 +16,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://channaln.github.io/blog/apache-feature-atlas.html</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://channaln.github.io/blog/how-i-track-small-weaknesses-at-work.html</loc>
     <lastmod>2026-05-02</lastmod>
     <changefreq>yearly</changefreq>

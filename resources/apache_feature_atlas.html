@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apache HTTP Server — Complete Feature Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080c12;
+  --bg2: #0e1520;
+  --bg3: #141d2b;
+  --bg4: #1a2536;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #c8d4e4;
+  --text2: #6b7e96;
+  --text3: #3d5068;
+  --accent: #f97316;
+  --accent2: #fb923c;
+  --teal: #14b8a6;
+  --blue: #3b82f6;
+  --green: #22c55e;
+  --red: #ef4444;
+  --purple: #a855f7;
+  --yellow: #eab308;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;line-height:1.6;min-height:100vh;overflow-x:hidden;}
+
+/* NOISE TEXTURE */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");opacity:0.4;pointer-events:none;z-index:0;}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:100;background:rgba(8,12,18,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;}
+.header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:20px;height:60px;}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#fff;letter-spacing:-0.5px;white-space:nowrap;}
+.logo span{color:var(--accent);}
+.search-wrap{flex:1;position:relative;max-width:400px;}
+.search-wrap input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:8px 14px 8px 36px;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;outline:none;transition:border-color .2s;}
+.search-wrap input:focus{border-color:var(--accent);}
+.search-wrap input::placeholder{color:var(--text3);}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;}
+.count-badge{margin-left:auto;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:11px;color:var(--text2);}
+
+/* CATEGORY NAV */
+.cat-nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;overflow-x:auto;scrollbar-width:none;}
+.cat-nav::-webkit-scrollbar{display:none;}
+.cat-nav-inner{max-width:1400px;margin:0 auto;display:flex;gap:2px;padding:8px 0;}
+.cat-btn{padding:6px 14px;border-radius:6px;border:none;background:transparent;color:var(--text2);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:6px;}
+.cat-btn:hover{background:var(--bg3);color:var(--text);}
+.cat-btn.active{background:var(--accent);color:#fff;}
+.cat-dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:0.6;}
+
+/* MAIN CONTENT */
+main{max-width:1400px;margin:0 auto;padding:28px 24px;}
+.section-label{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--text3);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;margin-bottom:40px;}
+
+/* FEATURE CARD */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all .2s;cursor:pointer;position:relative;}
+.card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,0.4);}
+.card.expanded{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
+.card-anim{height:140px;position:relative;overflow:hidden;background:var(--bg3);}
+.card-body{padding:16px;}
+.card-meta{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.cat-tag{font-size:10px;padding:3px 8px;border-radius:4px;font-weight:500;letter-spacing:0.5px;}
+.card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:#fff;margin-bottom:6px;}
+.card-desc{font-size:11.5px;color:var(--text2);line-height:1.7;}
+.card-expand{margin-top:12px;border-top:1px solid var(--border);padding-top:12px;display:none;}
+.card.expanded .card-expand{display:block;}
+.expand-section{margin-bottom:10px;}
+.expand-label{font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.config-block{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:11px;color:var(--teal);line-height:1.8;white-space:pre-wrap;overflow-x:auto;}
+.config-block .comment{color:var(--text3);}
+.config-block .directive{color:var(--accent2);}
+.config-block .value{color:var(--green);}
+.example-box{background:var(--bg);border-left:3px solid var(--accent);padding:10px 12px;border-radius:0 6px 6px 0;font-size:11.5px;color:var(--text2);line-height:1.6;}
+
+/* CATEGORY COLORS */
+.c-gateway{background:rgba(59,130,246,0.15);color:#60a5fa;}
+.c-security{background:rgba(239,68,68,0.15);color:#f87171;}
+.c-identity{background:rgba(168,85,247,0.15);color:#c084fc;}
+.c-traffic{background:rgba(20,184,166,0.15);color:#2dd4bf;}
+.c-performance{background:rgba(234,179,8,0.15);color:#facc15;}
+.c-hosting{background:rgba(34,197,94,0.15);color:#4ade80;}
+.c-integration{background:rgba(249,115,22,0.15);color:#fb923c;}
+.c-observability{background:rgba(99,102,241,0.15);color:#818cf8;}
+.c-devops{background:rgba(236,72,153,0.15);color:#f472b6;}
+.c-edge{background:rgba(14,165,233,0.15);color:#38bdf8;}
+
+/* ANIMATIONS — shared SVG styles inside cards */
+.anim-svg{width:100%;height:100%;}
+.flow-line{stroke-dasharray:6 4;animation:flowDash 1.5s linear infinite;}
+.flow-line-rev{stroke-dasharray:6 4;animation:flowDash 1.5s linear infinite reverse;}
+@keyframes flowDash{to{stroke-dashoffset:-20;}}
+.pulse{animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3;}}
+.blink{animation:blink 1s step-end infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0;}}
+.spin{animation:spin 3s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.spinOrigin{transform-origin:center;animation:spin 3s linear infinite;}
+.bounce{animation:bounce 1.5s ease-in-out infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px);}}
+.scan{animation:scan 2s linear infinite;}
+@keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(200%);}}
+.scale-pulse{animation:scalePulse 2s ease-in-out infinite;}
+@keyframes scalePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1);}}
+
+/* packet animations */
+.pkt1{animation:pkt1 2s linear infinite;}
+.pkt2{animation:pkt1 2s linear infinite 0.7s;}
+.pkt3{animation:pkt1 2s linear infinite 1.4s;}
+@keyframes pkt1{0%{transform:translateX(-120px);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateX(120px);opacity:0;}}
+.pkt-lb1{animation:pktLb1 2.5s linear infinite;}
+.pkt-lb2{animation:pktLb2 2.5s linear infinite 0.8s;}
+.pkt-lb3{animation:pktLb3 2.5s linear infinite 1.6s;}
+@keyframes pktLb1{0%,30%{transform:translate(0,0);opacity:0}35%{opacity:1}80%{transform:translate(60px,-28px);opacity:1}85%,100%{transform:translate(60px,-28px);opacity:0}}
+@keyframes pktLb2{0%,30%{transform:translate(0,0);opacity:0}35%{opacity:1}80%{transform:translate(60px,0px);opacity:1}85%,100%{transform:translate(60px,0px);opacity:0}}
+@keyframes pktLb3{0%,30%{transform:translate(0,0);opacity:0}35%{opacity:1}80%{transform:translate(60px,28px);opacity:1}85%,100%{transform:translate(60px,28px);opacity:0}}
+
+/* rate limit — requests then red X */
+.req-allow{animation:reqAllow 3s linear infinite;}
+.req-block{animation:reqBlock 3s linear infinite 2.2s;}
+@keyframes reqAllow{0%{transform:translateX(-50px);opacity:0}15%{opacity:1}50%{transform:translateX(30px);opacity:1}65%,100%{transform:translateX(30px);opacity:0}}
+@keyframes reqBlock{0%{transform:translateX(-50px);opacity:0}15%{opacity:1}40%{transform:translateX(-10px);opacity:1}50%,100%{transform:translateX(-10px);opacity:0}}
+
+/* lock shimmer */
+.shimmer{animation:shimmer 2.5s ease-in-out infinite;}
+@keyframes shimmer{0%{opacity:0.3}50%{opacity:1}100%{opacity:0.3}}
+
+/* health check ping */
+.ping1{animation:ping 2.5s ease-out infinite;}
+.ping2{animation:ping 2.5s ease-out infinite 0.5s;}
+@keyframes ping{0%{r:4;opacity:1}100%{r:18;opacity:0}}
+
+/* cache hit */
+.miss-line{animation:missLine 4s linear infinite;}
+.hit-line{animation:hitLine 4s linear infinite 2s;}
+@keyframes missLine{0%{stroke-dashoffset:100}50%{stroke-dashoffset:0}51%,100%{stroke-dashoffset:0;opacity:0}}
+@keyframes hitLine{0%,50%{opacity:0}55%{opacity:1;stroke-dashoffset:60}100%{stroke-dashoffset:0;opacity:1}}
+
+/* compress */
+.compress-bar{animation:compressBar 2s ease-in-out infinite;}
+@keyframes compressBar{0%,100%{transform:scaleY(1)}50%{transform:scaleY(0.35)}}
+
+/* websocket bidirectional */
+.ws-up{animation:wsUp 1.2s linear infinite;}
+.ws-dn{animation:wsDn 1.2s linear infinite 0.6s;}
+@keyframes wsUp{0%{transform:translateY(30px);opacity:0}30%{opacity:1}70%{opacity:1}100%{transform:translateY(-30px);opacity:0}}
+@keyframes wsDn{0%{transform:translateY(-30px);opacity:0}30%{opacity:1}70%{opacity:1}100%{transform:translateY(30px);opacity:0}}
+
+/* canary split */
+.heavy-flow{animation:heavyFlow 2s linear infinite;}
+.light-flow{animation:lightFlow 2s linear infinite;}
+@keyframes heavyFlow{0%,100%{stroke-dashoffset:-40}0%{opacity:1}}
+@keyframes lightFlow{0%,100%{stroke-dashoffset:-40}0%{opacity:0.3}}
+
+/* geo arrow */
+.geo-arrow{animation:geoArrow 2s ease-in-out infinite;}
+@keyframes geoArrow{0%,100%{transform:scale(1)}50%{transform:scale(1.15);filter:brightness(1.4)}}
+
+.no-results{grid-column:1/-1;text-align:center;padding:60px;color:var(--text3);font-size:14px;}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:24px;text-align:center;font-size:11px;color:var(--text3);margin-top:20px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">Apache <span>//</span> Feature Atlas</div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="searchInput" placeholder="search features, modules, use cases…" oninput="filterCards()">
+    </div>
+    <div class="count-badge" id="countBadge">55 features</div>
+  </div>
+</header>
+
+<div class="cat-nav">
+  <div class="cat-nav-inner" id="catNav"></div>
+</div>
+
+<main id="main"></main>
+
+<footer>Apache HTTP Server — Complete Feature Reference &nbsp;·&nbsp; All 55+ features with animated diagrams</footer>
+
+<script>
+const features = [
+  // ─── GATEWAY ────────────────────────────────────
+  {
+    cat:"Gateway", id:"reverse-proxy",
+    role:"Reverse Proxy", what:"Apache sits in front and forwards requests to a hidden backend server. Users never see the real address.",
+    modules:"mod_proxy, mod_proxy_http",
+    config:`ProxyPass "/app" "http://localhost:8080/"\nProxyPassReverse "/app" "http://localhost:8080/"`,
+    example:"Users visit app.example.com on port 443. Apache forwards to localhost:8080 where the Node.js app runs.",
+    anim:"reverse-proxy"
+  },
+  {
+    cat:"Gateway", id:"forward-proxy",
+    role:"Forward Proxy", what:"Apache acts as an exit gateway — internal users browse the internet through Apache, enabling logging and access controls.",
+    modules:"mod_proxy",
+    config:`ProxyRequests On\nProxyVia On\n<Proxy "*">\n  Require ip 10.0.0.0/8\n</Proxy>`,
+    example:"A company routes all employee web traffic through Apache so it can log URLs, block social media, and enforce policy.",
+    anim:"forward-proxy"
+  },
+  {
+    cat:"Gateway", id:"api-routing",
+    role:"API Gateway", what:"Central entry point for all API services. Routes /api/users to User Service, /api/orders to Order Service, etc.",
+    modules:"mod_proxy, mod_rewrite",
+    config:`ProxyPass "/api/users"  "http://user-svc:3001/"\nProxyPass "/api/orders" "http://order-svc:3002/"\nProxyPass "/api/pay"    "http://pay-svc:3003/"`,
+    example:"A microservices backend exposes one public endpoint. Apache routes by path prefix to 12 internal services.",
+    anim:"api-routing"
+  },
+  {
+    cat:"Gateway", id:"ajp-proxy",
+    role:"AJP Proxy (Tomcat)", what:"Binary protocol bridge between Apache and old Java/Tomcat systems — faster than HTTP for internal traffic.",
+    modules:"mod_proxy_ajp",
+    config:`ProxyPass "/java-app" "ajp://localhost:8009/"\nProxyPassReverse "/java-app" "ajp://localhost:8009/"`,
+    example:"A bank's 2005-era HR portal runs on Apache Tomcat via AJP — Apache provides SSL and logging in front of it.",
+    anim:"ajp-proxy"
+  },
+  {
+    cat:"Gateway", id:"container-gateway",
+    role:"Container Gateway", what:"Routes HTTP traffic into Docker containers or Kubernetes pods using their internal network addresses.",
+    modules:"mod_proxy_http, mod_proxy_balancer",
+    config:`ProxyPass "/service" "http://172.17.0.2:8080/"\n# or with docker DNS:\nProxyPass "/service" "http://mycontainer:8080/"`,
+    example:"A Docker Compose app exposes only Apache on port 80. All containers (Redis, Postgres, Node) stay on the internal Docker network.",
+    anim:"container-gateway"
+  },
+  {
+    cat:"Gateway", id:"graphql-gateway",
+    role:"GraphQL Gateway", what:"Single /graphql endpoint that Apache routes to the GraphQL engine, with optional caching and auth headers injected.",
+    modules:"mod_proxy_http, mod_headers",
+    config:`ProxyPass "/graphql" "http://gql-engine:4000/graphql"\nHeader set Access-Control-Allow-Origin "*"\nHeader set X-Internal-Service "true"`,
+    example:"A React SPA sends all queries to /graphql. Apache forwards to Hasura engine and injects the admin secret header.",
+    anim:"graphql-gateway"
+  },
+  {
+    cat:"Gateway", id:"websocket-proxy",
+    role:"WebSocket Proxy", what:"Upgrades HTTP connections to persistent WebSocket channels and keeps them open indefinitely.",
+    modules:"mod_proxy_wstunnel",
+    config:`RewriteEngine on\nRewriteCond %{HTTP:Upgrade} websocket [NC]\nRewriteRule /ws/(.*) ws://localhost:8080/$1 [P,L]`,
+    example:"A live stock trading dashboard connects via wss:// and receives price updates every millisecond without polling.",
+    anim:"websocket"
+  },
+  {
+    cat:"Gateway", id:"grpc-proxy",
+    role:"gRPC Proxy", what:"Forwards binary gRPC (HTTP/2 + protobuf) calls from browser-friendly clients to internal microservices.",
+    modules:"mod_proxy_http2",
+    config:`<Location "/grpc/">\n  ProxyPass "h2://grpc-backend:50051/"\n  ProxyPassReverse "h2://grpc-backend:50051/"\n</Location>`,
+    example:"A mobile app uses gRPC for efficiency. Apache bridges it to internal Go microservices over HTTP/2.",
+    anim:"grpc-proxy"
+  },
+
+  // ─── SECURITY ───────────────────────────────────
+  {
+    cat:"Security", id:"tls",
+    role:"TLS Termination (HTTPS)", what:"Apache decrypts HTTPS traffic at the edge. Backend servers receive plain HTTP — no SSL overhead for them.",
+    modules:"mod_ssl",
+    config:`<VirtualHost *:443>\n  SSLEngine on\n  SSLCertificateFile    /etc/ssl/certs/site.crt\n  SSLCertificateKeyFile /etc/ssl/private/site.key\n</VirtualHost>`,
+    example:"A login page is served over HTTPS. Apache holds the certificate; the backend Python app receives plain HTTP requests.",
+    anim:"tls"
+  },
+  {
+    cat:"Security", id:"mtls",
+    role:"Mutual TLS (mTLS)", what:"Both sides prove identity with certificates. The server also demands a certificate from the client — not just the browser.",
+    modules:"mod_ssl",
+    config:`SSLVerifyClient require\nSSLVerifyDepth 2\nSSLCACertificateFile /etc/ssl/client-ca.crt`,
+    example:"A payment gateway only accepts connections from partner banks holding a specific issued certificate.",
+    anim:"mtls"
+  },
+  {
+    cat:"Security", id:"rate-limiting",
+    role:"Rate Limiting", what:"Throttles how many requests per second one IP can send. Burst traffic gets queued or rejected.",
+    modules:"mod_ratelimit, mod_qos",
+    config:`<Location "/api/login">\n  SetOutputFilter RATE_LIMIT\n  SetEnv rate-limit 50\n</Location>`,
+    example:"A login endpoint is capped at 10 req/sec per IP. Bots guessing passwords are silently throttled to uselessness.",
+    anim:"rate-limit"
+  },
+  {
+    cat:"Security", id:"waf",
+    role:"WAF (Web App Firewall)", what:"Deep packet inspection — scans every request body for SQL injection, XSS, and other attack signatures.",
+    modules:"mod_security2",
+    config:`SecRuleEngine On\nInclude /etc/modsecurity/owasp-crs/*.conf\nSecRule ARGS "@detectSQLi" \\\n  "id:1001,deny,status:403"`,
+    example:"A hacker submits ' OR 1=1; -- in a form field. The WAF matches the SQLi pattern and returns 403 before the app sees it.",
+    anim:"waf"
+  },
+  {
+    cat:"Security", id:"ip-restriction",
+    role:"IP Restriction", what:"Allow or deny access to resources based on the originating IP address or CIDR network range.",
+    modules:"mod_authz_host",
+    config:`<Location "/admin">\n  Require ip 10.0.0.0/8\n  Require ip 192.168.1.0/24\n</Location>`,
+    example:"The /admin panel is only reachable from the office IP range. Requests from anywhere else get a 403.",
+    anim:"ip-restrict"
+  },
+  {
+    cat:"Security", id:"secrets-protection",
+    role:"Secrets Protection", what:"Blocks direct access to sensitive files (.env, .git, .htpasswd) that should never be served publicly.",
+    modules:"mod_authz_core",
+    config:`<FilesMatch "(\.env|\.git|composer\.json|package\.json)$">\n  Require all denied\n</FilesMatch>`,
+    example:"A developer accidentally deployed a .env file. Apache blocks all requests to *.env with a 403 before they leak credentials.",
+    anim:"secrets"
+  },
+  {
+    cat:"Security", id:"security-headers",
+    role:"Security Headers", what:"Injects HTTP response headers that instruct browsers to enforce HTTPS, block iframes, and prevent MIME sniffing.",
+    modules:"mod_headers",
+    config:`Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"\nHeader always set X-Frame-Options "SAMEORIGIN"\nHeader always set X-Content-Type-Options "nosniff"\nHeader always set Content-Security-Policy "default-src 'self'"`,
+    example:"A bank site gets A+ on securityheaders.com. Browsers refuse to load it in iframes (clickjacking prevention).",
+    anim:"sec-headers"
+  },
+  {
+    cat:"Security", id:"cors",
+    role:"CORS Control", what:"Adds headers that tell browsers which external origins may call this API. Without this, browsers block cross-origin requests.",
+    modules:"mod_headers",
+    config:`Header always set Access-Control-Allow-Origin "https://app.example.com"\nHeader always set Access-Control-Allow-Methods "GET,POST,OPTIONS"\nHeader always set Access-Control-Allow-Headers "Authorization,Content-Type"`,
+    example:"A Vue SPA on app.example.com calls api.example.com. Apache CORS headers allow it. Other domains are blocked.",
+    anim:"cors"
+  },
+  {
+    cat:"Security", id:"bot-protection",
+    role:"Bot Protection", what:"Detects and blocks automated scrapers, credential stuffers, and vulnerability scanners based on behaviour patterns.",
+    modules:"mod_security2, mod_evasive",
+    config:`DOSHashTableSize 3097\nDOSPageCount  5\nDOSSiteCount  50\nDOSBlockingPeriod 600`,
+    example:"A scraper hits product pages 2000 times/hour. mod_evasive detects the pattern and bans the IP for 10 minutes.",
+    anim:"bot-protect"
+  },
+  {
+    cat:"Security", id:"ip-reputation",
+    role:"IP Reputation Blocking", what:"Imports threat intelligence lists (TOR exits, known botnets) and blocks them before they reach the application.",
+    modules:"mod_maxminddb, mod_rewrite",
+    config:`# Load MaxMind GeoIP2 database\nMaxMindDBFile /etc/apache2/GeoLite2-City.mmdb\n# Block based on threat score\nRewriteCond %{ENV:MM_threat_level} high [NC]\nRewriteRule .* - [F,L]`,
+    example:"A media site blocks all TOR exit nodes. Fraudulent signups from known bot IPs drop by 90% overnight.",
+    anim:"ip-reputation"
+  },
+  {
+    cat:"Security", id:"timeout-control",
+    role:"Timeout Control", what:"Sets maximum durations for connections, headers, and request bodies to prevent Slowloris and slow-POST attacks.",
+    modules:"mod_reqtimeout",
+    config:`RequestReadTimeout header=20-40,MinRate=500\nRequestReadTimeout body=20,MinRate=500\nTimeOut 60`,
+    example:"An attacker opens 500 connections and sends headers at 1 byte/second. mod_reqtimeout closes them after 20s.",
+    anim:"timeout"
+  },
+  {
+    cat:"Security", id:"ocsp-stapling",
+    role:"OCSP Stapling", what:"Apache pre-fetches certificate revocation status from the CA and attaches it to the TLS handshake — removing a slow client round-trip.",
+    modules:"mod_ssl",
+    config:`SSLUseStapling on\nSSLStaplingCache "shmcb:logs/ssl_stapling(32768)"\nSSLStaplingResponderTimeout 5`,
+    example:"TLS handshake drops 200ms per user because the browser skips the OCSP lookup — Apache already confirmed the cert is valid.",
+    anim:"ocsp"
+  },
+
+  // ─── IDENTITY ───────────────────────────────────
+  {
+    cat:"Identity", id:"ldap-auth",
+    role:"LDAP / Active Directory Auth", what:"Employees log in with their Windows domain credentials. Apache checks with the corporate AD server.",
+    modules:"mod_authnz_ldap",
+    config:`AuthType Basic\nAuthName "Corporate Portal"\nAuthBasicProvider ldap\nAuthLDAPURL "ldap://ad.corp.com/DC=corp,DC=com"\nRequire valid-user`,
+    example:"Staff access the HR portal with their Windows login. No second password to manage — single source of truth.",
+    anim:"ldap"
+  },
+  {
+    cat:"Identity", id:"oidc-sso",
+    role:"OIDC / OAuth2 SSO", what:"Delegates authentication to an external identity provider (Google, Okta, Azure AD) using OpenID Connect.",
+    modules:"mod_auth_openidc",
+    config:`OIDCProviderMetadataURL https://accounts.google.com/.well-known/openid-configuration\nOIDCClientID     my-client-id\nOIDCClientSecret my-secret\nOIDCRedirectURI  https://myapp.com/redirect_uri`,
+    example:"A developer dashboard shows a 'Sign in with Google' button. Apache handles the OAuth flow; the app gets a verified user token.",
+    anim:"oidc"
+  },
+  {
+    cat:"Identity", id:"saml-sso",
+    role:"SAML SSO", what:"Enterprise federation standard. Users log in once via their corporate Identity Provider and access many services.",
+    modules:"mod_auth_mellon",
+    config:`MellonSPPrivateKeyFile  /etc/apache2/saml/sp.key\nMellonSPCertFile        /etc/apache2/saml/sp.cert\nMellonIdPMetadataFile   /etc/apache2/saml/idp-metadata.xml`,
+    example:"A corporate intranet uses Azure AD as the IdP. Employees log in to Windows and get automatic access to 30 internal apps.",
+    anim:"saml"
+  },
+  {
+    cat:"Identity", id:"kerberos",
+    role:"Kerberos / Windows Integrated", what:"Zero-click login for domain users. The browser silently exchanges a Kerberos ticket — no username/password prompt.",
+    modules:"mod_auth_kerb",
+    config:`AuthType Kerberos\nAuthName "Kerberos Login"\nKrbAuthRealms CORP.COM\nKrb5Keytab /etc/apache2/http.keytab\nRequire valid-user`,
+    example:"An employee opens the intranet URL in Chrome and is automatically logged in. No login screen appears at all.",
+    anim:"kerberos"
+  },
+  {
+    cat:"Identity", id:"ldap-group",
+    role:"LDAP Group Role Mapping", what:"Extracts group membership from LDAP and maps it to Apache access controls — admin vs user vs read-only.",
+    modules:"mod_authnz_ldap",
+    config:`Require ldap-group CN=Admins,OU=Groups,DC=corp,DC=com\nAuthLDAPGroupAttribute member\nAuthLDAPGroupAttributeIsDN on`,
+    example:"Only members of the 'DevOps' AD group can reach /deploy. Everyone else gets 403 even with valid credentials.",
+    anim:"ldap-group"
+  },
+
+  // ─── TRAFFIC ────────────────────────────────────
+  {
+    cat:"Traffic", id:"load-balancing",
+    role:"Load Balancing", what:"Distributes incoming requests across a pool of backend servers using Round Robin, Least Connections, or weighted rules.",
+    modules:"mod_proxy_balancer, mod_lbmethod_byrequests",
+    config:`<Proxy balancer://myapp>\n  BalancerMember http://srv1:8080\n  BalancerMember http://srv2:8080\n  BalancerMember http://srv3:8080\n  ProxySet lbmethod=byrequests\n</Proxy>`,
+    example:"An e-commerce site spreads 50,000 concurrent Black Friday shoppers across 5 application servers.",
+    anim:"load-balance"
+  },
+  {
+    cat:"Traffic", id:"health-check",
+    role:"Health Check", what:"Periodically probes backend servers. Unhealthy nodes are automatically removed from the pool and re-added when they recover.",
+    modules:"mod_proxy_hcheck",
+    config:`<Proxy balancer://myapp>\n  BalancerMember http://srv1:8080 hcmethod=GET hcuri=/health hcinterval=5\n  BalancerMember http://srv2:8080 hcmethod=GET hcuri=/health hcinterval=5\n</Proxy>`,
+    example:"Server #3 runs out of disk space and returns 500 on /health. Apache stops sending it traffic within 5 seconds.",
+    anim:"health-check"
+  },
+  {
+    cat:"Traffic", id:"sticky-session",
+    role:"Sticky Sessions", what:"Ensures returning users always reach the same backend server. Critical for in-memory session state.",
+    modules:"mod_proxy_balancer, mod_headers",
+    config:`Header add Set-Cookie "ROUTEID=.%{BALANCER_WORKER_ROUTE}e; path=/" env=BALANCER_ROUTE_CHANGED\n<Proxy balancer://myapp>\n  BalancerMember http://srv1:8080 route=1\n  BalancerMember http://srv2:8080 route=2\n  ProxySet stickysession=ROUTEID\n</Proxy>`,
+    example:"A user adds items to their cart (stored in server memory). Sticky sessions ensure they always hit the same server.",
+    anim:"sticky-session"
+  },
+  {
+    cat:"Traffic", id:"geo-routing",
+    role:"GeoIP / Geo Routing", what:"Routes users to region-specific backends or blocks access based on the country of the visitor's IP address.",
+    modules:"mod_maxminddb, mod_rewrite",
+    config:`MaxMindDBFile /etc/apache2/GeoLite2-Country.mmdb\nMaxMindDBEnable on\nRewriteCond %{ENV:MM_COUNTRY_CODE} ^(DE|FR|NL)$\nRewriteRule ^(.*)$ http://eu-backend:8080$1 [P]`,
+    example:"EU visitors are proxied to the Frankfurt data center for GDPR compliance. US visitors go to Virginia.",
+    anim:"geo-routing"
+  },
+  {
+    cat:"Traffic", id:"bandwidth-control",
+    role:"Bandwidth Throttling", what:"Limits download speed and concurrent connections per IP so one user can't monopolize the server.",
+    modules:"mod_ratelimit, mod_limitipconn",
+    config:`<Location "/downloads">\n  SetOutputFilter RATE_LIMIT\n  SetEnv rate-limit 204800\n</Location>\n# 204800 = 200KB/s`,
+    example:"A file hosting site caps each IP at 200KB/s and 5 concurrent downloads. 1000 users get fair bandwidth shares.",
+    anim:"bandwidth"
+  },
+
+  // ─── PERFORMANCE ────────────────────────────────
+  {
+    cat:"Performance", id:"http2",
+    role:"HTTP/2 Multiplexing", what:"One TCP connection carries many parallel requests simultaneously. Eliminates the head-of-line blocking of HTTP/1.1.",
+    modules:"mod_http2",
+    config:`Protocols h2 h2c http/1.1\n<VirtualHost *:443>\n  Protocols h2 http/1.1\n  H2Direct on\n</VirtualHost>`,
+    example:"A page with 50 assets (CSS, images, JS) loads them all on one connection instead of 6 parallel HTTP/1.1 connections.",
+    anim:"http2"
+  },
+  {
+    cat:"Performance", id:"caching",
+    role:"Disk / Memory Caching", what:"Stores backend responses locally. Repeat requests return the cached copy without hitting the application server.",
+    modules:"mod_cache, mod_cache_disk",
+    config:`CacheEnable disk "/static"\nCacheRoot /var/cache/apache2\nCacheDefaultExpire 600\nCacheDirLevels 2\nCacheDirLength 1`,
+    example:"A news site caches the homepage for 60 seconds. During a traffic spike, 100,000 requests/min get served from disk, not the database.",
+    anim:"cache"
+  },
+  {
+    cat:"Performance", id:"gzip",
+    role:"Gzip Compression", what:"Compresses text responses (HTML, CSS, JS, JSON) before sending. Reduces payload size by 60–80%.",
+    modules:"mod_deflate",
+    config:`AddOutputFilterByType DEFLATE text/html text/css\nAddOutputFilterByType DEFLATE application/javascript application/json\nDeflateCompressionLevel 6`,
+    example:"A 480KB React bundle compresses to 96KB over the wire. Page load on mobile drops from 3.2s to 0.8s.",
+    anim:"gzip"
+  },
+  {
+    cat:"Performance", id:"brotli",
+    role:"Brotli Compression", what:"Google's next-gen compression algorithm. 15–25% smaller than gzip for the same content — especially for HTML.",
+    modules:"mod_brotli",
+    config:`AddOutputFilterByType BROTLI_COMPRESS text/html text/css application/javascript\nBrotliCompressionQuality 5`,
+    example:"An SPA serving 200KB of JSON API responses drops to 42KB with Brotli — noticeably faster on 4G.",
+    anim:"brotli"
+  },
+  {
+    cat:"Performance", id:"connection-reuse",
+    role:"Connection Pooling", what:"Reuses existing TCP connections to backend servers instead of creating a new connection for every request.",
+    modules:"mod_proxy_http (keepalive)",
+    config:`ProxyPass "/app" "http://backend:8080/" keepalive=On\nSetEnv force-proxy-request-1.0 1\nSetEnv proxy-nokeepalive 0\nProxyTimeout 60`,
+    example:"A high-traffic API drops response time by 40ms because the 3-way TCP handshake overhead is eliminated per request.",
+    anim:"conn-reuse"
+  },
+  {
+    cat:"Performance", id:"cdn-origin",
+    role:"CDN Origin Config", what:"Sets cache-control headers so CDN edge nodes (Cloudflare, CloudFront) know how long to cache static assets.",
+    modules:"mod_headers, mod_expires",
+    config:`<FilesMatch "\.(jpg|png|css|js|woff2)$">\n  Header set Cache-Control "public, max-age=31536000, immutable"\n</FilesMatch>\nExpiresActive On\nExpiresDefault "access plus 1 year"`,
+    example:"Static assets are cached for 1 year at Cloudflare's 200+ edge locations. The origin server rarely serves them at all.",
+    anim:"cdn"
+  },
+  {
+    cat:"Performance", id:"mpm-tuning",
+    role:"MPM Worker Tuning", what:"Configure how Apache spawns processes and threads. Event MPM handles 3× more concurrent connections than Prefork for the same RAM.",
+    modules:"mpm_event, mpm_worker",
+    config:`<IfModule mpm_event_module>\n  StartServers           3\n  MinSpareThreads       25\n  MaxRequestWorkers    400\n  ThreadsPerChild       25\n</IfModule>`,
+    example:"Switching from Prefork to Event MPM allows 400 concurrent connections with the same memory budget as 130 in Prefork mode.",
+    anim:"mpm"
+  },
+
+  // ─── HOSTING ────────────────────────────────────
+  {
+    cat:"Hosting", id:"virtual-host",
+    role:"Virtual Hosting", what:"Host multiple completely independent websites on one server. Each domain gets its own document root, logs, and config.",
+    modules:"Core Apache",
+    config:`<VirtualHost *:443>\n  ServerName shop.example.com\n  DocumentRoot /var/www/shop\n</VirtualHost>\n<VirtualHost *:443>\n  ServerName blog.example.com\n  DocumentRoot /var/www/blog\n</VirtualHost>`,
+    example:"One $20/month server hosts 50 different client websites. Apache routes each domain to its own folder.",
+    anim:"vhost"
+  },
+  {
+    cat:"Hosting", id:"static-content",
+    role:"Static File Serving", what:"Efficiently serves HTML, CSS, JS, images, and fonts directly from disk without involving any application logic.",
+    modules:"Core Apache",
+    config:`DocumentRoot "/var/www/html"\n<Directory "/var/www/html">\n  Options -Indexes\n  AllowOverride None\n  Require all granted\n</Directory>`,
+    example:"A React SPA's dist/ folder is served directly by Apache. Thousands of asset requests are handled with minimal CPU.",
+    anim:"static"
+  },
+  {
+    cat:"Hosting", id:"webdav",
+    role:"WebDAV File Server", what:"Turns an Apache directory into a network drive that Windows, macOS, and Linux can mount directly.",
+    modules:"mod_dav, mod_dav_fs",
+    config:`<Location "/files">\n  DAV On\n  AuthType Basic\n  AuthName "Shared Files"\n  AuthUserFile /etc/apache2/.htpasswd\n  Require valid-user\n</Location>`,
+    example:"A design agency mounts the Apache server as a network drive in Windows Explorer to share large PSD files.",
+    anim:"webdav"
+  },
+
+  // ─── ROUTING ────────────────────────────────────
+  {
+    cat:"Routing", id:"url-rewrite",
+    role:"URL Rewriting", what:"Silently transforms request URLs — cleans up ugly query strings, maps old URLs to new structures, enables clean routing.",
+    modules:"mod_rewrite",
+    config:`RewriteEngine On\nRewriteRule ^/products/([a-z-]+)$ /products.php?slug=$1 [L,QSA]\nRewriteRule ^/blog/([0-9]{4})/(.+)$ /post.php?year=$1&slug=$2 [L]`,
+    example:"A URL like /products/blue-running-shoes silently maps to /products.php?slug=blue-running-shoes. Users never see the ugly version.",
+    anim:"url-rewrite"
+  },
+  {
+    cat:"Routing", id:"redirect",
+    role:"Redirects (301/302)", what:"Sends the browser to a new URL. 301 is permanent (SEO-safe), 302 is temporary. Used for migrations and canonicalization.",
+    modules:"mod_rewrite, mod_alias",
+    config:`# Permanent domain migration:\nRewriteRule ^(.*)$ https://newsite.com$1 [R=301,L]\n\n# Force HTTPS:\nRewriteCond %{HTTPS} off\nRewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]`,
+    example:"An old domain old-brand.com is retired. Every URL 301-redirects to new-brand.com, preserving search engine rankings.",
+    anim:"redirect"
+  },
+  {
+    cat:"Routing", id:"version-routing",
+    role:"API Version Routing", what:"Routes /api/v1/ and /api/v2/ to different backend services so both API versions run simultaneously.",
+    modules:"mod_proxy, mod_rewrite",
+    config:`ProxyPass "/api/v1" "http://api-v1:8080"\nProxyPass "/api/v2" "http://api-v2:9090"\n# Legacy clients still hit v1, new clients use v2`,
+    example:"A mobile app supports both API v1 and v2. Old installs continue to work; new installs use the faster v2 backend.",
+    anim:"version-route"
+  },
+  {
+    cat:"Routing", id:"mobile-redirect",
+    role:"Mobile Device Redirect", what:"Detects mobile User-Agents and routes them to a mobile-optimised version of the site.",
+    modules:"mod_rewrite, mod_setenvif",
+    config:`BrowserMatch "Mobile|Android|iPhone" IS_MOBILE\nRewriteCond %{ENV:IS_MOBILE} 1\nRewriteCond %{REQUEST_URI} !^/m/\nRewriteRule ^(.*)$ /m$1 [L,R=302]`,
+    example:"Android and iPhone users visiting example.com are redirected to m.example.com which serves a lighter mobile layout.",
+    anim:"mobile-redirect"
+  },
+
+  // ─── INTEGRATION ────────────────────────────────
+  {
+    cat:"Integration", id:"header-modification",
+    role:"Header Modification", what:"Adds, removes, or rewrites HTTP headers before passing to the backend — inject user info, trace IDs, internal secrets.",
+    modules:"mod_headers",
+    config:`# Pass auth info to backend:\nRequestHeader set X-Authenticated-User "%{REMOTE_USER}e"\nRequestHeader set X-Forwarded-For "%{REMOTE_ADDR}s"\n# Remove internal headers from responses:\nHeader unset X-Powered-By`,
+    example:"Apache strips X-Powered-By (hides server stack), and injects X-User-ID so the backend doesn't need to re-validate the JWT.",
+    anim:"headers"
+  },
+  {
+    cat:"Integration", id:"webhook",
+    role:"Webhook Receiver", what:"Accepts HTTP POST callbacks from external systems (GitHub, Stripe, PagerDuty) and forwards to internal handlers.",
+    modules:"mod_proxy, mod_rewrite",
+    config:`<Location "/webhooks/github">\n  ProxyPass "http://webhook-handler:5000/github"\n  Require all granted\n</Location>`,
+    example:"GitHub pushes a webhook to /webhooks/github on every commit. Apache forwards it to the internal CI trigger service.",
+    anim:"webhook"
+  },
+  {
+    cat:"Integration", id:"php-fpm",
+    role:"PHP-FPM / FastCGI", what:"Forwards PHP requests to a dedicated PHP-FPM process pool — decoupling the PHP runtime from Apache for better performance.",
+    modules:"mod_proxy_fcgi",
+    config:`<FilesMatch \\.php$>\n  SetHandler "proxy:unix:/run/php/php8.2-fpm.sock|fcgi://localhost"\n</FilesMatch>`,
+    example:"A WordPress site on PHP-FPM handles 500 concurrent PHP requests without spawning 500 Apache processes.",
+    anim:"php-fpm"
+  },
+  {
+    cat:"Integration", id:"python",
+    role:"Python / WSGI Runtime", what:"Runs Django, Flask, or any WSGI app directly inside Apache. The app is embedded in the server process.",
+    modules:"mod_wsgi",
+    config:`WSGIScriptAlias / /var/www/myapp/wsgi.py\n<Directory /var/www/myapp>\n  Require all granted\n</Directory>`,
+    example:"A Django weather app runs inside Apache via mod_wsgi. No separate Gunicorn or uWSGI process needed.",
+    anim:"python"
+  },
+  {
+    cat:"Integration", id:"service-mesh",
+    role:"Service Mesh Edge", what:"Acts as the ingress gateway for a service mesh (Istio, Consul). Handles TLS, auth, and routing before traffic enters the mesh.",
+    modules:"mod_proxy, mod_ssl",
+    config:`# Route to mesh sidecar\nProxyPass "/svc" "http://envoy-sidecar:15001/"\n# mTLS to mesh\nSSLVerifyClient require\nSSLCACertificateFile /etc/mesh/ca.crt`,
+    example:"A hybrid cloud app uses Apache as the public edge. Istio mesh takes over once traffic enters the internal cluster.",
+    anim:"service-mesh"
+  },
+
+  // ─── OBSERVABILITY ──────────────────────────────
+  {
+    cat:"Observability", id:"request-logging",
+    role:"Custom Request Logging", what:"Records every request with configurable fields — IP, response time, status code, referrer, user agent.",
+    modules:"mod_log_config",
+    config:`LogFormat "%h %t \\"%r\\" %>s %b %D \\"%{User-Agent}i\\"" detailed\nCustomLog /var/log/apache2/access.log detailed`,
+    example:"A DevOps team exports Apache logs to Grafana/Loki and dashboards which endpoints are slowest and most error-prone.",
+    anim:"logging"
+  },
+  {
+    cat:"Observability", id:"structured-logging",
+    role:"Structured / JSON Logging", what:"Outputs logs in JSON format instead of plain text — directly parseable by Elasticsearch, Splunk, and SIEM tools.",
+    modules:"mod_log_config",
+    config:`LogFormat "{ \\"time\\":\\"%t\\", \\"ip\\":\\"%h\\", \\"method\\":\\"%m\\", \\"uri\\":\\"%U\\", \\"status\\":%>s, \\"duration\\":%D }" json\nCustomLog /var/log/apache2/structured.log json`,
+    example:"The security team feeds JSON Apache logs into Splunk. Automated alerts fire when the 403 rate exceeds 5% in a 60-second window.",
+    anim:"struct-log"
+  },
+  {
+    cat:"Observability", id:"tracing",
+    role:"Distributed Tracing Headers", what:"Stamps every request with a unique Trace ID and propagates it to backend services for end-to-end trace correlation.",
+    modules:"mod_unique_id, mod_headers",
+    config:`# Generate unique ID\nLogFormat "%{UNIQUE_ID}e %h %t \\"%r\\" %>s" trace\n# Forward to backend\nRequestHeader set X-Trace-ID "%{UNIQUE_ID}e"`,
+    example:"A support engineer pastes a UNIQUE_ID from a user's error email into Jaeger and sees the full trace across 8 services.",
+    anim:"tracing"
+  },
+  {
+    cat:"Observability", id:"server-status",
+    role:"Server Status Dashboard", what:"Exposes a live /server-status page showing active workers, connections, request rates, and CPU load.",
+    modules:"mod_status",
+    config:`<Location "/server-status">\n  SetHandler server-status\n  Require ip 10.0.0.0/8\n  ExtendedStatus On\n</Location>`,
+    example:"During a traffic spike, a sysadmin opens /server-status and sees 395/400 workers are busy — triggers an alert to scale.",
+    anim:"srv-status"
+  },
+
+  // ─── DEVOPS ─────────────────────────────────────
+  {
+    cat:"DevOps", id:"maintenance",
+    role:"Maintenance Mode", what:"Instantly reroutes all traffic to a static maintenance page without stopping the application processes.",
+    modules:"mod_rewrite",
+    config:`RewriteEngine On\nRewriteCond %{REMOTE_ADDR} !^203\\.0\\.113\\.5$\nRewriteCond %{REQUEST_URI} !/maintenance.html\nRewriteRule ^(.*)$ /maintenance.html [R=302,L]`,
+    example:"During a DB migration, traffic is silently redirected to 'We'll be back in 20 minutes'. Your office IP is exempt for testing.",
+    anim:"maintenance"
+  },
+  {
+    cat:"DevOps", id:"blue-green",
+    role:"Blue/Green Deployment", what:"Maintain two identical production environments. Switch all traffic instantly between them with zero downtime.",
+    modules:"mod_proxy_balancer",
+    config:`# Currently serving blue:\nProxyPass "/app" "http://blue-env:8080/"\n\n# To cut over to green, change one line:\n# ProxyPass "/app" "http://green-env:8080/"`,
+    example:"Version 2.0 is deployed to the green environment and tested. Traffic is switched in 2 seconds. Green becomes the new blue.",
+    anim:"blue-green"
+  },
+  {
+    cat:"DevOps", id:"canary",
+    role:"Canary / A-B Release", what:"Routes a small percentage (1–10%) of real traffic to the new version while the majority goes to the stable version.",
+    modules:"mod_proxy_balancer",
+    config:`<Proxy balancer://myapp>\n  BalancerMember http://stable:8080 loadfactor=9\n  BalancerMember http://canary:8080 loadfactor=1\n</Proxy>`,
+    example:"10% of users hit the new checkout flow. Error rates are monitored. If stable for 30 minutes, traffic shifts to 100%.",
+    anim:"canary"
+  },
+  {
+    cat:"DevOps", id:"feature-toggle",
+    role:"Feature Toggle Routing", what:"Routes users matching certain criteria (cookie, header, IP) to a version with a feature flag enabled.",
+    modules:"mod_rewrite, mod_setenvif",
+    config:`SetEnvIf Cookie "beta_user=1" IS_BETA\nRewriteCond %{ENV:IS_BETA} 1\nRewriteRule ^(.*)$ http://beta-backend:8080$1 [P,L]`,
+    example:"Users who opted into the beta program are routed to the beta backend. Everyone else gets the stable experience.",
+    anim:"feature-toggle"
+  },
+
+  // ─── EDGE / TRANSFORMATION ──────────────────────
+  {
+    cat:"Edge", id:"content-sub",
+    role:"Content Substitution", what:"Modifies response bodies on the fly — replaces text patterns before sending to the client.",
+    modules:"mod_substitute",
+    config:`AddOutputFilterByType SUBSTITUTE text/html\nSubstitute "s|http://old-cdn.com|https://new-cdn.com|ni"\nSubstitute "s|INTERNAL-SERVER-ID||ni"`,
+    example:"Apache strips internal server IDs from all HTML responses so clients can't fingerprint which backend served them.",
+    anim:"content-sub"
+  },
+  {
+    cat:"Edge", id:"response-filter",
+    role:"Response Filtering / Masking", what:"Removes or redacts sensitive data from responses — hides internal IDs, IP addresses, or PII before they reach the client.",
+    modules:"mod_substitute, mod_security2",
+    config:`AddOutputFilterByType SUBSTITUTE application/json\nSubstitute "s|\\"internal_id\\":[0-9]+|\\"internal_id\\":null|n"`,
+    example:"An API response contains internal auto-increment IDs. Apache masks them to null before the response leaves the server.",
+    anim:"resp-filter"
+  },
+  {
+    cat:"Edge", id:"ssi",
+    role:"Server-Side Includes (SSI)", what:"Executes simple directives inside HTML files — inject file contents, dates, or script output without a full app server.",
+    modules:"mod_include",
+    config:`Options +Includes\nAddOutputFilter INCLUDES .shtml\n<!-- In HTML file: -->\n<!--#include virtual="/footer.html" -->\n<!--#echo var="DATE_LOCAL" -->`,
+    example:"A university's static site auto-updates 'Last modified: [date]' on every page without a CMS backend.",
+    anim:"ssi"
+  },
+  {
+    cat:"Edge", id:"ipv6",
+    role:"IPv6 Dual-Stack", what:"Listens on both IPv4 and IPv6 addresses simultaneously. Required for cloud-native and modern hosting environments.",
+    modules:"Core Apache",
+    config:`Listen 0.0.0.0:80\nListen [::]:80\nListen 0.0.0.0:443\nListen [::]:443`,
+    example:"A cloud-native app receives IPv6 traffic natively from AWS IPv6-enabled ALBs without any translation overhead.",
+    anim:"ipv6"
+  },
+  {
+    cat:"Edge", id:"lua-scripting",
+    role:"Lua Dynamic Routing", what:"Embed Lua scripts for complex routing logic — inspect tokens, parse request bodies, and make routing decisions programmatically.",
+    modules:"mod_lua",
+    config:`LuaHookTranslateName /etc/apache2/router.lua translate_name\n-- router.lua:\nfunction translate_name(r)\n  if r.uri:match("^/v2") then\n    r.uri = r.uri:gsub("^/v2","/api/v2")\n  end\nend`,
+    example:"A SaaS platform inspects JWT claims in Lua and routes 'admin' role users to a dedicated high-priority backend pool.",
+    anim:"lua"
+  },
+];
+
+// ── category meta ──────────────────────────────────────────────────────────
+const catMeta = {
+  "Gateway":     {cls:"c-gateway",     label:"Gateway"},
+  "Security":    {cls:"c-security",    label:"Security"},
+  "Identity":    {cls:"c-identity",    label:"Identity"},
+  "Traffic":     {cls:"c-traffic",     label:"Traffic"},
+  "Performance": {cls:"c-performance", label:"Performance"},
+  "Hosting":     {cls:"c-hosting",     label:"Hosting"},
+  "Routing":     {cls:"c-routing",     label:"Routing"},
+  "Integration": {cls:"c-integration", label:"Integration"},
+  "Observability":{cls:"c-observability",label:"Observability"},
+  "DevOps":      {cls:"c-devops",      label:"DevOps"},
+  "Edge":        {cls:"c-edge",        label:"Edge"},
+};
+
+// routing c-routing for cat tag
+const clsMap = {
+  "Gateway":"c-gateway","Security":"c-security","Identity":"c-identity",
+  "Traffic":"c-traffic","Performance":"c-performance","Hosting":"c-hosting",
+  "Routing":"c-gateway","Integration":"c-integration",
+  "Observability":"c-observability","DevOps":"c-devops","Edge":"c-edge"
+};
+
+let activeCategory = "All";
+let searchQuery = "";
+
+// ── BUILD NAV ──────────────────────────────────────────────────────────────
+function buildNav() {
+  const nav = document.getElementById('catNav');
+  const cats = ["All", ...Object.keys(catMeta)];
+  cats.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'cat-btn' + (c === "All" ? ' active' : '');
+    b.textContent = c;
+    b.onclick = () => {
+      activeCategory = c;
+      document.querySelectorAll('.cat-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      render();
+    };
+    nav.appendChild(b);
+  });
+}
+
+function filterCards() {
+  searchQuery = document.getElementById('searchInput').value.toLowerCase();
+  render();
+}
+
+function getFiltered() {
+  return features.filter(f => {
+    const catOk = activeCategory === "All" || f.cat === activeCategory;
+    const q = searchQuery;
+    if (!q) return catOk;
+    const haystack = [f.cat, f.role, f.what, f.modules, f.example].join(' ').toLowerCase();
+    return catOk && haystack.includes(q);
+  });
+}
+
+// ── GROUP by category ─────────────────────────────────────────────────────
+function render() {
+  const filtered = getFiltered();
+  document.getElementById('countBadge').textContent = filtered.length + ' features';
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+
+  if (filtered.length === 0) {
+    main.innerHTML = '<div class="grid"><div class="no-results">No matching features found.</div></div>';
+    return;
+  }
+
+  const grouped = {};
+  filtered.forEach(f => {
+    if (!grouped[f.cat]) grouped[f.cat] = [];
+    grouped[f.cat].push(f);
+  });
+
+  Object.entries(grouped).forEach(([cat, items]) => {
+    const label = document.createElement('div');
+    label.className = 'section-label';
+    label.textContent = cat;
+    main.appendChild(label);
+
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+    items.forEach(f => grid.appendChild(makeCard(f)));
+    main.appendChild(grid);
+  });
+}
+
+// ── CARD ──────────────────────────────────────────────────────────────────
+function makeCard(f) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="card-anim">${svgAnim(f.anim, f.cat)}</div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="cat-tag ${clsMap[f.cat] || 'c-gateway'}">${f.cat}</span>
+        <span style="font-size:10px;color:var(--text3)">${f.modules}</span>
+      </div>
+      <div class="card-title">${f.role}</div>
+      <div class="card-desc">${f.what}</div>
+      <div class="card-expand">
+        <div class="expand-section">
+          <div class="expand-label">Config snippet</div>
+          <pre class="config-block">${colorize(f.config)}</pre>
+        </div>
+        <div class="expand-section">
+          <div class="expand-label">Real-world example</div>
+          <div class="example-box">${f.example}</div>
+        </div>
+      </div>
+    </div>`;
+  card.onclick = () => card.classList.toggle('expanded');
+  return card;
+}
+
+function colorize(cfg) {
+  return cfg
+    .replace(/(#[^\n]+)/g, '<span class="comment">$1</span>')
+    .replace(/^([A-Za-z][A-Za-z0-9_]+)(\s)/gm, '<span class="directive">$1</span>$2')
+    .replace(/"([^"]+)"/g, '"<span class="value">$1</span>"');
+}
+
+// ── ANIMATED SVGS ─────────────────────────────────────────────────────────
+function svgAnim(type, cat) {
+  const accentColors = {
+    "Gateway":"#3b82f6","Security":"#ef4444","Identity":"#a855f7",
+    "Traffic":"#14b8a6","Performance":"#eab308","Hosting":"#22c55e",
+    "Routing":"#3b82f6","Integration":"#f97316","Observability":"#6366f1",
+    "DevOps":"#ec4899","Edge":"#0ea5e9"
+  };
+  const ac = accentColors[cat] || "#f97316";
+  const dim = "#1a2536";
+  const border = "#2a3a52";
+  const textCol = "#6b7e96";
+
+  // Helper: server box
+  function srvBox(x,y,w,h,label,col) {
+    col = col||ac;
+    return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="${dim}" stroke="${col}" stroke-width="1.2"/>
+    <text x="${x+w/2}" y="${y+h/2+1}" text-anchor="middle" dominant-baseline="central" fill="${col}" font-size="9" font-family="DM Mono,monospace">${label}</text>`;
+  }
+  function arrow(x1,y1,x2,y2,col,dash) {
+    col=col||ac;
+    const d = dash?`stroke-dasharray="5 3" class="flow-line"`:'';
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="1.5" marker-end="url(#arr)" ${d}/>`;
+  }
+  const defs = `<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="${ac}" stroke-width="1.8" stroke-linecap="round"/></marker></defs>`;
+
+  const anims = {
+    "reverse-proxy": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(10,55,60,30,"Client","#6b7e96")}
+      ${srvBox(140,50,60,40,"Apache","#f97316")}
+      ${srvBox(270,55,60,30,"Backend","#3b82f6")}
+      <text x="170" y="22" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">REVERSE PROXY</text>
+      <rect x="140" y="50" width="60" height="40" rx="6" fill="none" stroke="#f97316" stroke-width="1" opacity="0.4" class="pulse"/>
+      ${arrow(72,70,138,70,ac,true)}
+      ${arrow(202,65,268,65,"#3b82f6",true)}
+      ${arrow(268,75,202,75,"#3b82f6",true)}
+      <line x1="72" y1="70" x2="138" y2="70" stroke="${ac}" stroke-width="1.5" stroke-dasharray="5 3" class="flow-line"/>
+      <circle cx="90" cy="70" r="4" fill="${ac}" class="pkt1"/>
+      <circle cx="90" cy="70" r="4" fill="${ac}" class="pkt2"/>
+      <circle cx="230" cy="65" r="4" fill="#3b82f6" class="pkt1"/>
+      <text x="170" y="118" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">backend never exposed publicly</text>
+    </svg>`,
+
+    "forward-proxy": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(10,55,60,30,"Employee","#6b7e96")}
+      ${srvBox(140,50,60,40,"Apache","#f97316")}
+      ${srvBox(270,40,60,25,"Allowed","#22c55e")}
+      ${srvBox(270,75,60,25,"Blocked","#ef4444")}
+      <line x1="72" y1="70" x2="138" y2="70" stroke="${ac}" stroke-width="1.5" stroke-dasharray="5 3" class="flow-line"/>
+      <line x1="202" y1="62" x2="268" y2="52" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="202" y1="78" x2="268" y2="88" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="4 3"/>
+      <text x="240" y="87" fill="#ef4444" font-size="14">✕</text>
+      <circle cx="90" cy="70" r="4" fill="${ac}" class="pkt1"/>
+      <text x="170" y="118" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">controls outbound access policy</text>
+    </svg>`,
+
+    "api-routing": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(130,10,80,28,"Apache Gateway","#f97316")}
+      ${srvBox(20,85,80,28,"/users → :3001","#3b82f6")}
+      ${srvBox(130,85,80,28,"/orders → :3002","#14b8a6")}
+      ${srvBox(240,85,80,28,"/pay → :3003","#a855f7")}
+      <line x1="170" y1="38" x2="60" y2="83" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="170" y1="38" x2="170" y2="83" stroke="#14b8a6" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="170" y1="38" x2="280" y2="83" stroke="#a855f7" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <circle cx="10" cy="24" r="8" fill="${dim}" stroke="#6b7e96" stroke-width="1"/>
+      <text x="10" y="24" text-anchor="middle" dominant-baseline="central" fill="#6b7e96" font-size="8">CLI</text>
+      <line x1="18" y1="24" x2="128" y2="24" stroke="${ac}" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="128" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">one public entry → many internal services</text>
+    </svg>`,
+
+    "websocket": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(20,55,70,30,"Browser","#6b7e96")}
+      ${srvBox(140,50,60,40,"Apache","#f97316")}
+      ${srvBox(250,55,70,30,"ws://app","#14b8a6")}
+      <line x1="92" y1="65" x2="138" y2="65" stroke="${ac}" stroke-width="1.5"/>
+      <line x1="92" y1="75" x2="138" y2="75" stroke="${ac}" stroke-width="1.5"/>
+      <line x1="202" y1="65" x2="248" y2="65" stroke="#14b8a6" stroke-width="1.5"/>
+      <line x1="202" y1="75" x2="248" y2="75" stroke="#14b8a6" stroke-width="1.5"/>
+      <circle cx="115" cy="65" r="4" fill="${ac}" class="ws-up"/>
+      <circle cx="115" cy="75" r="4" fill="#6b7e96" class="ws-dn"/>
+      <circle cx="225" cy="65" r="4" fill="#14b8a6" class="ws-up"/>
+      <circle cx="225" cy="75" r="4" fill="#22c55e" class="ws-dn"/>
+      <text x="170" y="22" text-anchor="middle" fill="${ac}" font-size="8" font-family="DM Mono,monospace">Upgrade: websocket</text>
+      <text x="170" y="118" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">persistent bidirectional channel</text>
+    </svg>`,
+
+    "tls": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(10,55,70,30,"Browser","#6b7e96")}
+      ${srvBox(130,50,80,40,"Apache TLS","#f97316")}
+      ${srvBox(260,55,70,30,"HTTP App","#22c55e")}
+      <text x="45" y="42" text-anchor="middle" fill="#ef4444" font-size="18" class="shimmer">🔒</text>
+      <text x="170" y="42" text-anchor="middle" fill="#f97316" font-size="9" font-family="DM Mono,monospace">cert.pem + key.pem</text>
+      <line x1="82" y1="70" x2="128" y2="70" stroke="#ef4444" stroke-width="2" stroke-dasharray="3 2"/>
+      <line x1="212" y1="70" x2="258" y2="70" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="5 3" class="flow-line"/>
+      <text x="55" y="100" text-anchor="middle" fill="#ef4444" font-size="8" font-family="DM Mono,monospace">HTTPS</text>
+      <text x="235" y="100" text-anchor="middle" fill="#22c55e" font-size="8" font-family="DM Mono,monospace">plain HTTP</text>
+      <text x="170" y="118" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">backend never handles SSL overhead</text>
+    </svg>`,
+
+    "rate-limit": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(200,50,80,40,"Apache","#f97316")}
+      <text x="170" y="22" text-anchor="middle" fill="${textCol}" font-size="9" font-family="DM Mono,monospace">rate: 10 req/sec</text>
+      <line x1="60" y1="50" x2="198" y2="58" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="60" y1="70" x2="198" y2="70" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="60" y1="90" x2="198" y2="82" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="40" y1="110" x2="80" y2="110" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3 2"/>
+      <text x="95" y="115" fill="#ef4444" font-size="18">✕</text>
+      <text x="110" y="112" fill="#ef4444" font-size="8" font-family="DM Mono,monospace">429 Too Many</text>
+      <circle cx="30" cy="50" r="8" fill="${dim}" stroke="#22c55e" stroke-width="1"/>
+      <circle cx="30" cy="70" r="8" fill="${dim}" stroke="#22c55e" stroke-width="1"/>
+      <circle cx="30" cy="90" r="8" fill="${dim}" stroke="#22c55e" stroke-width="1"/>
+      <circle cx="30" cy="110" r="8" fill="${dim}" stroke="#ef4444" stroke-width="1"/>
+      <text x="30" y="110" text-anchor="middle" dominant-baseline="central" fill="#ef4444" font-size="7">BOT</text>
+      <text x="170" y="125" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">burst absorbed, excess rejected</text>
+    </svg>`,
+
+    "waf": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <text x="80" y="30" text-anchor="middle" fill="#ef4444" font-size="9" font-family="DM Mono,monospace">malicious request</text>
+      ${srvBox(20,40,120,40,"' OR 1=1; --","#ef4444")}
+      ${srvBox(220,50,100,30,"App Server","#22c55e")}
+      <rect x="160" y="45" width="50" height="50" rx="6" fill="${dim}" stroke="#f97316" stroke-width="1.5"/>
+      <text x="185" y="67" text-anchor="middle" fill="#f97316" font-size="8" font-family="DM Mono,monospace">WAF</text>
+      <text x="185" y="82" text-anchor="middle" fill="#f97316" font-size="7" font-family="DM Mono,monospace">OWASP</text>
+      <line x1="142" y1="65" x2="158" y2="65" stroke="#ef4444" stroke-width="1.5"/>
+      <text x="172" y="112" fill="#ef4444" font-size="18">✕</text>
+      <text x="185" y="120" text-anchor="middle" fill="#ef4444" font-size="8" font-family="DM Mono,monospace">403 Blocked</text>
+      <rect x="160" y="46" width="50" height="4" rx="2" fill="#f97316" class="scan"/>
+    </svg>`,
+
+    "load-balance": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(130,55,60,30,"Balancer","#f97316")}
+      ${srvBox(240,20,70,24,"srv1","#3b82f6")}
+      ${srvBox(240,58,70,24,"srv2","#3b82f6")}
+      ${srvBox(240,96,70,24,"srv3","#3b82f6")}
+      <circle cx="45" cy="70" r="12" fill="${dim}" stroke="#6b7e96" stroke-width="1"/>
+      <text x="45" y="70" text-anchor="middle" dominant-baseline="central" fill="#6b7e96" font-size="8">User</text>
+      <line x1="58" y1="70" x2="128" y2="70" stroke="${ac}" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="192" y1="65" x2="238" y2="32" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="192" y1="70" x2="238" y2="70" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="192" y1="75" x2="238" y2="108" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <circle cx="75" cy="70" r="4" fill="${ac}" class="pkt1"/>
+      <circle cx="75" cy="70" r="4" fill="${ac}" class="pkt2"/>
+      <circle cx="75" cy="70" r="4" fill="${ac}" class="pkt3"/>
+    </svg>`,
+
+    "health-check": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(130,55,60,30,"Balancer","#f97316")}
+      ${srvBox(240,20,80,24,"srv1 ✓","#22c55e")}
+      ${srvBox(240,58,80,24,"srv2 ✗","#ef4444")}
+      ${srvBox(240,96,80,24,"srv3 ✓","#22c55e")}
+      <line x1="192" y1="65" x2="238" y2="32" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="192" y1="70" x2="238" y2="70" stroke="#ef4444" stroke-width="1.2" opacity="0.4"/>
+      <text x="224" y="68" fill="#ef4444" font-size="11">✕</text>
+      <line x1="192" y1="75" x2="238" y2="108" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <circle cx="280" cy="32" r="6" fill="none" stroke="#22c55e" stroke-width="1.5" class="ping1"/>
+      <circle cx="280" cy="32" r="6" fill="none" stroke="#22c55e" stroke-width="1" class="ping2"/>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">unhealthy node removed from pool</text>
+    </svg>`,
+
+    "cache": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(15,55,55,30,"Client","#6b7e96")}
+      ${srvBox(135,50,70,40,"Apache Cache","#f97316")}
+      ${srvBox(265,55,60,30,"Backend","#3b82f6")}
+      <text x="170" y="22" text-anchor="middle" fill="#ef4444" font-size="8" font-family="DM Mono,monospace">MISS → fetch from backend</text>
+      <text x="170" y="32" text-anchor="middle" fill="#22c55e" font-size="8" font-family="DM Mono,monospace">HIT  → serve from disk ⚡</text>
+      <line x1="72" y1="68" x2="133" y2="68" stroke="${ac}" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="207" y1="65" x2="263" y2="65" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="133" y1="75" x2="72" y2="75" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <rect x="145" y="88" width="50" height="6" rx="3" fill="#22c55e" opacity="0.4" class="compress-bar"/>
+      <text x="170" y="118" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">60s TTL · disk cache</text>
+    </svg>`,
+
+    "gzip": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <rect x="100" y="30" width="40" height="70" rx="4" fill="${dim}" stroke="#6b7e96" stroke-width="1"/>
+      <text x="120" y="62" text-anchor="middle" fill="#6b7e96" font-size="7" font-family="DM Mono,monospace">480</text>
+      <text x="120" y="74" text-anchor="middle" fill="#6b7e96" font-size="7" font-family="DM Mono,monospace">KB</text>
+      <text x="120" y="115" text-anchor="middle" fill="#6b7e96" font-size="8">original</text>
+      <text x="180" y="72" text-anchor="middle" fill="${ac}" font-size="16">⇒</text>
+      <text x="180" y="88" text-anchor="middle" fill="${ac}" font-size="8" font-family="DM Mono,monospace">gzip</text>
+      <rect x="220" y="50" width="40" height="30" rx="4" fill="${dim}" stroke="${ac}" stroke-width="1.5" class="compress-bar" style="transform-origin:220px 80px"/>
+      <text x="240" y="62" text-anchor="middle" fill="${ac}" font-size="7" font-family="DM Mono,monospace">96</text>
+      <text x="240" y="74" text-anchor="middle" fill="${ac}" font-size="7" font-family="DM Mono,monospace">KB</text>
+      <text x="240" y="115" text-anchor="middle" fill="${ac}" font-size="8">compressed</text>
+      <text x="170" y="125" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">80% smaller over the wire</text>
+    </svg>`,
+
+    "http2": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(20,50,80,40,"HTTP/2 Server","#eab308")}
+      <text x="170" y="25" text-anchor="middle" fill="#eab308" font-size="9" font-family="DM Mono,monospace">one connection → many streams</text>
+      <line x1="102" y1="60" x2="230" y2="40" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="102" y1="65" x2="230" y2="60" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="102" y1="70" x2="230" y2="80" stroke="#a855f7" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="102" y1="75" x2="230" y2="100" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      ${srvBox(232,32,80,20,"stream 1","#3b82f6")}
+      ${srvBox(232,52,80,20,"stream 2","#22c55e")}
+      ${srvBox(232,72,80,20,"stream 3","#a855f7")}
+      ${srvBox(232,92,80,20,"stream 4","#ef4444")}
+      <text x="170" y="125" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">no head-of-line blocking</text>
+    </svg>`,
+
+    "vhost": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(130,50,80,40,"Apache","#f97316")}
+      ${srvBox(10,20,90,25,"shop.example.com","#22c55e")}
+      ${srvBox(10,55,90,25,"blog.example.com","#3b82f6")}
+      ${srvBox(10,90,90,25,"api.example.com","#a855f7")}
+      ${srvBox(248,20,80,25,"/var/www/shop","#22c55e")}
+      ${srvBox(248,55,80,25,"/var/www/blog","#3b82f6")}
+      ${srvBox(248,90,80,25,"/var/www/api","#a855f7")}
+      <line x1="102" y1="32" x2="128" y2="60" stroke="#22c55e" stroke-width="1" stroke-dasharray="3 2"/>
+      <line x1="102" y1="67" x2="128" y2="70" stroke="#3b82f6" stroke-width="1" stroke-dasharray="3 2"/>
+      <line x1="102" y1="103" x2="128" y2="80" stroke="#a855f7" stroke-width="1" stroke-dasharray="3 2"/>
+      <line x1="212" y1="60" x2="246" y2="32" stroke="#22c55e" stroke-width="1" stroke-dasharray="3 2"/>
+      <line x1="212" y1="70" x2="246" y2="67" stroke="#3b82f6" stroke-width="1" stroke-dasharray="3 2"/>
+      <line x1="212" y1="80" x2="246" y2="103" stroke="#a855f7" stroke-width="1" stroke-dasharray="3 2"/>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">one server · many domains</text>
+    </svg>`,
+
+    "url-rewrite": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <rect x="20" y="40" width="140" height="28" rx="5" fill="${dim}" stroke="#ef4444" stroke-width="1"/>
+      <text x="90" y="54" text-anchor="middle" dominant-baseline="central" fill="#ef4444" font-size="9" font-family="DM Mono,monospace">/products.php?id=99</text>
+      <rect x="20" y="85" width="140" height="28" rx="5" fill="${dim}" stroke="#22c55e" stroke-width="1"/>
+      <text x="90" y="99" text-anchor="middle" dominant-baseline="central" fill="#22c55e" font-size="9" font-family="DM Mono,monospace">/blue-running-shoes</text>
+      <line x1="90" y1="68" x2="90" y2="83" stroke="${ac}" stroke-width="1.5" marker-end="url(#arr)"/>
+      <text x="105" y="78" fill="${ac}" font-size="8" font-family="DM Mono,monospace">silent</text>
+      ${srvBox(210,57,110,28,"mod_rewrite","#f97316")}
+      <line x1="162" y1="54" x2="208" y2="65" stroke="#ef4444" stroke-width="1" stroke-dasharray="3 2"/>
+      <line x1="162" y1="99" x2="208" y2="79" stroke="#22c55e" stroke-width="1" stroke-dasharray="3 2"/>
+      <text x="170" y="118" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">SEO friendly · user never sees .php</text>
+    </svg>`,
+
+    "ldap": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <circle cx="50" cy="70" r="18" fill="${dim}" stroke="#a855f7" stroke-width="1.5"/>
+      <text x="50" y="66" text-anchor="middle" fill="#a855f7" font-size="8" font-family="DM Mono,monospace">User</text>
+      <text x="50" y="78" text-anchor="middle" fill="#a855f7" font-size="8" font-family="DM Mono,monospace">🔑</text>
+      ${srvBox(110,55,80,30,"Apache","#f97316")}
+      ${srvBox(235,40,90,25,"Active Directory","#a855f7")}
+      ${srvBox(235,80,90,25,"App Server","#22c55e")}
+      <line x1="68" y1="70" x2="108" y2="70" stroke="${ac}" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="192" y1="65" x2="233" y2="52" stroke="#a855f7" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="210" y="60" fill="#a855f7" font-size="8">?</text>
+      <line x1="233" y1="52" x2="200" y2="65" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="3 2"/>
+      <text x="205" y="58" fill="#22c55e" font-size="8">✓</text>
+      <line x1="192" y1="75" x2="233" y2="88" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">Windows domain credentials</text>
+    </svg>`,
+
+    "sticky-session": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(130,55,60,30,"Balancer","#f97316")}
+      ${srvBox(240,25,80,25,"srv1 🛒","#22c55e")}
+      ${srvBox(240,62,80,25,"srv2","#3b82f6")}
+      ${srvBox(240,99,80,25,"srv3","#3b82f6")}
+      <circle cx="45" cy="45" r="12" fill="${dim}" stroke="#22c55e" stroke-width="1.5"/>
+      <text x="45" y="41" text-anchor="middle" fill="#22c55e" font-size="7">User</text>
+      <text x="45" y="52" text-anchor="middle" fill="#22c55e" font-size="7">A</text>
+      <circle cx="45" cy="95" r="12" fill="${dim}" stroke="#22c55e" stroke-width="1.5"/>
+      <text x="45" y="91" text-anchor="middle" fill="#22c55e" font-size="7">User</text>
+      <text x="45" y="102" text-anchor="middle" fill="#22c55e" font-size="7">A</text>
+      <line x1="57" y1="45" x2="128" y2="60" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="57" y1="95" x2="128" y2="75" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="192" y1="67" x2="238" y2="37" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="192" y1="73" x2="238" y2="73" stroke="#6b7e96" stroke-width="1" opacity="0.3"/>
+      <line x1="192" y1="77" x2="238" y2="111" stroke="#6b7e96" stroke-width="1" opacity="0.3"/>
+      <text x="170" y="120" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">ROUTEID cookie → always srv1</text>
+    </svg>`,
+
+    "redirect": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <rect x="20" y="35" width="100" height="28" rx="5" fill="${dim}" stroke="#ef4444" stroke-width="1"/>
+      <text x="70" y="49" text-anchor="middle" dominant-baseline="central" fill="#ef4444" font-size="9" font-family="DM Mono,monospace">old-domain.com</text>
+      <rect x="220" y="78" width="100" height="28" rx="5" fill="${dim}" stroke="#22c55e" stroke-width="1"/>
+      <text x="270" y="92" text-anchor="middle" dominant-baseline="central" fill="#22c55e" font-size="9" font-family="DM Mono,monospace">new-domain.com</text>
+      <path d="M 120 49 C 200 49 160 92 218 92" fill="none" stroke="${ac}" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arr)" class="flow-line"/>
+      <rect x="145" y="58" width="50" height="20" rx="5" fill="${dim}" stroke="${ac}" stroke-width="1"/>
+      <text x="170" y="68" text-anchor="middle" dominant-baseline="central" fill="${ac}" font-size="9" font-family="DM Mono,monospace">301</text>
+      <text x="170" y="120" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">permanent · SEO juice preserved</text>
+    </svg>`,
+
+    "geo-routing": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <ellipse cx="170" cy="70" rx="60" ry="42" fill="${dim}" stroke="#6b7e96" stroke-width="1" opacity="0.5"/>
+      <line x1="110" y1="70" x2="230" y2="70" stroke="#6b7e96" stroke-width="0.5" opacity="0.3"/>
+      <line x1="170" y1="28" x2="170" y2="112" stroke="#6b7e96" stroke-width="0.5" opacity="0.3"/>
+      ${srvBox(10,50,60,28,"EU User","#3b82f6")}
+      ${srvBox(270,50,60,28,"US User","#a855f7")}
+      ${srvBox(90,105,70,28,"EU Server","#3b82f6")}
+      ${srvBox(180,105,70,28,"US Server","#a855f7")}
+      <line x1="70" y1="64" x2="108" y2="60" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="270" y1="64" x2="230" y2="60" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="125" y1="70" x2="125" y2="103" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="3 2" class="flow-line"/>
+      <line x1="215" y1="70" x2="215" y2="103" stroke="#a855f7" stroke-width="1.2" stroke-dasharray="3 2" class="flow-line"/>
+    </svg>`,
+
+    "canary": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(130,55,60,30,"Balancer","#f97316")}
+      ${srvBox(248,30,80,30,"Stable v1.0","#22c55e")}
+      ${srvBox(248,80,80,30,"Canary v2.0","#ec4899")}
+      <circle cx="45" cy="70" r="12" fill="${dim}" stroke="#6b7e96" stroke-width="1"/>
+      <text x="45" y="70" text-anchor="middle" dominant-baseline="central" fill="#6b7e96" font-size="7">Users</text>
+      <line x1="58" y1="70" x2="128" y2="70" stroke="${ac}" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="192" y1="67" x2="246" y2="45" stroke="#22c55e" stroke-width="3" stroke-dasharray="5 3" class="flow-line"/>
+      <line x1="192" y1="73" x2="246" y2="95" stroke="#ec4899" stroke-width="1" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="220" y="56" fill="#22c55e" font-size="8" font-family="DM Mono,monospace">90%</text>
+      <text x="220" y="90" fill="#ec4899" font-size="8" font-family="DM Mono,monospace">10%</text>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">loadfactor 9:1 split</text>
+    </svg>`,
+
+    "blue-green": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(10,50,80,40,"Apache","#f97316")}
+      <rect x="140" y="30" width="90" height="35" rx="7" fill="${dim}" stroke="#3b82f6" stroke-width="2"/>
+      <text x="185" y="48" text-anchor="middle" dominant-baseline="central" fill="#3b82f6" font-size="9" font-family="DM Mono,monospace">Blue v1.0</text>
+      <rect x="140" y="78" width="90" height="35" rx="7" fill="${dim}" stroke="#22c55e" stroke-width="1" opacity="0.5"/>
+      <text x="185" y="96" text-anchor="middle" dominant-baseline="central" fill="#22c55e" font-size="9" font-family="DM Mono,monospace">Green v2.0</text>
+      <line x1="92" y1="65" x2="138" y2="48" stroke="#3b82f6" stroke-width="2" stroke-dasharray="5 3" class="flow-line"/>
+      <line x1="92" y1="75" x2="138" y2="95" stroke="#22c55e" stroke-width="0.8" opacity="0.3"/>
+      <text x="100" y="44" fill="#3b82f6" font-size="8" font-family="DM Mono,monospace">LIVE</text>
+      <text x="100" y="115" fill="#6b7e96" font-size="8" font-family="DM Mono,monospace">staging</text>
+      <text x="260" y="55" fill="#6b7e96" font-size="10">⇅</text>
+      <text x="250" y="72" fill="#6b7e96" font-size="8" font-family="DM Mono,monospace">instant</text>
+      <text x="250" y="84" fill="#6b7e96" font-size="8" font-family="DM Mono,monospace">switch</text>
+    </svg>`,
+
+    "logging": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(20,50,70,40,"Apache","#f97316")}
+      <rect x="120" y="20" width="200" height="100" rx="6" fill="${dim}" stroke="#6366f1" stroke-width="1"/>
+      <text x="220" y="38" text-anchor="middle" fill="#6366f1" font-size="8" font-family="DM Mono,monospace">access.log</text>
+      <text x="128" y="56" fill="#22c55e" font-size="7" font-family="DM Mono,monospace">10.0.0.1 GET /api 200 12ms</text>
+      <text x="128" y="70" fill="#22c55e" font-size="7" font-family="DM Mono,monospace">10.0.0.2 POST /login 401 4ms</text>
+      <text x="128" y="84" fill="#ef4444" font-size="7" font-family="DM Mono,monospace">10.0.0.4 GET /admin 403 1ms</text>
+      <text x="128" y="98" fill="#22c55e" font-size="7" font-family="DM Mono,monospace">10.0.0.5 GET /img 200 2ms</text>
+      <text x="128" y="112" fill="#eab308" font-size="7" font-family="DM Mono,monospace">10.0.0.7 GET /api 500 8021ms</text>
+      <line x1="92" y1="70" x2="118" y2="70" stroke="${ac}" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+    </svg>`,
+
+    "maintenance": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(20,55,80,30,"All Users","#6b7e96")}
+      ${srvBox(150,30,80,30,"🔧 Maint.","#eab308")}
+      ${srvBox(150,80,80,30,"App Server","#22c55e")}
+      <text x="260" y="45" fill="#22c55e" font-size="8" font-family="DM Mono,monospace">Your office</text>
+      <circle cx="268" cy="68" r="8" fill="${dim}" stroke="#22c55e" stroke-width="1.5"/>
+      <text x="268" y="68" text-anchor="middle" dominant-baseline="central" fill="#22c55e" font-size="7">Admin</text>
+      <line x1="102" y1="70" x2="148" y2="45" stroke="#eab308" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="148" y1="95" x2="102" y2="88" stroke="#6b7e96" stroke-width="0.5" opacity="0.3"/>
+      <line x1="260" y1="72" x2="230" y2="90" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">office IP bypasses · users see 302</text>
+    </svg>`,
+
+    "headers": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(20,55,70,30,"Browser","#6b7e96")}
+      ${srvBox(130,45,80,50,"Apache","#f97316")}
+      ${srvBox(260,55,70,30,"Backend","#22c55e")}
+      <line x1="92" y1="70" x2="128" y2="70" stroke="#6b7e96" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="212" y1="70" x2="258" y2="70" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="26" text-anchor="middle" fill="${ac}" font-size="8" font-family="DM Mono,monospace">+X-User-ID: alice</text>
+      <text x="170" y="36" text-anchor="middle" fill="${ac}" font-size="8" font-family="DM Mono,monospace">+X-Trace-ID: abc123</text>
+      <text x="170" y="112" text-anchor="middle" fill="#ef4444" font-size="8" font-family="DM Mono,monospace">-X-Powered-By (stripped)</text>
+    </svg>`,
+
+    "tracing": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <text x="170" y="18" text-anchor="middle" fill="#6366f1" font-size="9" font-family="DM Mono,monospace">X-Trace-ID: 8f3a-b2c9-...</text>
+      ${srvBox(10,35,60,25,"Apache","#f97316")}
+      ${srvBox(90,35,60,25,"Auth Svc","#a855f7")}
+      ${srvBox(170,35,60,25,"Order Svc","#3b82f6")}
+      ${srvBox(250,35,80,25,"DB / Cache","#22c55e")}
+      <line x1="70" y1="47" x2="88" y2="47" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="150" y1="47" x2="168" y2="47" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="230" y1="47" x2="248" y2="47" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <rect x="10" y="75" width="320" height="48" rx="6" fill="${dim}" stroke="#6366f1" stroke-width="1"/>
+      <text x="15" y="91" fill="#6366f1" font-size="8" font-family="DM Mono,monospace">Jaeger trace view:</text>
+      <rect x="15" y="98" width="60" height="10" rx="3" fill="#f97316" opacity="0.7"/>
+      <rect x="15" y="98" width="240" height="5" rx="2" fill="none" stroke="#f97316" stroke-width="0.5" opacity="0.3"/>
+      <rect x="25" y="103" width="40" height="10" rx="3" fill="#a855f7" opacity="0.7"/>
+      <rect x="75" y="103" width="50" height="10" rx="3" fill="#3b82f6" opacity="0.7"/>
+      <rect x="135" y="103" width="80" height="10" rx="3" fill="#22c55e" opacity="0.7"/>
+      <text x="170" y="135" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">one trace ID follows request end-to-end</text>
+    </svg>`,
+
+    "ip-restrict": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(260,50,70,40,"Admin Panel","#f97316")}
+      <circle cx="45" cy="45" r="14" fill="${dim}" stroke="#22c55e" stroke-width="1.5"/>
+      <text x="45" y="41" text-anchor="middle" fill="#22c55e" font-size="7">10.0</text>
+      <text x="45" y="52" text-anchor="middle" fill="#22c55e" font-size="7">.1.5 ✓</text>
+      <circle cx="45" cy="95" r="14" fill="${dim}" stroke="#ef4444" stroke-width="1.5"/>
+      <text x="45" y="91" text-anchor="middle" fill="#ef4444" font-size="7">8.8</text>
+      <text x="45" y="102" text-anchor="middle" fill="#ef4444" font-size="7">.8.8 ✗</text>
+      ${srvBox(150,55,80,30,"Require ip\n10.0.0.0/8","#6b7e96")}
+      <line x1="60" y1="45" x2="148" y2="62" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="148" y1="70" x2="258" y2="70" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="60" y1="95" x2="148" y2="78" stroke="#ef4444" stroke-width="1.2"/>
+      <text x="100" y="93" fill="#ef4444" font-size="16">✕</text>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">office IPs allowed · internet blocked</text>
+    </svg>`,
+
+    "cors": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(10,40,100,30,"app.example.com","#3b82f6")}
+      ${srvBox(230,40,100,30,"api.example.com","#f97316")}
+      <text x="170" y="30" text-anchor="middle" fill="#ef4444" font-size="8" font-family="DM Mono,monospace">cross-origin request</text>
+      <line x1="112" y1="55" x2="228" y2="55" stroke="${ac}" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="50" text-anchor="middle" fill="${ac}" font-size="7" font-family="DM Mono,monospace">Origin: app.example.com</text>
+      <line x1="228" y1="65" x2="112" y2="65" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="80" text-anchor="middle" fill="#22c55e" font-size="7" font-family="DM Mono,monospace">Access-Control-Allow-Origin: ✓</text>
+      <rect x="50" y="90" width="240" height="18" rx="4" fill="${dim}" stroke="#ef4444" stroke-width="1"/>
+      <text x="170" y="99" text-anchor="middle" dominant-baseline="central" fill="#ef4444" font-size="7" font-family="DM Mono,monospace">without CORS header → browser blocks</text>
+      <text x="170" y="120" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">browser checks Origin · Apache approves</text>
+    </svg>`,
+
+    "oidc": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <circle cx="45" cy="70" r="16" fill="${dim}" stroke="#a855f7" stroke-width="1.5"/>
+      <text x="45" y="66" text-anchor="middle" fill="#a855f7" font-size="8">User</text>
+      <text x="45" y="78" text-anchor="middle" fill="#a855f7" font-size="8">🧑</text>
+      ${srvBox(110,55,70,30,"Apache","#f97316")}
+      ${srvBox(240,30,90,28,"Google/Okta","#3b82f6")}
+      ${srvBox(240,82,90,28,"App Server","#22c55e")}
+      <line x1="61" y1="70" x2="108" y2="70" stroke="${ac}" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="182" y1="62" x2="238" y2="44" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="212" y="48" fill="#3b82f6" font-size="8">→ auth</text>
+      <line x1="238" y1="44" x2="190" y2="67" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="3 2"/>
+      <text x="205" y="60" fill="#22c55e" font-size="8">JWT ✓</text>
+      <line x1="182" y1="78" x2="238" y2="96" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">sign in with Google / Okta / Azure AD</text>
+    </svg>`,
+
+    "saml": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <circle cx="30" cy="70" r="14" fill="${dim}" stroke="#a855f7" stroke-width="1.5"/>
+      <text x="30" y="70" text-anchor="middle" dominant-baseline="central" fill="#a855f7" font-size="7">User</text>
+      ${srvBox(80,55,70,30,"Apache SP","#f97316")}
+      ${srvBox(230,30,100,28,"Azure AD\nIdP","#3b82f6")}
+      ${srvBox(230,82,100,28,"CRM / ERP / HR","#22c55e")}
+      <line x1="44" y1="70" x2="78" y2="70" stroke="${ac}" stroke-width="1.2" stroke-dasharray="3 2" class="flow-line"/>
+      <path d="M150 62 C180 30 200 44 228 44" fill="none" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <path d="M228 56 C200 70 180 72 150 74" fill="none" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="3 2" class="flow-line"/>
+      <text x="190" y="46" fill="#3b82f6" font-size="7">AuthnReq</text>
+      <text x="175" y="78" fill="#22c55e" font-size="7">SAMLResponse ✓</text>
+      <line x1="152" y1="78" x2="228" y2="96" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">one login → 30 enterprise apps</text>
+    </svg>`,
+
+    "kerberos": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <circle cx="40" cy="70" r="16" fill="${dim}" stroke="#a855f7" stroke-width="1.5"/>
+      <text x="40" y="66" text-anchor="middle" fill="#a855f7" font-size="7">Windows</text>
+      <text x="40" y="77" text-anchor="middle" fill="#a855f7" font-size="7">User 🖥️</text>
+      ${srvBox(120,55,80,30,"Apache Kerb","#f97316")}
+      ${srvBox(250,35,80,28,"KDC / AD","#3b82f6")}
+      ${srvBox(250,80,80,28,"Intranet App","#22c55e")}
+      <line x1="56" y1="70" x2="118" y2="70" stroke="${ac}" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="88" y="62" fill="${ac}" font-size="8">ticket</text>
+      <line x1="202" y1="62" x2="248" y2="49" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="248" y1="56" x2="202" y2="70" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="3 2"/>
+      <text x="228" y="68" fill="#22c55e" font-size="8">✓</text>
+      <line x1="202" y1="78" x2="248" y2="90" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">zero-click login · no password prompt</text>
+    </svg>`,
+
+    "php-fpm": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(20,50,80,40,"Apache","#f97316")}
+      ${srvBox(150,30,80,30,"PHP-FPM\nPool","#6366f1")}
+      ${srvBox(150,80,80,30,"PHP-FPM\nPool","#6366f1")}
+      ${srvBox(270,50,60,40,"WordPress","#22c55e")}
+      <text x="190" y="18" text-anchor="middle" fill="#6b7e96" font-size="8" font-family="DM Mono,monospace">unix socket</text>
+      <line x1="102" y1="63" x2="148" y2="45" stroke="#6366f1" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="102" y1="77" x2="148" y2="95" stroke="#6366f1" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="232" y1="45" x2="268" y2="60" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="232" y1="95" x2="268" y2="80" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">PHP isolated · Apache handles static</text>
+    </svg>`,
+
+    "python": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(20,50,80,40,"Apache\n+ mod_wsgi","#f97316")}
+      ${srvBox(180,30,80,30,"Django App","#eab308")}
+      ${srvBox(180,80,80,30,"Flask App","#22c55e")}
+      <line x1="102" y1="63" x2="178" y2="45" stroke="#eab308" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="102" y1="77" x2="178" y2="95" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="275" y="55" fill="#6b7e96" font-size="10">🐍</text>
+      <text x="275" y="95" fill="#6b7e96" font-size="10">🐍</text>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">embedded in server process · no Gunicorn</text>
+    </svg>`,
+
+    "struct-log": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(10,50,60,40,"Apache","#f97316")}
+      <rect x="90" y="20" width="150" height="100" rx="6" fill="${dim}" stroke="#6366f1" stroke-width="1"/>
+      <text x="165" y="36" text-anchor="middle" fill="#6366f1" font-size="8" font-family="DM Mono,monospace">JSON log</text>
+      <text x="96" y="52" fill="#14b8a6" font-size="7" font-family="DM Mono,monospace">{"ip":"10.0.0.1",</text>
+      <text x="96" y="65" fill="#14b8a6" font-size="7" font-family="DM Mono,monospace"> "status":200,</text>
+      <text x="96" y="78" fill="#14b8a6" font-size="7" font-family="DM Mono,monospace"> "dur":12,</text>
+      <text x="96" y="91" fill="#14b8a6" font-size="7" font-family="DM Mono,monospace"> "uri":"/api/v2"}</text>
+      <line x1="72" y1="70" x2="88" y2="70" stroke="${ac}" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      ${srvBox(258,50,70,40,"Splunk /\nElastic","#ef4444")}
+      <line x1="242" y1="70" x2="256" y2="70" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+    </svg>`,
+
+    "srv-status": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <rect x="20" y="20" width="300" height="100" rx="6" fill="${dim}" stroke="#6366f1" stroke-width="1"/>
+      <text x="170" y="38" text-anchor="middle" fill="#6366f1" font-size="9" font-family="DM Mono,monospace">/server-status</text>
+      <rect x="30" y="48" width="120" height="8" rx="3" fill="#22c55e" opacity="0.8"/>
+      <rect x="152" y="48" width="40" height="8" rx="3" fill="#eab308" opacity="0.8"/>
+      <rect x="194" y="48" width="20" height="8" rx="3" fill="#6b7e96" opacity="0.4"/>
+      <text x="30" y="72" fill="#6b7e96" font-size="7" font-family="DM Mono,monospace">Workers: 395/400 busy</text>
+      <text x="30" y="85" fill="#eab308" font-size="7" font-family="DM Mono,monospace">Req/sec: 8,240</text>
+      <text x="30" y="98" fill="#22c55e" font-size="7" font-family="DM Mono,monospace">Uptime: 47d 3h</text>
+      <text x="160" y="85" fill="#ef4444" font-size="7" font-family="DM Mono,monospace">CPU: 78%</text>
+      <text x="160" y="98" fill="#3b82f6" font-size="7" font-family="DM Mono,monospace">Traffic: 2.1GB/s</text>
+      <rect x="30" y="48" width="0" height="8" rx="3" fill="#ef4444" class="pulse"/>
+    </svg>`,
+
+    "brotli": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <rect x="60" y="30" width="40" height="80" rx="4" fill="${dim}" stroke="#6b7e96" stroke-width="1"/>
+      <text x="80" y="67" text-anchor="middle" fill="#6b7e96" font-size="7">200</text>
+      <text x="80" y="78" text-anchor="middle" fill="#6b7e96" font-size="7">KB</text>
+      <text x="80" y="118" text-anchor="middle" fill="#6b7e96" font-size="7">gzip</text>
+      <rect x="140" y="45" width="40" height="50" rx="4" fill="${dim}" stroke="#22c55e" stroke-width="1.5"/>
+      <text x="160" y="67" text-anchor="middle" fill="#22c55e" font-size="7">42</text>
+      <text x="160" y="78" text-anchor="middle" fill="#22c55e" font-size="7">KB</text>
+      <text x="160" y="103" text-anchor="middle" fill="#22c55e" font-size="7">brotli</text>
+      <text x="220" y="68" fill="#22c55e" font-size="9">−79%</text>
+      <text x="215" y="80" fill="#eab308" font-size="7" font-family="DM Mono,monospace">15% better</text>
+      <text x="215" y="90" fill="#eab308" font-size="7" font-family="DM Mono,monospace">than gzip</text>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">Google's algorithm · modern browsers</text>
+    </svg>`,
+
+    "cdn": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(10,55,70,30,"Apache Origin","#f97316")}
+      ${srvBox(240,20,90,28,"Edge NYC","#3b82f6")}
+      ${srvBox(240,56,90,28,"Edge LDN","#3b82f6")}
+      ${srvBox(240,92,90,28,"Edge SIN","#3b82f6")}
+      <rect x="140" y="46" width="80" height="48" rx="6" fill="${dim}" stroke="#eab308" stroke-width="1.5"/>
+      <text x="180" y="65" text-anchor="middle" fill="#eab308" font-size="8" font-family="DM Mono,monospace">Cloudflare</text>
+      <text x="180" y="78" text-anchor="middle" fill="#eab308" font-size="8" font-family="DM Mono,monospace">Edge CDN</text>
+      <line x1="82" y1="70" x2="138" y2="70" stroke="#6b7e96" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>
+      <text x="110" y="63" fill="#6b7e96" font-size="7">origin pull</text>
+      <line x1="222" y1="58" x2="238" y2="34" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="222" y1="68" x2="238" y2="70" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="222" y1="78" x2="238" y2="106" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">Cache-Control: max-age=31536000</text>
+    </svg>`,
+
+    "conn-reuse": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(20,50,80,40,"Apache","#f97316")}
+      ${srvBox(240,50,80,40,"Backend","#22c55e")}
+      <rect x="148" y="30" width="44" height="80" rx="6" fill="${dim}" stroke="#14b8a6" stroke-width="1.5"/>
+      <text x="170" y="50" text-anchor="middle" fill="#14b8a6" font-size="7" font-family="DM Mono,monospace">conn</text>
+      <text x="170" y="62" text-anchor="middle" fill="#14b8a6" font-size="7" font-family="DM Mono,monospace">pool</text>
+      <circle cx="165" cy="75" r="4" fill="#14b8a6" class="pulse"/>
+      <circle cx="175" cy="75" r="4" fill="#14b8a6" class="pulse" style="animation-delay:0.5s"/>
+      <circle cx="165" cy="90" r="4" fill="#14b8a6" class="pulse" style="animation-delay:1s"/>
+      <circle cx="175" cy="90" r="4" fill="#14b8a6" class="pulse" style="animation-delay:1.5s"/>
+      <line x1="102" y1="70" x2="146" y2="70" stroke="${ac}" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="194" y1="70" x2="238" y2="70" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">reuse TCP · no 3-way handshake per req</text>
+    </svg>`,
+
+    "mpm": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <text x="170" y="18" text-anchor="middle" fill="#eab308" font-size="9" font-family="DM Mono,monospace">Event MPM — 25 threads × 16 workers</text>
+      <rect x="20" y="28" width="300" height="88" rx="6" fill="${dim}" stroke="#eab308" stroke-width="1"/>
+      ${[0,1,2,3].map(i=>`
+        <rect x="${28+i*76}" y="35" width="68" height="74" rx="4" fill="${dim}" stroke="#6b7e96" stroke-width="0.8"/>
+        <text x="${62+i*76}" y="50" text-anchor="middle" fill="#6b7e96" font-size="7">worker ${i+1}</text>
+        ${[0,1,2,3,4].map(j=>`
+          <rect x="${32+i*76+j*12}" y="56" width="10" height="44" rx="2" fill="${j<4?'#22c55e':'#6b7e96'}" opacity="${j<4?'0.7':'0.3'}"/>
+        `).join('')}
+      `).join('')}
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">400 concurrent connections · same RAM</text>
+    </svg>`,
+
+    "static": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(20,50,80,40,"Apache","#f97316")}
+      <rect x="140" y="25" width="50" height="90" rx="4" fill="${dim}" stroke="#22c55e" stroke-width="1"/>
+      <text x="165" y="45" text-anchor="middle" fill="#22c55e" font-size="8" font-family="DM Mono,monospace">/www</text>
+      <text x="148" y="62" fill="#22c55e" font-size="8" font-family="DM Mono,monospace">📄.html</text>
+      <text x="148" y="76" fill="#3b82f6" font-size="8" font-family="DM Mono,monospace">🎨.css</text>
+      <text x="148" y="90" fill="#eab308" font-size="8" font-family="DM Mono,monospace">📦.js</text>
+      <text x="148" y="104" fill="#a855f7" font-size="8" font-family="DM Mono,monospace">🖼️.png</text>
+      <line x1="102" y1="70" x2="138" y2="70" stroke="${ac}" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      ${srvBox(218,50,100,40,"Browser Client","#6b7e96")}
+      <line x1="192" y1="70" x2="216" y2="70" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="125" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">served direct from disk · no app logic</text>
+    </svg>`,
+
+    "webdav": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(220,50,100,40,"Apache\n/files (DAV)","#f97316")}
+      <circle cx="50" cy="40" r="14" fill="${dim}" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="50" y="36" text-anchor="middle" fill="#3b82f6" font-size="7">Win</text>
+      <text x="50" y="47" text-anchor="middle" fill="#3b82f6" font-size="7">🖥️</text>
+      <circle cx="50" cy="80" r="14" fill="${dim}" stroke="#22c55e" stroke-width="1.5"/>
+      <text x="50" y="76" text-anchor="middle" fill="#22c55e" font-size="7">Mac</text>
+      <text x="50" y="87" text-anchor="middle" fill="#22c55e" font-size="7">💻</text>
+      <circle cx="50" cy="120" r="14" fill="${dim}" stroke="#eab308" stroke-width="1.5"/>
+      <text x="50" y="116" text-anchor="middle" fill="#eab308" font-size="7">Lnx</text>
+      <text x="50" y="127" text-anchor="middle" fill="#eab308" font-size="7">🐧</text>
+      <line x1="64" y1="40" x2="218" y2="62" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="64" y1="80" x2="218" y2="72" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="64" y1="115" x2="218" y2="82" stroke="#eab308" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="127" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">mount as network drive</text>
+    </svg>`,
+
+    "bandwidth": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(130,50,80,40,"Apache Rate\nLimit","#f97316")}
+      <circle cx="40" cy="60" r="12" fill="${dim}" stroke="#22c55e" stroke-width="1.5"/>
+      <text x="40" y="60" text-anchor="middle" dominant-baseline="central" fill="#22c55e" font-size="7">User A</text>
+      <circle cx="40" cy="95" r="12" fill="${dim}" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="40" y="95" text-anchor="middle" dominant-baseline="central" fill="#3b82f6" font-size="7">User B</text>
+      <line x1="52" y1="60" x2="128" y2="65" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="52" y1="95" x2="128" y2="80" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="290" y="58" text-anchor="middle" fill="#22c55e" font-size="8" font-family="DM Mono,monospace">200KB/s</text>
+      <text x="290" y="82" text-anchor="middle" fill="#3b82f6" font-size="8" font-family="DM Mono,monospace">200KB/s</text>
+      <line x1="212" y1="65" x2="268" y2="55" stroke="#22c55e" stroke-width="2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="212" y1="80" x2="268" y2="90" stroke="#3b82f6" stroke-width="2" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">fair share · no hogging</text>
+    </svg>`,
+
+    "sec-headers": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(10,50,80,40,"Apache","#f97316")}
+      <rect x="110" y="20" width="220" height="100" rx="6" fill="${dim}" stroke="#ef4444" stroke-width="1"/>
+      <text x="220" y="36" text-anchor="middle" fill="#ef4444" font-size="8" font-family="DM Mono,monospace">Response Headers</text>
+      <text x="116" y="52" fill="#22c55e" font-size="7" font-family="DM Mono,monospace">✓ HSTS: max-age=63072000</text>
+      <text x="116" y="65" fill="#22c55e" font-size="7" font-family="DM Mono,monospace">✓ X-Frame-Options: SAMEORIGIN</text>
+      <text x="116" y="78" fill="#22c55e" font-size="7" font-family="DM Mono,monospace">✓ X-Content-Type-Options: nosniff</text>
+      <text x="116" y="91" fill="#22c55e" font-size="7" font-family="DM Mono,monospace">✓ CSP: default-src 'self'</text>
+      <text x="116" y="104" fill="#22c55e" font-size="7" font-family="DM Mono,monospace">✓ Referrer-Policy: strict-origin</text>
+      <line x1="92" y1="70" x2="108" y2="70" stroke="${ac}" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+    </svg>`,
+
+    "bot-protect": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(20,50,80,40,"Apache mod_\nevasive","#f97316")}
+      <text x="170" y="20" text-anchor="middle" fill="#ef4444" font-size="8" font-family="DM Mono,monospace">2000 req/hour from one IP → detected</text>
+      ${[0,1,2,3,4,5,6].map(i=>`
+        <circle cx="200" cy="${25+i*16}" r="5" fill="${dim}" stroke="${i<5?'#ef4444':'#22c55e'}" stroke-width="1"/>
+        ${i<5?`<text x="200" y="${25+i*16}" text-anchor="middle" dominant-baseline="central" fill="#ef4444" font-size="6">🤖</text>`:`<text x="200" y="${25+i*16}" text-anchor="middle" dominant-baseline="central" fill="#22c55e" font-size="6">👤</text>`}
+      `).join('')}
+      <line x1="102" y1="70" x2="145" y2="70" stroke="${ac}" stroke-width="1" stroke-dasharray="3 2"/>
+      <text x="165" y="75" fill="#ef4444" font-size="20">🚫</text>
+      <text x="230" y="68" fill="#ef4444" font-size="8" font-family="DM Mono,monospace">IP banned</text>
+      <text x="230" y="80" fill="#ef4444" font-size="8" font-family="DM Mono,monospace">600 seconds</text>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">pattern detection · auto-block</text>
+    </svg>`,
+
+    "ip-reputation": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(20,50,80,40,"Apache","#f97316")}
+      <rect x="120" y="35" width="100" height="70" rx="6" fill="${dim}" stroke="#ef4444" stroke-width="1"/>
+      <text x="170" y="52" text-anchor="middle" fill="#ef4444" font-size="8" font-family="DM Mono,monospace">Threat DB</text>
+      <text x="126" y="67" fill="#ef4444" font-size="7" font-family="DM Mono,monospace">TOR exits: 7,321</text>
+      <text x="126" y="80" fill="#ef4444" font-size="7" font-family="DM Mono,monospace">Botnets: 42,000</text>
+      <text x="126" y="93" fill="#ef4444" font-size="7" font-family="DM Mono,monospace">Scanners: 1,200</text>
+      <line x1="102" y1="70" x2="118" y2="70" stroke="${ac}" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <circle cx="240" cy="55" r="10" fill="${dim}" stroke="#ef4444" stroke-width="1.5"/>
+      <text x="240" y="55" text-anchor="middle" dominant-baseline="central" fill="#ef4444" font-size="8">TOR</text>
+      <circle cx="275" cy="75" r="10" fill="${dim}" stroke="#ef4444" stroke-width="1.5"/>
+      <text x="275" y="75" text-anchor="middle" dominant-baseline="central" fill="#ef4444" font-size="7">BOT</text>
+      <text x="258" y="103" fill="#ef4444" font-size="18">✕</text>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">threat intelligence · pre-block</text>
+    </svg>`,
+
+    "timeout": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(20,50,80,40,"Apache","#f97316")}
+      <circle cx="230" cy="55" r="16" fill="${dim}" stroke="#ef4444" stroke-width="1.5" class="pulse"/>
+      <text x="230" y="51" text-anchor="middle" fill="#ef4444" font-size="7" font-family="DM Mono,monospace">Slowloris</text>
+      <text x="230" y="62" text-anchor="middle" fill="#ef4444" font-size="7" font-family="DM Mono,monospace">attack</text>
+      <line x1="102" y1="65" x2="212" y2="57" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="2 4"/>
+      <text x="150" y="52" fill="#ef4444" font-size="7">1 byte/s</text>
+      <line x1="102" y1="75" x2="212" y2="73" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <rect x="120" y="85" width="100" height="20" rx="4" fill="${dim}" stroke="${ac}" stroke-width="1"/>
+      <text x="170" y="95" text-anchor="middle" dominant-baseline="central" fill="${ac}" font-size="8" font-family="DM Mono,monospace">20s timeout → close</text>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">mod_reqtimeout · min 500B/s rate</text>
+    </svg>`,
+
+    "ocsp": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(20,55,80,30,"Apache","#f97316")}
+      <circle cx="240" cy="45" r="20" fill="${dim}" stroke="#a855f7" stroke-width="1.5"/>
+      <text x="240" y="41" text-anchor="middle" fill="#a855f7" font-size="7">Cert Auth</text>
+      <text x="240" y="52" text-anchor="middle" fill="#a855f7" font-size="7">OCSP</text>
+      <line x1="102" y1="65" x2="218" y2="52" stroke="#a855f7" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="155" y="50" fill="#a855f7" font-size="7">pre-fetch</text>
+      <rect x="120" y="80" width="100" height="28" rx="5" fill="${dim}" stroke="#22c55e" stroke-width="1"/>
+      <text x="170" y="91" text-anchor="middle" fill="#22c55e" font-size="7" font-family="DM Mono,monospace">stapled ✓ valid</text>
+      <text x="170" y="102" text-anchor="middle" fill="#22c55e" font-size="7">in TLS handshake</text>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">client skips OCSP lookup → −200ms</text>
+    </svg>`,
+
+    "mtls": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <circle cx="45" cy="70" r="18" fill="${dim}" stroke="#22c55e" stroke-width="1.5"/>
+      <text x="45" y="65" text-anchor="middle" fill="#22c55e" font-size="7">Partner</text>
+      <text x="45" y="77" text-anchor="middle" fill="#22c55e" font-size="8">🏦</text>
+      ${srvBox(140,55,60,30,"Apache","#f97316")}
+      <line x1="63" y1="65" x2="138" y2="65" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="100" y="56" text-anchor="middle" fill="#22c55e" font-size="7">client cert</text>
+      <line x1="138" y1="75" x2="63" y2="75" stroke="#f97316" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="100" y="85" text-anchor="middle" fill="#f97316" font-size="7">server cert</text>
+      <circle cx="270" cy="60" r="12" fill="${dim}" stroke="#ef4444" stroke-width="1.5"/>
+      <text x="270" y="56" text-anchor="middle" fill="#ef4444" font-size="7">Rogue</text>
+      <text x="270" y="67" text-anchor="middle" fill="#ef4444" font-size="7">Client</text>
+      <line x1="258" y1="65" x2="202" y2="65" stroke="#ef4444" stroke-width="1.2"/>
+      <text x="230" y="56" fill="#ef4444" font-size="16">✕</text>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">both sides verify identity</text>
+    </svg>`,
+
+    "ldap-group": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(20,50,80,40,"LDAP /\nActive Dir","#a855f7")}
+      ${srvBox(150,30,80,28,"Admin Panel","#ef4444")}
+      ${srvBox(150,78,80,28,"User Portal","#22c55e")}
+      <circle cx="300" cy="42" r="12" fill="${dim}" stroke="#ef4444" stroke-width="1.5"/>
+      <text x="300" y="38" text-anchor="middle" fill="#ef4444" font-size="7">Alice</text>
+      <text x="300" y="48" text-anchor="middle" fill="#ef4444" font-size="7">Admin</text>
+      <circle cx="300" cy="90" r="12" fill="${dim}" stroke="#22c55e" stroke-width="1.5"/>
+      <text x="300" y="86" text-anchor="middle" fill="#22c55e" font-size="7">Bob</text>
+      <text x="300" y="96" text-anchor="middle" fill="#22c55e" font-size="7">User</text>
+      <line x1="102" y1="65" x2="148" y2="44" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="102" y1="75" x2="148" y2="92" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="232" y1="44" x2="286" y2="44" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="232" y1="92" x2="286" y2="92" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+    </svg>`,
+
+    "version-route": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(130,55,80,30,"Apache","#f97316")}
+      ${srvBox(10,30,90,25,"old /api/v1","#6b7e96")}
+      ${srvBox(10,80,90,25,"new /api/v2","#22c55e")}
+      ${srvBox(260,30,70,25,"v1 svc :8080","#3b82f6")}
+      ${srvBox(260,80,70,25,"v2 svc :9090","#22c55e")}
+      <line x1="102" y1="42" x2="128" y2="62" stroke="#6b7e96" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="102" y1="92" x2="128" y2="78" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="212" y1="62" x2="258" y2="42" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="212" y1="78" x2="258" y2="92" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">both API versions live simultaneously</text>
+    </svg>`,
+
+    "mobile-redirect": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <rect x="20" y="45" width="20" height="30" rx="3" fill="${dim}" stroke="#3b82f6" stroke-width="1.5"/>
+      <rect x="22" y="50" width="16" height="18" rx="1" fill="#3b82f6" opacity="0.3"/>
+      <circle cx="30" cy="72" r="2" fill="#3b82f6"/>
+      <rect x="20" y="85" width="30" height="20" rx="2" fill="${dim}" stroke="#6b7e96" stroke-width="1"/>
+      <text x="35" y="95" text-anchor="middle" dominant-baseline="central" fill="#6b7e96" font-size="7">Desktop</text>
+      ${srvBox(115,50,80,40,"mod_setenvif\nUserAgent","#f97316")}
+      ${srvBox(255,35,75,25,"m.example.com","#3b82f6")}
+      ${srvBox(255,75,75,25,"example.com","#6b7e96")}
+      <line x1="40" y1="60" x2="113" y2="65" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="38" y1="95" x2="113" y2="80" stroke="#6b7e96" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="197" y1="62" x2="253" y2="47" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="197" y1="78" x2="253" y2="87" stroke="#6b7e96" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">User-Agent Mobile → 302 → m.</text>
+    </svg>`,
+
+    "webhook": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <circle cx="45" cy="60" r="20" fill="${dim}" stroke="#6b7e96" stroke-width="1.5"/>
+      <text x="45" y="56" text-anchor="middle" fill="#6b7e96" font-size="7">GitHub</text>
+      <text x="45" y="67" text-anchor="middle" fill="#6b7e96" font-size="9">⚡</text>
+      ${srvBox(130,50,80,40,"Apache\n/webhooks","#f97316")}
+      ${srvBox(260,50,70,40,"CI Trigger\n:5000","#22c55e")}
+      <line x1="65" y1="60" x2="128" y2="65" stroke="${ac}" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="95" y="52" fill="${ac}" font-size="7">POST push</text>
+      <line x1="212" y1="70" x2="258" y2="70" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">push event → CI build triggered</text>
+    </svg>`,
+
+    "service-mesh": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(10,50,80,40,"Apache\nIngress","#f97316")}
+      <rect x="120" y="30" width="90" height="80" rx="6" fill="${dim}" stroke="#14b8a6" stroke-width="1.5" stroke-dasharray="6 3"/>
+      <text x="165" y="50" text-anchor="middle" fill="#14b8a6" font-size="8" font-family="DM Mono,monospace">Istio Mesh</text>
+      ${srvBox(130,58,70,22,"svc A","#14b8a6")}
+      ${srvBox(130,88,70,22,"svc B","#14b8a6")}
+      ${srvBox(240,50,90,40,"External\nCloud","#6b7e96")}
+      <line x1="92" y1="70" x2="118" y2="70" stroke="${ac}" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="200" y1="70" x2="238" y2="70" stroke="#14b8a6" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <circle cx="212" cy="70" r="6" fill="${dim}" stroke="#14b8a6" stroke-width="1.5"/>
+      <text x="212" y="70" text-anchor="middle" dominant-baseline="central" fill="#14b8a6" font-size="6">proxy</text>
+      <text x="170" y="125" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">edge TLS · mesh handles internal</text>
+    </svg>`,
+
+    "content-sub": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <rect x="20" y="35" width="130" height="35" rx="5" fill="${dim}" stroke="#ef4444" stroke-width="1"/>
+      <text x="85" y="50" text-anchor="middle" fill="#ef4444" font-size="8" font-family="DM Mono,monospace">http://old-cdn.com</text>
+      <text x="85" y="62" text-anchor="middle" fill="#ef4444" font-size="7">/img/logo.png</text>
+      <rect x="20" y="85" width="130" height="35" rx="5" fill="${dim}" stroke="#22c55e" stroke-width="1"/>
+      <text x="85" y="100" text-anchor="middle" fill="#22c55e" font-size="8" font-family="DM Mono,monospace">https://new-cdn.com</text>
+      <text x="85" y="112" text-anchor="middle" fill="#22c55e" font-size="7">/img/logo.png</text>
+      <line x1="85" y1="72" x2="85" y2="83" stroke="${ac}" stroke-width="1.5" marker-end="url(#arr)"/>
+      ${srvBox(192,55,120,35,"mod_substitute\nfind & replace","#f97316")}
+      <text x="170" y="118" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">regex replacement in response body</text>
+    </svg>`,
+
+    "resp-filter": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <rect x="20" y="35" width="120" height="30" rx="5" fill="${dim}" stroke="#ef4444" stroke-width="1"/>
+      <text x="80" y="47" text-anchor="middle" fill="#ef4444" font-size="8" font-family="DM Mono,monospace">"user_id":482934</text>
+      <text x="80" y="58" text-anchor="middle" fill="#ef4444" font-size="7">"ssn":"123-45-678"</text>
+      <rect x="20" y="82" width="120" height="30" rx="5" fill="${dim}" stroke="#22c55e" stroke-width="1"/>
+      <text x="80" y="94" text-anchor="middle" fill="#22c55e" font-size="8" font-family="DM Mono,monospace">"user_id":null</text>
+      <text x="80" y="105" text-anchor="middle" fill="#22c55e" font-size="7">"ssn":"***-**-***"</text>
+      <line x1="80" y1="67" x2="80" y2="80" stroke="${ac}" stroke-width="1.5" marker-end="url(#arr)"/>
+      ${srvBox(185,55,130,30,"mod_substitute\nmask PII","#f97316")}
+      <text x="170" y="125" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">sensitive data never reaches client</text>
+    </svg>`,
+
+    "ssi": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <rect x="20" y="30" width="140" height="80" rx="5" fill="${dim}" stroke="#6b7e96" stroke-width="1"/>
+      <text x="90" y="48" text-anchor="middle" fill="#6b7e96" font-size="8" font-family="DM Mono,monospace">index.shtml</text>
+      <text x="28" y="65" fill="#14b8a6" font-size="8" font-family="DM Mono,monospace">&lt;h1&gt;Welcome&lt;/h1&gt;</text>
+      <text x="28" y="79" fill="#eab308" font-size="7" font-family="DM Mono,monospace">&lt;!--#echo var="DATE"--&gt;</text>
+      <text x="28" y="93" fill="#14b8a6" font-size="8" font-family="DM Mono,monospace">&lt;!--#include</text>
+      <text x="28" y="104" fill="#14b8a6" font-size="8" font-family="DM Mono,monospace"> virtual="/nav.html"--&gt;</text>
+      <line x1="162" y1="70" x2="190" y2="70" stroke="${ac}" stroke-width="1.5" marker-end="url(#arr)"/>
+      <rect x="192" y="30" width="130" height="80" rx="5" fill="${dim}" stroke="#22c55e" stroke-width="1"/>
+      <text x="257" y="48" text-anchor="middle" fill="#22c55e" font-size="8" font-family="DM Mono,monospace">rendered HTML</text>
+      <text x="198" y="65" fill="#14b8a6" font-size="8" font-family="DM Mono,monospace">&lt;h1&gt;Welcome&lt;/h1&gt;</text>
+      <text x="198" y="79" fill="#eab308" font-size="7" font-family="DM Mono,monospace">Wed Mar 26 2025</text>
+      <text x="198" y="93" fill="#14b8a6" font-size="8" font-family="DM Mono,monospace">&lt;nav&gt;...&lt;/nav&gt;</text>
+    </svg>`,
+
+    "ipv6": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(130,55,80,30,"Apache","#f97316")}
+      <circle cx="40" cy="55" r="14" fill="${dim}" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="40" y="51" text-anchor="middle" fill="#3b82f6" font-size="7">IPv4</text>
+      <text x="40" y="62" text-anchor="middle" fill="#3b82f6" font-size="7">client</text>
+      <circle cx="40" cy="95" r="14" fill="${dim}" stroke="#22c55e" stroke-width="1.5"/>
+      <text x="40" y="91" text-anchor="middle" fill="#22c55e" font-size="7">IPv6</text>
+      <text x="40" y="102" text-anchor="middle" fill="#22c55e" font-size="7">client</text>
+      <line x1="54" y1="55" x2="128" y2="63" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="54" y1="95" x2="128" y2="77" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="210" y="55" fill="#3b82f6" font-size="7" font-family="DM Mono,monospace">0.0.0.0:80</text>
+      <text x="210" y="68" fill="#22c55e" font-size="7" font-family="DM Mono,monospace">[::]:80</text>
+      <text x="210" y="82" fill="#3b82f6" font-size="7" font-family="DM Mono,monospace">0.0.0.0:443</text>
+      <text x="210" y="95" fill="#22c55e" font-size="7" font-family="DM Mono,monospace">[::]:443</text>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">dual stack · native IPv6 support</text>
+    </svg>`,
+
+    "lua": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(10,50,80,40,"Request","#6b7e96")}
+      <rect x="110" y="25" width="120" height="90" rx="6" fill="${dim}" stroke="#3b82f6" stroke-width="1"/>
+      <text x="170" y="40" text-anchor="middle" fill="#3b82f6" font-size="8" font-family="DM Mono,monospace">router.lua</text>
+      <text x="116" y="56" fill="#eab308" font-size="7" font-family="DM Mono,monospace">if role == "admin"</text>
+      <text x="116" y="68" fill="#eab308" font-size="7" font-family="DM Mono,monospace">  then priority_pool</text>
+      <text x="116" y="80" fill="#14b8a6" font-size="7" font-family="DM Mono,monospace">elseif v2_uri</text>
+      <text x="116" y="92" fill="#14b8a6" font-size="7" font-family="DM Mono,monospace">  then rewrite /api/v2</text>
+      <text x="116" y="104" fill="#22c55e" font-size="7" font-family="DM Mono,monospace">end</text>
+      <line x1="92" y1="70" x2="108" y2="70" stroke="${ac}" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      ${srvBox(248,50,80,40,"Backend","#22c55e")}
+      <line x1="232" y1="70" x2="246" y2="70" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+    </svg>`,
+
+    "grpc-proxy": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <circle cx="40" cy="70" r="18" fill="${dim}" stroke="#6b7e96" stroke-width="1.5"/>
+      <text x="40" y="65" text-anchor="middle" fill="#6b7e96" font-size="7">Mobile</text>
+      <text x="40" y="77" text-anchor="middle" fill="#6b7e96" font-size="7">App</text>
+      ${srvBox(118,55,80,30,"Apache\nHTTP/2","#f97316")}
+      ${srvBox(248,55,80,30,"gRPC Go\n:50051","#14b8a6")}
+      <line x1="58" y1="70" x2="116" y2="70" stroke="${ac}" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="200" y1="70" x2="246" y2="70" stroke="#14b8a6" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="105" text-anchor="middle" fill="${ac}" font-size="8" font-family="DM Mono,monospace">h2://backend:50051</text>
+      <text x="170" y="118" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">binary protobuf · HTTP/2 streams</text>
+    </svg>`,
+
+    "ajp-proxy": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(20,55,80,30,"Apache","#f97316")}
+      ${srvBox(240,55,80,30,"Tomcat :8009","#ef4444")}
+      <rect x="138" y="50" width="64" height="40" rx="6" fill="${dim}" stroke="#eab308" stroke-width="1.5"/>
+      <text x="170" y="67" text-anchor="middle" fill="#eab308" font-size="8" font-family="DM Mono,monospace">AJP</text>
+      <text x="170" y="80" text-anchor="middle" fill="#eab308" font-size="7" font-family="DM Mono,monospace">binary</text>
+      <line x1="102" y1="70" x2="136" y2="70" stroke="${ac}" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="204" y1="70" x2="238" y2="70" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="28" text-anchor="middle" fill="#eab308" font-size="8" font-family="DM Mono,monospace">faster than HTTP internally</text>
+      <text x="170" y="118" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">legacy Java / enterprise integration</text>
+    </svg>`,
+
+    "container-gateway": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(10,55,80,30,"Apache :80","#f97316")}
+      <rect x="118" y="25" width="210" height="90" rx="6" fill="${dim}" stroke="#14b8a6" stroke-width="1" stroke-dasharray="5 3"/>
+      <text x="223" y="40" text-anchor="middle" fill="#14b8a6" font-size="7">Docker Network 172.17.0.0/16</text>
+      ${srvBox(130,52,60,22,"node :3000","#22c55e")}
+      ${srvBox(200,52,60,22,"redis :6379","#ef4444")}
+      ${srvBox(270,52,50,22,"pg :5432","#3b82f6")}
+      ${srvBox(130,88,60,22,"nginx :8080","#eab308")}
+      ${srvBox(200,88,60,22,"worker","#a855f7")}
+      <line x1="92" y1="70" x2="128" y2="63" stroke="${ac}" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">only Apache exposed · containers hidden</text>
+    </svg>`,
+
+    "graphql-gateway": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      <circle cx="40" cy="70" r="16" fill="${dim}" stroke="#a855f7" stroke-width="1.5"/>
+      <text x="40" y="66" text-anchor="middle" fill="#a855f7" font-size="7">React</text>
+      <text x="40" y="77" text-anchor="middle" fill="#a855f7" font-size="7">SPA</text>
+      ${srvBox(110,55,80,30,"Apache /graphql","#f97316")}
+      ${srvBox(245,55,85,30,"Hasura\n:4000","#a855f7")}
+      <line x1="56" y1="70" x2="108" y2="70" stroke="${ac}" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="80" y="60" fill="${ac}" font-size="7">query{}</text>
+      <line x1="192" y1="70" x2="243" y2="70" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="217" y="60" fill="#a855f7" font-size="7">+secret</text>
+      <text x="170" y="118" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">Apache injects admin-secret header</text>
+    </svg>`,
+
+    "feature-toggle": () => `<svg viewBox="0 0 340 140" class="anim-svg">${defs}
+      ${srvBox(130,55,80,30,"mod_setenvif","#f97316")}
+      <circle cx="40" cy="50" r="14" fill="${dim}" stroke="#ec4899" stroke-width="1.5"/>
+      <text x="40" y="46" text-anchor="middle" fill="#ec4899" font-size="7">Beta</text>
+      <text x="40" y="57" text-anchor="middle" fill="#ec4899" font-size="7">User 🧪</text>
+      <circle cx="40" cy="90" r="14" fill="${dim}" stroke="#6b7e96" stroke-width="1.5"/>
+      <text x="40" y="86" text-anchor="middle" fill="#6b7e96" font-size="7">Normal</text>
+      <text x="40" y="97" text-anchor="middle" fill="#6b7e96" font-size="7">User</text>
+      ${srvBox(255,35,75,25,"Beta Backend","#ec4899")}
+      ${srvBox(255,80,75,25,"Stable","#22c55e")}
+      <line x1="54" y1="50" x2="128" y2="62" stroke="#ec4899" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="54" y1="90" x2="128" y2="78" stroke="#6b7e96" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="212" y1="64" x2="253" y2="47" stroke="#ec4899" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line"/>
+      <line x1="212" y1="76" x2="253" y2="92" stroke="#6b7e96" stroke-width="1.2" stroke-dasharray="4 3" class="flow-line"/>
+      <text x="170" y="122" text-anchor="middle" fill="${textCol}" font-size="8" font-family="DM Mono,monospace">cookie beta_user=1 → beta backend</text>
+    </svg>`,
+  };
+
+  const fn = anims[type];
+  return fn ? fn() : `<svg viewBox="0 0 340 140" class="anim-svg">
+    <rect x="40" y="40" width="260" height="60" rx="8" fill="${dim}" stroke="${ac}" stroke-width="1"/>
+    <text x="170" y="70" text-anchor="middle" dominant-baseline="central" fill="${ac}" font-size="12" font-family="DM Mono,monospace">${type}</text>
+  </svg>`;
+}
+
+buildNav();
+render();
+</script>
+</body>
+</html>

@@ -791,6 +791,42 @@ main .code-block .code-block-header,
 .post-content strong { color: var(--t1); font-weight: 600; }
 .post-content em { font-style: italic; }
 .post-content a { color: var(--t1); text-decoration: underline; text-underline-offset: 3px; }
+.resource-link-card {
+  display: block;
+  padding: 22px 24px;
+  margin: 12px 0 34px;
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  background: var(--bg2);
+  color: var(--t1);
+  text-decoration: none !important;
+  text-align: left;
+}
+.resource-link-card strong,
+.resource-link-card span {
+  display: block;
+}
+.resource-link-card strong {
+  margin: 6px 0 8px;
+  font-family: var(--font-heading);
+  font-size: 19px;
+}
+.resource-link-card span:last-child {
+  color: var(--t2);
+  font-size: 15px;
+  line-height: 1.55;
+}
+.resource-link-eyebrow {
+  color: var(--ac);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.resource-link-card:hover {
+  border-color: var(--t2);
+}
 /* Inline code in prose (not in fenced blocks) */
 .post-content p code,
 .post-content li code,
