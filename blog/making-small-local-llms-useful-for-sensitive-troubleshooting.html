@@ -77,13 +77,21 @@
 
  <div class="post-content">
 
- <p>For some time now, I have been thinking about one practical problem with AI in infrastructure work.</p>
+ <p>Before talking about the tool, I need to explain the real trigger behind this idea.</p>
 
- <p>AI is useful. It can explain logs, summarize health-check reports, write recommendations, and help us see patterns faster. But the data we work with is not always safe to send outside.</p>
+ <p>For some time now, I have been thinking about one practical problem that I have been facing in infrastructure and support work.</p>
 
- <p>Server logs can include hostnames, IP addresses, usernames, authentication events, customer names, internal paths, service failures, security signals, and environment details. A health-check report may look simple, but it can still expose enough information to make a company uncomfortable.</p>
+ <p>Here is the trigger point.</p>
 
- <p>So the easy answer, "just upload it to GPT and ask," is not always the right answer.</p>
+ <p>One day, our infrastructure and support team received a customer ticket to conduct a health check for 150+ servers.</p>
+
+ <p>Here is the deal: we did not have a proper tool for this. These were critical infrastructure servers, and the data was sensitive because it was related to a banking-sector environment. Global AI models were not a solution here because multiple levels of logs were involved, including network-layer information.</p>
+
+ <p>Also, we used Ansible to collect the data as string outputs. I was the person responsible for this work, and I was not ready to do it manually.</p>
+
+ <p>A health-check report may look simple, but it can still expose enough information to make a company uncomfortable.</p>
+
+ <p>So the easy answer, "just upload it to GPT and ask," was out of the window. Also, you and I both know a local LLM running in a lab or on a Mac is not capable of handling this in the traditional raw-upload way.</p>
 
  <p>That is the idea behind LogQL.</p>
 
