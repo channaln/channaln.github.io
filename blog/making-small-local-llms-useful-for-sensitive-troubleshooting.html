@@ -287,6 +287,58 @@ when the data is large, messy, sensitive, and hard to filter manually?</code></p
  <div class="code-block"><pre><code>Look how much better local AI becomes
 when the application prepares the evidence properly.</code></pre></div>
 
+ <h2>What The Draft Screens Show</h2>
+
+ <p>The screenshots below are not a polished product demo. They are more like a proof of the idea: can a small local LLM become useful if the application prepares the work properly before asking the model?</p>
+
+ <figure class="post-cover">
+ <img src="../images/post/logql-upload-server-grouping.png" alt="LogQL upload workspace showing server report selection and server grouping" loading="lazy">
+ </figure>
+
+ <p><strong>Upload and grouping.</strong> This is where the sensitive health-check reports enter the local workspace. The user can choose a report folder, select servers, and create groups. The grouping can be manual, suggested from hostname and IP patterns, or helped by a local LLM when the user gives a simple instruction like "group the application servers together." The point is simple: the user does not need to know the perfect prompt or filtering logic before starting.</p>
+
+ <figure class="post-cover">
+ <img src="../images/post/logql-individual-queries.png" alt="LogQL saved queries screen for running individual checks" loading="lazy">
+ </figure>
+
+ <p><strong>Individual queries.</strong> Each saved query is a small lens over the uploaded data. One query can show hostnames, another can show server summary, disk usage, OS release, kernel version, or top log errors. The output can be searched, sorted, deduped, and filtered by host or severity. This helps even small issues become visible before they are buried inside the full report.</p>
+
+ <figure class="post-cover">
+ <img src="../images/post/logql-smart-jq-builder.png" alt="LogQL Smart JQ Builder generating and testing filtering queries" loading="lazy">
+ </figure>
+
+ <p><strong>Smart query builder.</strong> This is for the person who does not know jq, JSON paths, or prompt engineering. They can describe what they want in normal language. The configured local/private LLM can suggest a filtering query, the app tests it against the available fields, and only then the user can save it. So the LLM is not blindly answering from raw data. It is helping build the filter that prepares better evidence.</p>
+
+ <figure class="post-cover">
+ <img src="../images/post/logql-workflow-builder.png" alt="LogQL workflow builder chaining selected checks into a focused review" loading="lazy">
+ </figure>
+
+ <p><strong>Workflow builder.</strong> After individual queries are working, they can be chained into one repeatable workflow. For example, a "Focused Log Review" can run server inventory, summary, disk, and log checks together. This is useful because troubleshooting should not depend on remembering every manual step each time. The workflow becomes a small review process.</p>
+
+ <figure class="post-cover">
+ <img src="../images/post/logql-operational-dashboard.png" alt="LogQL operational dashboard showing critical nodes, resource pressure, log findings, and risk bands" loading="lazy">
+ </figure>
+
+ <p><strong>Operational dashboard.</strong> After a workflow runs, the app shows the first-pass picture: critical nodes, warning nodes, healthy nodes, disk pressure, memory pressure, log findings, platform distribution, and risk bands. This gives a clear view before AI writes a paragraph. The dashboard is not replacing the engineer. It is giving the local LLM and the human a cleaner starting point.</p>
+
+ <figure class="post-cover">
+ <img src="../images/post/logql-event-families-risk.png" alt="LogQL analytics showing event families, operational risk, priority queue, and impact table" loading="lazy">
+ </figure>
+
+ <p><strong>Log categorization and recommendations.</strong> The app groups log evidence into event families such as collector issues, memory/OOM, authentication, SELinux/audit, services, warnings, storage, and kernel/platform. This is where small recommendations can start. If a pattern repeats across hosts, the app can push it higher. If it is only noise, the reviewer can push it down. This makes the local LLM's job easier because it receives organized evidence instead of a random log dump.</p>
+
+ <figure class="post-cover">
+ <img src="../images/post/logql-host-analyzer-ai-summary.png" alt="LogQL host analyzer showing selected host evidence and live AI summary progress" loading="lazy">
+ </figure>
+
+ <p><strong>Individual server summary.</strong> Sometimes the question is not "what is wrong with the whole environment?" It is "what is happening on this one server?" The host analyzer focuses on one node, shows the selected evidence sections, and lets the local LLM summarize that host from the visible proof. That keeps the answer smaller, more private, and easier to verify.</p>
+
+ <figure class="post-cover">
+ <img src="../images/post/logql-evidence-intelligence.png" alt="LogQL Evidence Intelligence middle layer scoring chunks and preparing local LLM context" loading="lazy">
+ </figure>
+
+ <p><strong>Evidence Intelligence.</strong> This is the real middle layer. It breaks the report into metric chunks and log chunks, scores them, groups repeated patterns, tracks confidence, and shows how much context will be passed to the model. The reviewer can include, exclude, mark important, force evidence into the prompt, or add a note. This is how the application prepares a clean evidence vault for the local LLM. Day by day, that vault can make reviews more accurate because the process keeps better evidence and better reviewer decisions. But again, this is not LLM training. It is better context preparation.</p>
+
  <h2>How I See The Flow</h2>
 
  <p>The workflow I want is simple.</p>
