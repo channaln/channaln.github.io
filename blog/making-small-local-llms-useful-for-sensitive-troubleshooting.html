@@ -99,8 +99,10 @@
 
  <p>It started as a simple health-check helper, but the real idea became bigger:</p>
 
- <div class="code-block"><pre><code>How can we analyze sensitive infrastructure data with AI
-without sending the raw data to a global AI service?</code></pre></div>
+ <blockquote>
+ <p>How can we analyze sensitive infrastructure data with AI<br>
+ without sending the raw data to a global AI service?</p>
+ </blockquote>
 
  <p>The answer I wanted to test was local AI. Run a private LLM locally, keep the data inside the machine or internal network, and use that local model to help with troubleshooting and health-check review.</p>
 
@@ -112,8 +114,10 @@ without sending the raw data to a global AI service?</code></pre></div>
 
  <p>The real problem is this:</p>
 
- <div class="code-block"><pre><code>How do we make a small local LLM useful
-when the data is large, messy, sensitive, and hard to filter manually?</code></pre></div>
+ <blockquote>
+ <p>How do we make a small local LLM useful<br>
+ when the data is large, messy, sensitive, and hard to filter manually?</p>
+ </blockquote>
 
  <p>That is where the middle layer comes in.</p>
 
@@ -127,11 +131,13 @@ when the data is large, messy, sensitive, and hard to filter manually?</code></p
 
  <p>The better idea is:</p>
 
- <div class="code-block"><pre><code>Raw sensitive data
-  -> intelligent middle layer
-  -> clean evidence package
-  -> local private LLM
-  -> evidence-backed explanation</code></pre></div>
+ <blockquote>
+ <p>Raw sensitive data<br>
+ &rarr; intelligent middle layer<br>
+ &rarr; clean evidence package<br>
+ &rarr; local private LLM<br>
+ &rarr; evidence-backed explanation</p>
+ </blockquote>
 
  <p>This middle layer is the important part.</p>
 
@@ -284,7 +290,9 @@ when the data is large, messy, sensitive, and hard to filter manually?</code></p
 
  <p>The cool part is that the power does not come only from the model. It comes from the flow:</p>
 
- <div class="code-block"><pre><code>small model + clean evidence + guided workflow = useful private troubleshooting</code></pre></div>
+ <blockquote>
+ <p>small model + clean evidence + guided workflow = useful private troubleshooting</p>
+ </blockquote>
 
  <p>That is the impression I want this tool to give.</p>
 
@@ -292,8 +300,10 @@ when the data is large, messy, sensitive, and hard to filter manually?</code></p
 
  <p>More like:</p>
 
- <div class="code-block"><pre><code>Look how much better local AI becomes
-when the application prepares the evidence properly.</code></pre></div>
+ <blockquote>
+ <p>Look how much better local AI becomes<br>
+ when the application prepares the evidence properly.</p>
+ </blockquote>
 
  <h2>What The Draft Screens Show</h2>
 
@@ -367,10 +377,12 @@ when the application prepares the evidence properly.</code></pre></div>
 
  <p>That is the whole idea in one line:</p>
 
- <div class="code-block"><pre><code>private data stays local,
-the middle layer prepares the evidence,
-the local LLM explains it,
-and the human approves the result.</code></pre></div>
+ <blockquote>
+ <p>private data stays local,<br>
+ the middle layer prepares the evidence,<br>
+ the local LLM explains it,<br>
+ and the human approves the result.</p>
+ </blockquote>
 
  <h2>What LogQL Proves</h2>
 
@@ -380,17 +392,21 @@ and the human approves the result.</code></pre></div>
 
  <p>But it proves something important:</p>
 
- <div class="code-block"><pre><code>Small local LLMs can help with sensitive troubleshooting
-if we do not ask them to read everything blindly.</code></pre></div>
+ <blockquote>
+ <p>Small local LLMs can help with sensitive troubleshooting<br>
+ if we do not ask them to read everything blindly.</p>
+ </blockquote>
 
  <p>The application proves that the useful architecture is not only "connect to AI." The useful architecture is:</p>
 
- <div class="code-block"><pre><code>sensitive data
-  -> evidence extraction
-  -> intelligent filtering
-  -> context matching
-  -> local LLM review
-  -> human-approved report</code></pre></div>
+ <blockquote>
+ <p>sensitive data<br>
+ &rarr; evidence extraction<br>
+ &rarr; intelligent filtering<br>
+ &rarr; context matching<br>
+ &rarr; local LLM review<br>
+ &rarr; human-approved report</p>
+ </blockquote>
 
  <p>That is the direction I want to continue improving.</p>
 
@@ -414,10 +430,12 @@ if we do not ask them to read everything blindly.</code></pre></div>
 
  <p>That is the real idea behind LogQL:</p>
 
- <div class="code-block"><pre><code>private data
-  -> intelligent middle layer
-  -> small local secured LLM
-  -> evidence-backed troubleshooting</code></pre></div>
+ <blockquote>
+ <p>private data<br>
+ &rarr; intelligent middle layer<br>
+ &rarr; small local secured LLM<br>
+ &rarr; evidence-backed troubleshooting</p>
+ </blockquote>
 
  <p>If this continues to evolve, I think tools like this can make local AI more useful for real operational work, especially in small environments where even a laptop-based local model can help review health checks, troubleshoot common issues, and prepare cleaner reports.</p>
 
@@ -439,6 +457,5 @@ if we do not ask them to read everything blindly.</code></pre></div>
  </footer>
 
  <script src="../js/site-settings.js" defer></script>
- <script src="../js/code-block-expand.js" defer></script>
 </body>
 </html>
