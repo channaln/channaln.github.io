@@ -79,27 +79,21 @@
 
  <h2>Introduction</h2>
 
- <p>Before talking about the tool, I need to explain the real trigger behind this idea.</p>
+ <p>Here is the deal: we did not have a proper automated tool for this. These were critical infrastructure servers, and the data was sensitive because it was tied to a banking-sector environment. Global AI models were not a solution because multiple layers of logs were involved, including network-layer information. A health-check report may look simple, but it can still expose enough banking-environment detail to cause a real issue.</p>
 
- <p>For some time now, I have been thinking about one practical problem that I have been facing in infrastructure and support work.</p>
+ <p>The existing practice in my team was mostly manual, except for gathering the information. That part was fine because we used Ansible to collect the data as string outputs.</p>
 
- <p>Here is the trigger point.</p>
-
- <p>One day, our infrastructure and support team received a customer ticket to conduct a health check for 150+ servers.</p>
-
- <p>Here is the deal: we did not have a proper tool for this. These were critical infrastructure servers, and the data was sensitive because it was related to a banking-sector environment. Global AI models were not a solution here because multiple levels of logs were involved, including network-layer information.</p>
-
- <p>Also, we used Ansible to collect the data as string outputs. I was the person responsible for this work, and I was not ready to do it manually.</p>
-
- <p>A health-check report may look simple, but it can still expose enough information to make a company uncomfortable.</p>
+ <p>My dear audience, guess what? This time, I was the person responsible for this work during the shift. Call me Gen Z if you want, but I was not ready to manually read through data from 150+ servers.</p>
 
  <p>So the easy answer, "just upload it to GPT and ask," was out of the window. Also, you and I both know a local LLM running in a lab or on a Mac is not capable of handling this in the traditional raw-upload way.</p>
+
+ <p>Still, local AI felt like the best and fastest path, because preparing that environment was easier and I did not have much time to research and build a completely new setup.</p>
 
  <p>That is the idea behind LogQL-Interface.</p>
 
  <p>I know, I know, not a good name. Just forget it and hear me out on the idea.</p>
 
- <p>It started as a simple health-check helper, but the real idea became bigger:</p>
+ <p>It started as a simple health-check helper, but the real idea became bigger than I thought. Let me tell the story from the beginning.</p>
 
  <blockquote>
  <p>How can we analyze sensitive infrastructure data with AI<br>
