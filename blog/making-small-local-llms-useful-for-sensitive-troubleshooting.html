@@ -79,15 +79,13 @@
 
  <h2>Introduction</h2>
 
- <p>Here is the deal: we did not have a proper automated tool for this. These were critical infrastructure servers, and the data was sensitive because it was tied to a banking-sector environment. Global AI models were not a solution because multiple layers of logs were involved, including network-layer information. A health-check report may look simple, but it can still expose enough banking-environment detail to cause a real issue.</p>
+ <p>For some time now, I have been thinking about one practical problem that I have been facing in infrastructure and support work.</p>
 
- <p>The existing practice in my team was mostly manual, except for gathering the information. That part was fine because we used Ansible to collect the data as string outputs.</p>
+ <p>The deal is, we did not have a proper automated tool for this. These were critical infrastructure servers, and the data was sensitive because it was related to a banking-sector environment. Global AI models were not a solution here because multiple levels of logs were involved, including network-layer information. A health-check report may look simple, but it can still expose enough information to cause an issue because it contains banking data.</p>
 
- <p>My dear audience, guess what? This time, I was the person responsible for this work during the shift. Call me Gen Z if you want, but I was not ready to manually read through data from 150+ servers.</p>
+ <p>The existing practice my team had been following was fully manual, except for gathering information. That part was fine because we used Ansible to collect the data as string outputs. My dear audience, guess what? It was me who was responsible for this work during the shift. Call me Gen Z, but still, I was not ready to manually read data from 150+ servers.</p>
 
- <p>So the easy answer, "just upload it to GPT and ask," was out of the window. Also, you and I both know a local LLM running in a lab or on a Mac is not capable of handling this in the traditional raw-upload way.</p>
-
- <p>Still, local AI felt like the best and fastest path, because preparing that environment was easier and I did not have much time to research and build a completely new setup.</p>
+ <p>So the easy answer, "just upload it to GPT and ask," was out of the window. Also, you and I both know a local LLM running in a lab or on a Mac is not capable of handling this in the traditional raw-upload way. Still, that was the best and fastest way because the environment preparation was easy. I did not have much time to research and prepare a new environment to do this.</p>
 
  <p>That is the idea behind LogQL-Interface.</p>
 
