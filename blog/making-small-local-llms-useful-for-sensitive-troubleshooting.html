@@ -43,6 +43,307 @@
  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000&family=Inter:wght@300;400;450;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;0,700&family=Source+Sans+3:ital,wght@0,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900&display=swap" rel="stylesheet">
  <link rel="stylesheet" href="../css/minimal.css">
  <link rel="stylesheet" href="../css/glass.css">
+ <style>
+ .logql-chain-visual {
+   margin: 30px 0 40px;
+   padding: clamp(18px, 4vw, 28px);
+   border: 1px solid var(--bd);
+   border-radius: 18px;
+   background:
+     radial-gradient(circle at top left, rgba(26, 137, 23, 0.12), transparent 38%),
+     linear-gradient(180deg, var(--bg2), var(--bg));
+   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.10);
+   color: var(--t1);
+   font-family: var(--font-body);
+   text-align: left;
+   overflow: hidden;
+ }
+
+ .logql-chain-visual * {
+   box-sizing: border-box;
+ }
+
+ .post-content .logql-chain-visual h3,
+ .post-content .logql-chain-visual h4,
+ .post-content .logql-chain-visual p {
+   margin: 0;
+   text-align: left;
+ }
+
+ .logql-chain-kicker {
+   display: inline-flex;
+   margin-bottom: 10px;
+   color: var(--ac);
+   font-family: var(--font-mono), ui-monospace, monospace;
+   font-size: 11px;
+   font-weight: 700;
+   letter-spacing: 0.12em;
+   text-transform: uppercase;
+ }
+
+ .post-content .logql-chain-title {
+   color: var(--t1);
+   font-family: var(--font-heading);
+   font-size: clamp(21px, 3.8vw, 30px);
+   line-height: 1.2;
+ }
+
+ .post-content .logql-chain-intro {
+   max-width: 660px;
+   margin-top: 10px;
+   color: var(--t2);
+   font-size: 15px;
+   line-height: 1.65;
+ }
+
+ .logql-chain-track {
+   position: relative;
+   height: 34px;
+   margin: 28px 6px 14px;
+ }
+
+ .logql-chain-line {
+   position: absolute;
+   left: 0;
+   right: 0;
+   top: 50%;
+   height: 2px;
+   border-radius: 999px;
+   background: var(--bd);
+   transform: translateY(-50%);
+ }
+
+ .logql-chain-progress {
+   position: absolute;
+   left: 0;
+   top: 50%;
+   width: var(--chain-progress, 0%);
+   height: 2px;
+   border-radius: 999px;
+   background: var(--ac);
+   transform: translateY(-50%);
+   transition: width 0.5s ease;
+ }
+
+ .logql-chain-packet {
+   position: absolute;
+   left: var(--chain-progress, 0%);
+   top: 50%;
+   width: 18px;
+   height: 18px;
+   border: 3px solid var(--bg);
+   border-radius: 50%;
+   background: var(--ac);
+   box-shadow: 0 0 0 7px rgba(26, 137, 23, 0.12), 0 12px 24px rgba(0, 0, 0, 0.20);
+   transform: translate(-50%, -50%);
+   transition: left 0.5s ease;
+ }
+
+ .logql-chain-nodes {
+   display: grid;
+   grid-template-columns: repeat(3, minmax(0, 1fr));
+   gap: 10px;
+   margin-bottom: 18px;
+ }
+
+ .logql-chain-node {
+   display: flex;
+   align-items: center;
+   gap: 9px;
+   min-width: 0;
+   padding: 10px;
+   border: 1px solid var(--bd);
+   border-radius: 12px;
+   background: rgba(255, 255, 255, 0.50);
+   color: var(--t2);
+   cursor: pointer;
+   font: inherit;
+   text-align: left;
+   transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+ }
+
+ .logql-chain-node:hover,
+ .logql-chain-node:focus-visible,
+ .logql-chain-node.is-active {
+   border-color: var(--ac);
+   background: rgba(26, 137, 23, 0.08);
+   color: var(--t1);
+ }
+
+ .logql-chain-node.is-active {
+   transform: translateY(-1px);
+ }
+
+ .logql-chain-number {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   flex: 0 0 auto;
+   width: 24px;
+   height: 24px;
+   border-radius: 999px;
+   background: var(--bg3);
+   color: var(--t1);
+   font-family: var(--font-mono), ui-monospace, monospace;
+   font-size: 11px;
+   font-weight: 700;
+ }
+
+ .logql-chain-node.is-active .logql-chain-number {
+   background: var(--ac);
+   color: #fff;
+ }
+
+ .logql-chain-node span:last-child {
+   min-width: 0;
+   font-size: 13px;
+   font-weight: 700;
+   line-height: 1.25;
+ }
+
+ .logql-chain-detail {
+   display: grid;
+   grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+   gap: 16px;
+   align-items: stretch;
+ }
+
+ .logql-chain-card,
+ .logql-chain-output,
+ .logql-chain-prompt-card {
+   border: 1px solid var(--bd);
+   border-radius: 14px;
+   background: rgba(255, 255, 255, 0.58);
+ }
+
+ .logql-chain-card,
+ .logql-chain-output {
+   padding: 18px;
+ }
+
+ .logql-chain-label,
+ .logql-chain-output-label {
+   display: block;
+   margin-bottom: 8px;
+   color: var(--ac);
+   font-family: var(--font-mono), ui-monospace, monospace;
+   font-size: 11px;
+   font-weight: 700;
+   letter-spacing: 0.08em;
+   text-transform: uppercase;
+ }
+
+ .post-content .logql-chain-stage-title {
+   color: var(--t1);
+   font-family: var(--font-heading);
+   font-size: 20px;
+   line-height: 1.25;
+ }
+
+ .post-content .logql-chain-change {
+   margin-top: 10px;
+   color: var(--t2);
+   font-size: 15px;
+   line-height: 1.65;
+ }
+
+ .logql-chain-output pre {
+   min-height: 154px;
+   margin: 0;
+   padding: 14px;
+   overflow-x: auto;
+   border: 1px solid var(--bd);
+   border-radius: 10px;
+   background: #0d1117;
+   color: #e6edf3;
+   font-family: var(--font-code), "JetBrains Mono", ui-monospace, monospace;
+   font-size: 12px;
+   line-height: 1.65;
+   text-align: left;
+   white-space: pre;
+ }
+
+ .logql-chain-prompts {
+   display: grid;
+   grid-template-columns: repeat(3, minmax(0, 1fr));
+   gap: 10px;
+   margin-top: 16px;
+ }
+
+ .logql-chain-prompt-card {
+   padding: 13px;
+ }
+
+ .logql-chain-prompt-card strong,
+ .logql-chain-prompt-card span {
+   display: block;
+ }
+
+ .logql-chain-prompt-card strong {
+   color: var(--t1);
+   font-size: 13px;
+   line-height: 1.35;
+ }
+
+ .logql-chain-prompt-card span {
+   margin-top: 5px;
+   color: var(--t2);
+   font-size: 12px;
+   line-height: 1.45;
+ }
+
+ html[data-theme="dark"] .logql-chain-visual {
+   background:
+     radial-gradient(circle at top left, rgba(85, 190, 110, 0.16), transparent 40%),
+     linear-gradient(180deg, rgba(24, 27, 33, 0.95), rgba(10, 12, 16, 0.95));
+   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+ }
+
+ html[data-theme="dark"] .logql-chain-node,
+ html[data-theme="dark"] .logql-chain-card,
+ html[data-theme="dark"] .logql-chain-output,
+ html[data-theme="dark"] .logql-chain-prompt-card {
+   background: rgba(255, 255, 255, 0.04);
+ }
+
+ html[data-theme="dark"] .logql-chain-node.is-active,
+ html[data-theme="dark"] .logql-chain-node:hover,
+ html[data-theme="dark"] .logql-chain-node:focus-visible {
+   background: rgba(85, 190, 110, 0.12);
+ }
+
+ @media (max-width: 760px) {
+   .logql-chain-nodes,
+   .logql-chain-prompts,
+   .logql-chain-detail {
+     grid-template-columns: 1fr;
+   }
+
+   .logql-chain-track {
+     display: none;
+   }
+
+   .logql-chain-node {
+     padding: 11px 12px;
+   }
+
+   .logql-chain-output pre {
+     min-height: 128px;
+   }
+ }
+
+ @media (prefers-reduced-motion: reduce) {
+   .logql-chain-progress,
+   .logql-chain-packet,
+   .logql-chain-node {
+     transition: none;
+   }
+
+   .logql-chain-node.is-active {
+     transform: none;
+   }
+ }
+ </style>
 </head>
 <body class="page-root">
 
@@ -355,6 +656,64 @@
 
  <p>The workflow I want is simple.</p>
 
+ <p>The important correction is this: once the JSON files are uploaded, the first real shaping layer is jq. Evidence Intelligence does not start from the full raw file. It starts from the workflow output created by those jq checks.</p>
+
+ <section class="logql-chain-visual" aria-labelledby="logql-chain-title">
+ <span class="logql-chain-kicker">Animated chain</span>
+ <h3 class="logql-chain-title" id="logql-chain-title">How the data changes before the local LLM sees it</h3>
+ <p class="logql-chain-intro">The packet below moves through the same idea as the application: upload, scope, jq extraction, workflow chaining, evidence scoring, chunking, prompt packing, then local LLM review.</p>
+
+ <div class="logql-chain-track" aria-hidden="true">
+ <span class="logql-chain-line"></span>
+ <span class="logql-chain-progress"></span>
+ <span class="logql-chain-packet"></span>
+ </div>
+
+ <div class="logql-chain-nodes" aria-label="LogQL-Interface processing chain">
+ <button type="button" class="logql-chain-node is-active" data-chain-step="0" aria-pressed="true"><span class="logql-chain-number">1</span><span>Upload JSON</span></button>
+ <button type="button" class="logql-chain-node" data-chain-step="1" aria-pressed="false"><span class="logql-chain-number">2</span><span>Select scope</span></button>
+ <button type="button" class="logql-chain-node" data-chain-step="2" aria-pressed="false"><span class="logql-chain-number">3</span><span>jq extraction</span></button>
+ <button type="button" class="logql-chain-node" data-chain-step="3" aria-pressed="false"><span class="logql-chain-number">4</span><span>Workflow chain</span></button>
+ <button type="button" class="logql-chain-node" data-chain-step="4" aria-pressed="false"><span class="logql-chain-number">5</span><span>Evidence rows</span></button>
+ <button type="button" class="logql-chain-node" data-chain-step="5" aria-pressed="false"><span class="logql-chain-number">6</span><span>Score and clean</span></button>
+ <button type="button" class="logql-chain-node" data-chain-step="6" aria-pressed="false"><span class="logql-chain-number">7</span><span>Host chunks</span></button>
+ <button type="button" class="logql-chain-node" data-chain-step="7" aria-pressed="false"><span class="logql-chain-number">8</span><span>Prompt packs</span></button>
+ <button type="button" class="logql-chain-node" data-chain-step="8" aria-pressed="false"><span class="logql-chain-number">9</span><span>Local LLM</span></button>
+ </div>
+
+ <div class="logql-chain-detail" aria-live="polite">
+ <div class="logql-chain-card">
+ <span class="logql-chain-label">Changing part</span>
+ <h4 class="logql-chain-stage-title" data-chain-title>Upload JSON</h4>
+ <p class="logql-chain-change" data-chain-change>Sensitive health-check files enter the local workspace. At this point, no model has seen the raw files.</p>
+ </div>
+ <div class="logql-chain-output">
+ <span class="logql-chain-output-label">Output shape</span>
+ <pre data-chain-output>reports/2026-07-13/amq1_report.json
+reports/2026-07-13/amq2_report.json
+reports/2026-07-13/loki_report.json
+reports/2026-07-13/loki2_report.json</pre>
+ </div>
+ </div>
+
+ <div class="logql-chain-prompts" aria-label="Prompt-specific context examples">
+ <div class="logql-chain-prompt-card">
+ <strong>Disk prompt</strong>
+ <span>Receives disk, filesystem, mount, and capacity evidence.</span>
+ </div>
+ <div class="logql-chain-prompt-card">
+ <strong>Log prompt</strong>
+ <span>Receives log chunks grouped by host, log type, and repeated pattern.</span>
+ </div>
+ <div class="logql-chain-prompt-card">
+ <strong>Conclusion prompt</strong>
+ <span>Receives top risks plus previous AI sections and reviewer notes.</span>
+ </div>
+ </div>
+ </section>
+
+ <p>This is why the chaining part matters. One jq query is only one lens. A workflow chains multiple lenses together, such as inventory, summary, disk, and log checks. Then Evidence Intelligence receives that combined workflow output and turns it into scored evidence, host chunks, and prompt-specific context.</p>
+
  <p>First, the user uploads sensitive server data into the local application. The data can be a health-check JSON file, log bundle, or troubleshooting output.</p>
 
  <p>Second, the application reads the data and extracts useful evidence. It does not send the full raw file to the model immediately.</p>
@@ -450,6 +809,109 @@
  </div>
  </footer>
 
+ <script>
+ (function () {
+   var root = document.querySelector(".logql-chain-visual");
+   if (!root) return;
+
+   var steps = [
+     {
+       title: "Upload JSON",
+       change: "Sensitive health-check files enter the local workspace. At this point, no model has seen the raw files.",
+       output: "reports/2026-07-13/amq1_report.json\nreports/2026-07-13/amq2_report.json\nreports/2026-07-13/loki_report.json\nreports/2026-07-13/loki2_report.json"
+     },
+     {
+       title: "Select scope",
+       change: "The user decides which hosts are allowed into the run. It can be all servers or a smaller server group.",
+       output: "active scope: All servers\nselected files: 4\nor\nactive scope: AMQ group\nselected hosts: amq1, amq2"
+     },
+     {
+       title: "jq extraction",
+       change: "Saved jq queries pull only useful fields from the JSON. This is the first real filter before Evidence Intelligence.",
+       output: "loki  | Highest Disk Usage | /var/lib/... 100%\namq1  | Server Summary     | CPU 2% | RAM 1706 MB\namq1  | dmesg              | pci bridge window failed to assign"
+     },
+     {
+       title: "Workflow chain",
+       change: "This is the chaining part: separate jq checks become one repeatable review path. The workflow output becomes the input for Evidence Intelligence.",
+       output: "Focused Log Review\n1. Server Inventory\n2. Server Summary\n3. Highest Disk Usage\n4. Top Log Errors\n\ncombined output: 5 sections with data"
+     },
+     {
+       title: "Evidence rows",
+       change: "The middle layer reads workflow sections and categorizes each row as metric evidence, log evidence, or supporting evidence.",
+       output: "kind=metric | host=loki | section=Highest Disk Usage\nkind=metric | host=amq1 | section=Server Summary\nkind=log    | host=amq1 | log_type=dmesg"
+     },
+     {
+       title: "Score and clean",
+       change: "Rows are ranked by severity, repetition, affected hosts, source reliability, and noise penalties. Noisy collection lines are pushed down.",
+       output: "score 92 | disk 100% on loki\nscore 49 | repeated dmesg bridge warning\nscore low | Ansible collection noise"
+     },
+     {
+       title: "Host chunks",
+       change: "High-signal evidence is grouped per host. Metric chunks and log chunks are capped so the local LLM does not receive a huge dump.",
+       output: "host: loki\nmetric_chunks: disk, RAM, OS, kernel\nlog_chunks: repeated service or kernel patterns\n\nhost evidence score: highest chunk score"
+     },
+     {
+       title: "Prompt packs",
+       change: "The app builds different context for different prompts. Disk questions get disk evidence. Log questions get log evidence. Conclusion gets top risks and previous AI output.",
+       output: "Disk Recommendations -> disk evidence only\nLog Analysis          -> logs by host and log type\nConclusion            -> top risks + reviewer notes"
+     },
+     {
+       title: "Local LLM",
+       change: "The private model explains the prepared evidence. The reviewer can include, exclude, mark important, or force evidence into the prompt. This is context preparation, not model training.",
+       output: "prepared prompt context -> local LLM\nlocal summary -> human review\napproved evidence -> report preview / DOCX / PDF"
+     }
+   ];
+
+   var buttons = Array.prototype.slice.call(root.querySelectorAll("[data-chain-step]"));
+   var title = root.querySelector("[data-chain-title]");
+   var change = root.querySelector("[data-chain-change]");
+   var output = root.querySelector("[data-chain-output]");
+   var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+   var index = 0;
+   var timer = null;
+
+   function setStep(nextIndex) {
+     index = nextIndex;
+     var progress = steps.length > 1 ? (index / (steps.length - 1)) * 100 : 0;
+     root.style.setProperty("--chain-progress", progress + "%");
+     buttons.forEach(function (button, buttonIndex) {
+       var active = buttonIndex === index;
+       button.classList.toggle("is-active", active);
+       button.setAttribute("aria-pressed", active ? "true" : "false");
+     });
+     title.textContent = steps[index].title;
+     change.textContent = steps[index].change;
+     output.textContent = steps[index].output;
+   }
+
+   function stopAutoPlay() {
+     if (timer) {
+       window.clearInterval(timer);
+       timer = null;
+     }
+   }
+
+   function startAutoPlay() {
+     if (reduceMotion || timer) return;
+     timer = window.setInterval(function () {
+       setStep((index + 1) % steps.length);
+     }, 3600);
+   }
+
+   buttons.forEach(function (button) {
+     button.addEventListener("click", function () {
+       stopAutoPlay();
+       setStep(Number(button.getAttribute("data-chain-step")));
+     });
+   });
+
+   root.addEventListener("mouseenter", stopAutoPlay);
+   root.addEventListener("mouseleave", startAutoPlay);
+   root.addEventListener("focusin", stopAutoPlay);
+   setStep(0);
+   startAutoPlay();
+ }());
+ </script>
  <script src="../js/site-settings.js" defer></script>
 </body>
 </html>
