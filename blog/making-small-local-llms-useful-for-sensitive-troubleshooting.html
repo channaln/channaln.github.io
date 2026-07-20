@@ -108,7 +108,8 @@
    max-height: calc(100dvh - clamp(24px, 6vw, 68px));
    margin: 0;
    padding: clamp(18px, 3vw, 34px);
-   overflow: auto;
+   overflow-x: hidden;
+   overflow-y: auto;
    cursor: default;
    border-color: rgba(26, 137, 23, 0.55);
    box-shadow: 0 34px 120px rgba(0, 0, 0, 0.34);
@@ -439,6 +440,8 @@
  .logql-chain-visual.is-expanded .logql-chain-output pre {
    min-height: 230px;
    font-size: 13px;
+   white-space: pre-wrap;
+   overflow-wrap: anywhere;
  }
 
  .logql-chain-prompts {
@@ -1001,6 +1004,68 @@ reports/2026-07-13/loki2_report.json</pre>
  </div>
  </section>
 
+ <p>Now here is the same chain with a real example file. This one uses the attached <a href="../files/logql-broker01-report.json" target="_blank" rel="noopener">broker01 health-check JSON</a> and shows how a normal-looking raw report becomes useful evidence before the local LLM sees it.</p>
+
+ <section class="logql-chain-visual" data-chain-example="broker01" aria-labelledby="logql-broker-chain-title">
+ <div class="logql-chain-head">
+ <div>
+ <span class="logql-chain-kicker">Real example</span>
+ <h3 class="logql-chain-title" id="logql-broker-chain-title">broker01 report moving through the same chain</h3>
+ <p class="logql-chain-intro">This is not fake AMQ/Loki sample text. These rows are shaped from the attached broker01 JSON report: hostname, OS, CPU, memory, disk, SELinux, network, and archive-backed log pointers.</p>
+ </div>
+ <button type="button" class="logql-chain-expand" aria-expanded="false" data-chain-expand>Full screen</button>
+ </div>
+
+ <div class="logql-chain-track" aria-hidden="true">
+ <span class="logql-chain-line"></span>
+ <span class="logql-chain-stream"><span></span><span></span><span></span><span></span></span>
+ <span class="logql-chain-progress"></span>
+ <span class="logql-chain-packet"></span>
+ </div>
+
+ <div class="logql-chain-nodes" aria-label="broker01 processing chain">
+ <button type="button" class="logql-chain-node is-active" data-chain-step="0" aria-pressed="true"><span class="logql-chain-number">1</span><span>Raw JSON</span></button>
+ <button type="button" class="logql-chain-node" data-chain-step="1" aria-pressed="false"><span class="logql-chain-number">2</span><span>Host scope</span></button>
+ <button type="button" class="logql-chain-node" data-chain-step="2" aria-pressed="false"><span class="logql-chain-number">3</span><span>jq rows</span></button>
+ <button type="button" class="logql-chain-node" data-chain-step="3" aria-pressed="false"><span class="logql-chain-number">4</span><span>Workflow</span></button>
+ <button type="button" class="logql-chain-node" data-chain-step="4" aria-pressed="false"><span class="logql-chain-number">5</span><span>Evidence type</span></button>
+ <button type="button" class="logql-chain-node" data-chain-step="5" aria-pressed="false"><span class="logql-chain-number">6</span><span>Score</span></button>
+ <button type="button" class="logql-chain-node" data-chain-step="6" aria-pressed="false"><span class="logql-chain-number">7</span><span>Chunks</span></button>
+ <button type="button" class="logql-chain-node" data-chain-step="7" aria-pressed="false"><span class="logql-chain-number">8</span><span>Prompt pack</span></button>
+ <button type="button" class="logql-chain-node" data-chain-step="8" aria-pressed="false"><span class="logql-chain-number">9</span><span>LLM answer</span></button>
+ </div>
+
+ <div class="logql-chain-detail" aria-live="polite">
+ <div class="logql-chain-card">
+ <span class="logql-chain-label">Changing part</span>
+ <h4 class="logql-chain-stage-title" data-chain-title>Raw JSON</h4>
+ <p class="logql-chain-change" data-chain-change>The input is a single broker01 report with hardware, storage, system, service, network, process, and log pointer sections.</p>
+ </div>
+ <div class="logql-chain-output">
+ <span class="logql-chain-output-label">Output shape</span>
+ <pre data-chain-output>files/logql-broker01-report.json
+hostname: broker01
+date: 2026-04-05T09:40:26Z
+keys: hardware, network, performance, processes, services, storage, system, logs</pre>
+ </div>
+ </div>
+
+ <div class="logql-chain-prompts" aria-label="broker01 prompt examples">
+ <div class="logql-chain-prompt-card">
+ <strong>Server status</strong>
+ <span>Uses OS, kernel, uptime, CPU, memory, load, disk, and SELinux rows.</span>
+ </div>
+ <div class="logql-chain-prompt-card">
+ <strong>Disk review</strong>
+ <span>Uses the highest disk row: root filesystem at 42 percent.</span>
+ </div>
+ <div class="logql-chain-prompt-card">
+ <strong>Log review</strong>
+ <span>Sees that log sources exist as archive pointers, not expanded raw log lines.</span>
+ </div>
+ </div>
+ </section>
+
  <p>This is why the chaining part matters. One jq query is only one lens. A workflow chains multiple lenses together, such as inventory, summary, disk, and log checks. Then Evidence Intelligence receives that combined workflow output and turns it into scored evidence, host chunks, and prompt-specific context.</p>
 
  <p>First, the user uploads sensitive server data into the local application. The data can be a health-check JSON file, log bundle, or troubleshooting output.</p>
@@ -1100,10 +1165,10 @@ reports/2026-07-13/loki2_report.json</pre>
 
  <script>
  (function () {
-   var root = document.querySelector(".logql-chain-visual");
-   if (!root) return;
+   var roots = Array.prototype.slice.call(document.querySelectorAll(".logql-chain-visual"));
+   if (!roots.length) return;
 
-   var steps = [
+   var defaultSteps = [
      {
        title: "Upload JSON",
        change: "Sensitive health-check files enter the local workspace. At this point, no model has seen the raw files.",
@@ -1151,128 +1216,180 @@ reports/2026-07-13/loki2_report.json</pre>
      }
    ];
 
-   var buttons = Array.prototype.slice.call(root.querySelectorAll("[data-chain-step]"));
-   var expandButton = root.querySelector("[data-chain-expand]");
-   var title = root.querySelector("[data-chain-title]");
-   var change = root.querySelector("[data-chain-change]");
-   var output = root.querySelector("[data-chain-output]");
    var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-   var index = 0;
-   var timer = null;
-   var animationTimer = null;
-   var placeholder = null;
 
-   function setStep(nextIndex) {
-     index = nextIndex;
-     var progress = steps.length > 1 ? (index / (steps.length - 1)) * 100 : 0;
-     root.style.setProperty("--chain-progress", progress + "%");
-     buttons.forEach(function (button, buttonIndex) {
-       var active = buttonIndex === index;
-       button.classList.toggle("is-active", active);
-       button.setAttribute("aria-pressed", active ? "true" : "false");
-     });
-     title.textContent = steps[index].title;
-     change.textContent = steps[index].change;
-     output.textContent = steps[index].output;
-     if (!reduceMotion) {
-       root.classList.remove("is-changing");
-       void root.offsetWidth;
-       root.classList.add("is-changing");
-       window.clearTimeout(animationTimer);
-       animationTimer = window.setTimeout(function () {
+   var brokerSteps = [
+     {
+       title: "Raw JSON",
+       change: "The input is a single broker01 report with hardware, storage, system, service, network, process, and log pointer sections.",
+       output: "files/logql-broker01-report.json\nhostname: broker01\ndate: 2026-04-05T09:40:26Z\nkeys: hardware, network, performance, processes, services, storage, system, logs"
+     },
+     {
+       title: "Host scope",
+       change: "The run is scoped to one uploaded server report. In a larger run this same step would narrow all uploaded files to the selected server group.",
+       output: "active scope: broker01\nselected report: broker01_report.json\ndefault_ip: 10.10.30.16\nuptime: 32 days"
+     },
+     {
+       title: "jq rows",
+       change: "jq turns nested JSON fields into small rows the workflow can understand. This is the first real shaping step.",
+       output: "broker01 | Server Summary | CPU 0.501983% | RAM 7681 MB | Free 7206 MB | Load 0.20\nbroker01 | OS Release | Red Hat Enterprise Linux 9.6 (Plow)\nbroker01 | Highest Disk | /dev/mapper/rhel-root 9841M 42% /\nbroker01 | SELinux | enabled / enforcing"
+     },
+     {
+       title: "Workflow",
+       change: "Several jq rows become one repeatable health-check path, so the review does not depend on remembering manual steps.",
+       output: "Broker health review\n1. Server Summary\n2. Server Inventory\n3. Highest Disk Usage\n4. SELinux Status\n5. Network Errors\n\ncombined output: one workflow view for broker01"
+     },
+     {
+       title: "Evidence type",
+       change: "Evidence Intelligence classifies the workflow rows. Most broker01 rows become metric/profile evidence; log fields are pointers to archived logs.",
+       output: "metric | broker01 | CPU 0.501983% | low resource pressure\nmetric | broker01 | root disk 42% | capacity normal\nmetric | broker01 | SELinux enforcing | security baseline present\nsupporting | broker01 | logs: dmesg/messages/secure -> see archive"
+     },
+     {
+       title: "Score",
+       change: "The score stays low because this sample does not show high disk usage, high load, OOM, panic, failed login, or repeated critical log lines inside the JSON.",
+       output: "CPU 0.501983% -> low score\nload 0.20 -> low score\nroot disk 42% -> low score\nSELinux enforcing -> healthy/supporting\nnetwork TX transns 1 -> supporting check, not a conclusion by itself"
+     },
+     {
+       title: "Chunks",
+       change: "The middle layer builds a compact host profile. This is what stops the local LLM from reading the whole raw JSON and kernel parameter dump.",
+       output: "host: broker01\nmetric_chunks:\n- RHEL 9.6, kernel 5.14.0-570.33.2.el9_6\n- uptime 32 days\n- CPU 0.501983%, RAM free 7206 MB\n- highest disk 42% on /\n- SELinux enforcing\nlog_chunks:\n- archive pointers only"
+     },
+     {
+       title: "Prompt pack",
+       change: "Each prompt gets only the evidence it needs. The server prompt gets the full host summary; the disk prompt gets storage; the log prompt gets the archive limitation.",
+       output: "Server Status prompt -> OS, kernel, uptime, CPU, RAM, load, disk, SELinux\nDisk prompt -> /dev/mapper/rhel-root at 42%\nLog prompt -> logs exist as archive references, not expanded rows\nConclusion prompt -> low immediate risk from visible JSON"
+     },
+     {
+       title: "LLM answer",
+       change: "The local LLM now answers from clean evidence. For this file the better answer is not dramatic: broker01 looks stable from visible metrics, with logs needing archive review if deeper log analysis is required.",
+       output: "local LLM context:\n- broker01 visible metrics are healthy\n- root filesystem is 42%, no disk pressure\n- CPU/load/memory look normal\n- SELinux is enforcing\n- raw logs are referenced as archive data, so do not invent log findings"
+     }
+   ];
+
+   roots.forEach(function (root) {
+     var steps = root.getAttribute("data-chain-example") === "broker01" ? brokerSteps : defaultSteps;
+     var buttons = Array.prototype.slice.call(root.querySelectorAll("[data-chain-step]"));
+     var expandButton = root.querySelector("[data-chain-expand]");
+     var title = root.querySelector("[data-chain-title]");
+     var change = root.querySelector("[data-chain-change]");
+     var output = root.querySelector("[data-chain-output]");
+     var index = 0;
+     var timer = null;
+     var animationTimer = null;
+     var placeholder = null;
+
+     function setStep(nextIndex) {
+       index = nextIndex;
+       var progress = steps.length > 1 ? (index / (steps.length - 1)) * 100 : 0;
+       root.style.setProperty("--chain-progress", progress + "%");
+       buttons.forEach(function (button, buttonIndex) {
+         var active = buttonIndex === index;
+         button.classList.toggle("is-active", active);
+         button.setAttribute("aria-pressed", active ? "true" : "false");
+       });
+       title.textContent = steps[index].title;
+       change.textContent = steps[index].change;
+       output.textContent = steps[index].output;
+       if (!reduceMotion) {
          root.classList.remove("is-changing");
-       }, 420);
-     }
-   }
-
-   function stopAutoPlay() {
-     if (timer) {
-       window.clearInterval(timer);
-       timer = null;
-     }
-   }
-
-   function startAutoPlay() {
-     if (reduceMotion || timer) return;
-     timer = window.setInterval(function () {
-       setStep((index + 1) % steps.length);
-     }, 3600);
-   }
-
-   function openFullScreen() {
-     if (root.classList.contains("is-expanded")) return;
-     placeholder = document.createComment("logql-chain-placeholder");
-     root.parentNode.insertBefore(placeholder, root);
-     document.body.appendChild(root);
-     document.body.classList.add("logql-chain-open");
-     root.classList.add("is-expanded");
-     if (expandButton) {
-       expandButton.textContent = "Close";
-       expandButton.setAttribute("aria-expanded", "true");
-     }
-     startAutoPlay();
-   }
-
-   function closeFullScreen() {
-     if (!root.classList.contains("is-expanded")) return;
-     root.classList.remove("is-expanded");
-     document.body.classList.remove("logql-chain-open");
-     if (placeholder && placeholder.parentNode) {
-       placeholder.parentNode.insertBefore(root, placeholder);
-       placeholder.parentNode.removeChild(placeholder);
-       placeholder = null;
-     }
-     if (expandButton) {
-       expandButton.textContent = "Full screen";
-       expandButton.setAttribute("aria-expanded", "false");
-       expandButton.focus();
-     }
-   }
-
-   buttons.forEach(function (button) {
-     button.addEventListener("click", function (event) {
-       stopAutoPlay();
-       setStep(Number(button.getAttribute("data-chain-step")));
-       if (!root.classList.contains("is-expanded")) {
-         openFullScreen();
+         void root.offsetWidth;
+         root.classList.add("is-changing");
+         window.clearTimeout(animationTimer);
+         animationTimer = window.setTimeout(function () {
+           root.classList.remove("is-changing");
+         }, 420);
        }
-       event.stopPropagation();
-     });
-   });
+     }
 
-   if (expandButton) {
-     expandButton.addEventListener("click", function (event) {
-       event.stopPropagation();
-       if (root.classList.contains("is-expanded")) {
+     function stopAutoPlay() {
+       if (timer) {
+         window.clearInterval(timer);
+         timer = null;
+       }
+     }
+
+     function startAutoPlay() {
+       if (reduceMotion || timer) return;
+       timer = window.setInterval(function () {
+         setStep((index + 1) % steps.length);
+       }, 3600);
+     }
+
+     function openFullScreen() {
+       if (root.classList.contains("is-expanded")) return;
+       placeholder = document.createComment("logql-chain-placeholder");
+       root.parentNode.insertBefore(placeholder, root);
+       document.body.appendChild(root);
+       document.body.classList.add("logql-chain-open");
+       root.classList.add("is-expanded");
+       if (expandButton) {
+         expandButton.textContent = "Close";
+         expandButton.setAttribute("aria-expanded", "true");
+       }
+       startAutoPlay();
+     }
+
+     function closeFullScreen() {
+       if (!root.classList.contains("is-expanded")) return;
+       root.classList.remove("is-expanded");
+       document.body.classList.remove("logql-chain-open");
+       if (placeholder && placeholder.parentNode) {
+         placeholder.parentNode.insertBefore(root, placeholder);
+         placeholder.parentNode.removeChild(placeholder);
+         placeholder = null;
+       }
+       if (expandButton) {
+         expandButton.textContent = "Full screen";
+         expandButton.setAttribute("aria-expanded", "false");
+         expandButton.focus();
+       }
+     }
+
+     buttons.forEach(function (button) {
+       button.addEventListener("click", function (event) {
+         stopAutoPlay();
+         setStep(Number(button.getAttribute("data-chain-step")));
+         if (!root.classList.contains("is-expanded")) {
+           openFullScreen();
+         }
+         event.stopPropagation();
+       });
+     });
+
+     if (expandButton) {
+       expandButton.addEventListener("click", function (event) {
+         event.stopPropagation();
+         if (root.classList.contains("is-expanded")) {
+           closeFullScreen();
+         } else {
+           openFullScreen();
+         }
+       });
+     }
+
+     root.addEventListener("click", function () {
+       openFullScreen();
+     });
+     document.addEventListener("keydown", function (event) {
+       if (event.key === "Escape") {
          closeFullScreen();
-       } else {
-         openFullScreen();
        }
      });
-   }
-
-   root.addEventListener("click", function () {
-     openFullScreen();
+     document.addEventListener("click", function (event) {
+       if (root.classList.contains("is-expanded") && !root.contains(event.target)) {
+         closeFullScreen();
+       }
+     });
+     root.addEventListener("mouseenter", function () {
+       if (!root.classList.contains("is-expanded")) {
+         stopAutoPlay();
+       }
+     });
+     root.addEventListener("mouseleave", startAutoPlay);
+     root.addEventListener("focusin", stopAutoPlay);
+     setStep(0);
+     startAutoPlay();
    });
-   document.addEventListener("keydown", function (event) {
-     if (event.key === "Escape") {
-       closeFullScreen();
-     }
-   });
-   document.addEventListener("click", function (event) {
-     if (root.classList.contains("is-expanded") && !root.contains(event.target)) {
-       closeFullScreen();
-     }
-   });
-   root.addEventListener("mouseenter", function () {
-     if (!root.classList.contains("is-expanded")) {
-       stopAutoPlay();
-     }
-   });
-   root.addEventListener("mouseleave", startAutoPlay);
-   root.addEventListener("focusin", stopAutoPlay);
-   setStep(0);
-   startAutoPlay();
  }());
  </script>
  <script src="../js/site-settings.js" defer></script>
