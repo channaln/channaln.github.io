@@ -1037,7 +1037,7 @@ reports/2026-07-13/loki2_report.json</pre>
  <div>
  <span class="logql-chain-kicker">Real example</span>
  <h3 class="logql-chain-title" id="logql-loki-chain-title">loki.ocp.kuwaitnet.lab report moving through the same chain</h3>
- <p class="logql-chain-intro">This is not fake AMQ/Loki sample text. These rows are shaped from the attached Loki JSON report: hostname, OS, CPU, memory, disk, SELinux, network, and real log evidence from messages and secure logs.</p>
+ <p class="logql-chain-intro">This is not fake AMQ/Loki sample text. These rows are shaped from the attached Loki JSON report and the saved Focused Log Review workflow: hostname, inventory, summary, disk, and real messages log evidence.</p>
  </div>
  <button type="button" class="logql-chain-expand" aria-expanded="false" data-chain-expand>Full screen</button>
  </div>
@@ -1079,15 +1079,15 @@ keys: hardware, network, performance, processes, services, storage, system, logs
  <div class="logql-chain-prompts" aria-label="Loki prompt examples">
  <div class="logql-chain-prompt-card">
  <strong>Server status</strong>
- <span>Uses OS, kernel, uptime, CPU, memory, load, disk, and SELinux rows.</span>
+ <span>Uses the actual inventory and summary rows: RHEL 9.7, kernel 5.14.0, CPU 0.615333%, load 0.05.</span>
  </div>
  <div class="logql-chain-prompt-card">
  <strong>Disk review</strong>
- <span>Separates root disk at 20 percent from snap loop mounts showing 100 percent.</span>
+ <span>Uses the workflow disk row: /dev/loop0 at 100%, then reviewer context marks it as snap loop noise.</span>
  </div>
  <div class="logql-chain-prompt-card">
  <strong>Log review</strong>
- <span>Uses repeated promtail permission errors and secure-log authentication failures.</span>
+ <span>Uses 20 real Top Log Errors rows: promtail cannot open /var/log/messages because of permission denied.</span>
  </div>
  </div>
  </section>
@@ -1257,38 +1257,38 @@ keys: hardware, network, performance, processes, services, storage, system, logs
      },
      {
        title: "jq rows",
-       change: "jq turns nested JSON fields into small rows the workflow can understand. This is the first real shaping step.",
-       output: "loki | Server Summary | CPU 0.615333% | RAM 1674 MB | Free 693 MB | Load 0.05\nloki | OS Release | Red Hat Enterprise Linux 9.7 (Plow)\nloki | Root Disk | /dev/mapper/rhel-root 47G 20% /\nloki | Highest Disk | /dev/loop0 100% /var/lib/snapd/snap/bare/5"
+       change: "These are actual jq outputs from the saved Focused Log Review queries, shortened only so they fit inside the chart.",
+       output: "Server Hostnames:\nloki.ocp.kuwaitnet.lab\n\nServer Inventory:\nloki.ocp.kuwaitnet.lab | IP: 10.10.30.17 | RHEL: Red Hat Enterprise Linux release 9.7 (Plow) | Kernel: 5.14.0-611.16.1.el9_7.x86_64\n\nServer Summary:\nloki.ocp.kuwaitnet.lab | CPU: 0.615333 % | RAM Total: 1674 MB | RAM Free: 693 MB | Load: 0.05\n\nHighest Disk Usage:\nloki.ocp.kuwaitnet.lab | Disk: /dev/loop0 0M 100% /var/lib/snapd/snap/bare/5\n\nTop Log Errors:\nloki.ocp.kuwaitnet.lab | messages | Mar 8 00:00:00 ... promtail ... permission denied"
      },
      {
        title: "Workflow",
-       change: "Several jq rows become one repeatable health-check path, so the review does not depend on remembering manual steps.",
-       output: "Loki health review\n1. Server Summary\n2. Server Inventory\n3. Highest Disk Usage\n4. Top Log Errors\n5. SELinux Status\n\ncombined output: metrics + repeated log rows"
+       change: "This is the actual saved Focused Log Review workflow run against the Loki report. The output is not a workflow description; it is the row count produced by each saved jq query.",
+       output: "Focused Log Review\nServer Hostnames: 1 row\nServer Inventory: 1 row\nServer Summary: 1 row\nHighest Disk Usage: 1 row\nTop Log Errors: 20 rows\n\nworkflow output total: 24 rows"
      },
      {
        title: "Evidence type",
-       change: "Evidence Intelligence classifies the workflow rows. Metrics, repeated log lines, security events, and likely noise stop being treated as one flat text dump.",
-       output: "metric | loki | root disk 20% | capacity normal\nmetric | loki | /dev/loop* snap mounts 100% | likely pseudo filesystem noise\nlog | loki | messages | promtail failed to start tailer: permission denied\nlog | loki | secure | authentication failure for ansible/root"
+       change: "Evidence Intelligence receives the 24 workflow rows and classifies the actual rows by type before the LLM sees them.",
+       output: "metric | Server Inventory | IP 10.10.30.17 | RHEL 9.7 | kernel 5.14.0-611.16.1\nmetric | Server Summary | CPU 0.615333% | RAM free 693 MB | load 0.05\nmetric | Highest Disk Usage | /dev/loop0 0M 100% /var/lib/snapd/snap/bare/5\nlog | Top Log Errors | messages | promtail failed to start tailer: permission denied"
      },
      {
        title: "Score",
-       change: "The score separates useful signals from noisy rows. Repeated promtail permission failures and authentication failures rise up; snap loop 100 percent mounts are downgraded because they are expected pseudo filesystems.",
-       output: "repeated promtail permission denied -> high log signal\nrepeated ssh authentication failures -> security signal\n/dev/loop* 100% snap mounts -> noise/downgraded\nroot disk 20% -> low risk\nCPU/load -> low risk"
+       change: "These are the actual scores returned by the app's Evidence Intelligence ranking for this workflow output. The reviewer note is what prevents the loop device from becoming a false disk conclusion.",
+       output: "top_score: 45\nranked_evidence_count: 23\n\nscore 45 | medium | Top Log Errors | warning/error keyword, repeated pattern x20\nscore 43 | medium | Highest Disk Usage | >=90% utilization | /dev/loop0 100%\nscore 8 | low | Server Summary | supporting context | CPU 0.615333%, load 0.05\nscore 8 | low | Server Inventory | supporting context | RHEL 9.7, kernel 5.14.0"
      },
      {
        title: "Chunks",
-       change: "The middle layer builds compact metric chunks and log chunks for the host. This is what stops the local LLM from reading the whole raw JSON and the full log body.",
-       output: "host: loki.ocp.kuwaitnet.lab\nmetric_chunks:\n- RHEL 9.7, kernel 5.14.0-611.16.1\n- CPU 0.615333%, load 0.05\n- RAM available 693 MB of 1674 MB\n- root disk 20%, snap loops at 100%\nlog_chunks:\n- promtail /var/log/messages permission denied\n- ssh auth failures from 10.10.20.210"
+       change: "The app then turns the ranked rows into host chunks. This is the concrete context reduction: 6 MB of JSON and logs becomes a 4504-character evidence profile.",
+       output: "host: loki.ocp.kuwaitnet.lab\nsection_count: 5\nchunk_count: 17\nllm_chars: 4504\n\nmetric_chunks:\n- Highest Disk Usage | score 43 | /dev/loop0 100% snap mount\n- Server Inventory | score 8 | RHEL 9.7, kernel 5.14.0\n- Server Summary | score 8 | CPU 0.615333%, RAM free 693 MB, load 0.05\n\nlog_chunks:\n- Top Log Errors | score 45 | 20 repeated promtail permission-denied rows"
      },
      {
        title: "Prompt pack",
-       change: "Each prompt gets only the evidence it needs. The server prompt gets host health, the disk prompt gets storage with noise notes, and the log prompt gets repeated evidence patterns.",
-       output: "Server Status prompt -> OS, kernel, uptime, CPU, RAM, disk, SELinux\nDisk prompt -> root disk 20%; snap loop 100% downgraded\nLog prompt -> promtail permission denied + secure auth failures\nConclusion prompt -> log collector issue first, auth review second"
+       change: "These prompt packs are generated from the same workflow sections by the app's prompt-pack function. The smaller disk pack is why a local LLM does not need the whole raw file.",
+       output: "Report: Server Status -> 9207 evidence characters\nReport: Disk Recommendations -> 1506 evidence characters\nReport: Log Analysis -> 8566 evidence characters\nReport: Conclusion -> 9200 evidence characters\n\npack preview:\n- source counts: 1 hostname, 1 inventory, 1 summary, 1 disk, 20 log rows\n- top cluster: score 45, count 20, promtail permission denied\n- disk cluster: score 43, /dev/loop0 100% snap mount"
      },
      {
        title: "LLM answer",
-       change: "The local LLM now answers from clean evidence. It can avoid the false disk alarm, then focus on the real operational signals from the logs.",
-       output: "local LLM context:\n- visible CPU/load/root disk are not the main issue\n- /dev/loop 100% entries should not drive disk recommendation\n- promtail cannot read /var/log/messages\n- secure log shows repeated authentication failures\n- recommend permission/log collector review and auth source review"
+       change: "This is an actual private-network Ollama response from granite3.1-dense:2b using the prepared evidence pack. It is useful, but still needs reviewer control.",
+       output: "actual local LLM answer excerpt:\n- Promtail encountered 20 startup failures due to permission issues while accessing /var/log/messages.\n- /dev/loop0 displays 100% usage, but this might be expected noise for squashfs snaps.\n- RAM free is approximately 693 MB out of 1674 MB.\n\nreviewer check:\n- CPU is 0.615333% and load average is 0.05, so resource pressure is not the main finding.\n- main action: fix promtail read permission or scrape configuration."
      }
    ];
 
