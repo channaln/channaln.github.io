@@ -668,39 +668,65 @@
 
  <p>For some time now, I have been thinking about one practical problem that I have been facing in infrastructure and support work.</p>
 
- <p>The deal is, we did not have a proper automated tool for this. These were critical infrastructure servers, and the data was sensitive because it was related to a banking-sector environment. Global AI models were not a solution here because multiple levels of logs were involved, including network-layer information. A health-check report may look simple, but it can still expose enough information to cause an issue because it contains banking data.</p>
+ <h3>The Operational Trigger</h3>
 
- <p>The existing practice my team had been following was fully manual, except for gathering information. That part was fine because we used Ansible to collect the data as string outputs. My dear audience, guess what? It was me who was responsible for this work during the shift. Call me Gen Z, but still, I was not ready to manually read data from 150+ servers.</p>
+ <p>In infrastructure and support work, server health checks for multiple clients are normal, but they are also slow, time-consuming, and heavily manual. One request pushed this idea into action: a customer needed a health check for 150+ servers across different environments, including DB clusters, application servers, Java middleware servers, and other critical systems.</p>
 
- <p>So the easy answer, "just upload it to GPT and ask," was out of the window. Also, you and I both know a local LLM running in a lab or on a Mac is not capable of handling this in the traditional raw-upload way. Still, that was the best and fastest way because the environment preparation was easy. I did not have much time to research and prepare a new environment to do this.</p>
+ <p>To be honest, our team did not have a proper automated analysis tool for this. We had a collection method, but not a review engine. The collection side was okay because Ansible could gather hostname, compute, storage, services, messages, audit, application, NTP, and other standard outputs. Each server output could be saved as JSON. But after that, somebody still had to read the output and make sense of it.</p>
+
+ <p>And my dear audience, guess what? I was the person responsible for it during that shift. Call me Gen Z, but I was not ready to manually read 150+ server reports and pretend that was the best use of time.</p>
+
+ <h3>Why Global AI Was Out</h3>
+
+ <p>The obvious shortcut sounds simple: throw the reports into GPT, Claude, or another global AI model and ask for findings. But these environments were related to banking-sector infrastructure. Even if the visible risk looks small, policies are strict, and the reports can still expose hostnames, IPs, network information, logs, service names, and operational clues.</p>
+
+ <p>So "use GPT" was out of the window from the first look. A health-check report may look simple, but in the wrong place it can still create a security and compliance problem.</p>
+
+ <h3>Why Local AI Was Not Enough By Itself</h3>
+
+ <p>The answer I wanted to test was local AI. Run a private LLM locally, keep the data inside the machine or internal network, and use that local model to help with troubleshooting and health-check review.</p>
+
+ <p>That sounded like the fastest practical direction because preparing a small local environment was easier than building a full enterprise platform. I did not have time to research and prepare a completely new environment for this request.</p>
+
+ <p>Small local LLMs are safer, but they are not as strong as the big global models. They usually have less reasoning power, smaller context windows, and weaker recommendations when we throw too much messy data at them.</p>
+
+ <h3>The Actual Problem Statement</h3>
+
+ <blockquote>
+ <p>How do I analyze large sensitive health-check data<br>
+ using a small local LLM?</p>
+ </blockquote>
+
+ <p>A small model running on a laptop or small server cannot magically understand thousands of mixed log lines, repeated errors, normal messages, irrelevant output, and noisy health-check data. If I just dump everything into the model, I will get weak answers, hallucinations, or missed findings.</p>
+
+ <p>So the problem was not only "which model should I use?" The better question was: how do I reduce, group, label, and organize the data before the model sees it?</p>
+
+ <h3>The Missing Middle Layer</h3>
+
+ <p>What I understood was that I needed a middle layer. Not magic, but something practical: reduce the input, remove repeated noise, group similar log patterns, label the data by condition, and keep the important evidence small enough for a local model to review.</p>
+
+ <p>This layer also had to be customizable. Engineers should be able to add their own filtering logic, adjust patterns, and reuse working checks. I did not want an application where the AI decides everything. I wanted engineer knowledge in the loop, because that is where real troubleshooting experience lives.</p>
+
+ <h3>How The First Version Started</h3>
 
  <p>That is the idea behind LogQL-Interface.</p>
 
  <p>I know, I know, not a good name. Just forget it and hear me out on the idea.</p>
 
- <p>It started as a simple health-check helper, but the real idea became bigger than I thought. Let me tell the story from the beginning.</p>
+ <p>I started with an Ansible playbook to gather server information and save each server output as JSON. Then I created a small web application around jq so I could upload those JSON reports and run predefined queries against them.</p>
+
+ <p>The first version was simple: create, edit, update, and test jq queries; filter the JSON; and show the data in a way I could actually review. There was no LLM at this stage, but it was already useful. I could use my own knowledge to identify focus points, critical errors, resource issues, and suspicious patterns much faster than reading raw files.</p>
+
+ <p>Then I added workflows. Instead of running one query at a time, I could select multiple queries, chain them together, analyze the reports, and save that workflow for reuse.</p>
 
  <blockquote>
- <p>How can we analyze sensitive infrastructure data with AI<br>
- without sending the raw data to a global AI service?</p>
+ <p>JSON report<br>
+ &rarr; jq output<br>
+ &rarr; workflow sections<br>
+ &rarr; focused output</p>
  </blockquote>
 
- <p>The answer I wanted to test was local AI. Run a private LLM locally, keep the data inside the machine or internal network, and use that local model to help with troubleshooting and health-check review.</p>
-
- <p>But that immediately creates another problem.</p>
-
- <p>Small local LLMs are safer, but they are not as strong as the big global models. They usually have less reasoning power, smaller context windows, and weaker recommendations when we throw too much messy data at them.</p>
-
- <p>So the real problem is not only privacy.</p>
-
- <p>The real problem is this:</p>
-
- <blockquote>
- <p>How do we make a small local LLM useful<br>
- when the data is large, messy, sensitive, and hard to filter manually?</p>
- </blockquote>
-
- <p>That is where the middle layer comes in.</p>
+ <p>That solved almost half of the problem. The next question was how to make the local LLM useful on top of this filtered and organized evidence. That is where the real idea started.</p>
 
  <h2>The Real Idea</h2>
 
