@@ -45,11 +45,13 @@
  <link rel="stylesheet" href="../css/glass.css">
  <style>
  .logql-chain-visual {
+   position: relative;
    margin: 30px 0 40px;
    padding: clamp(18px, 4vw, 28px);
    border: 1px solid var(--bd);
    border-radius: 18px;
    background:
+     linear-gradient(115deg, rgba(255, 255, 255, 0.10), transparent 26%, rgba(26, 137, 23, 0.08) 48%, transparent 68%),
      radial-gradient(circle at top left, rgba(26, 137, 23, 0.12), transparent 38%),
      linear-gradient(180deg, var(--bg2), var(--bg));
    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.10);
@@ -57,6 +59,60 @@
    font-family: var(--font-body);
    text-align: left;
    overflow: hidden;
+   cursor: zoom-in;
+   transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+   isolation: isolate;
+ }
+
+ .logql-chain-visual::before {
+   content: "";
+   position: absolute;
+   inset: -40%;
+   z-index: -1;
+   background:
+     radial-gradient(circle, rgba(26, 137, 23, 0.14) 0 3px, transparent 4px) 0 0 / 64px 64px,
+     linear-gradient(120deg, transparent 35%, rgba(26, 137, 23, 0.10), transparent 65%);
+   opacity: 0.45;
+   transform: translateX(-18%) rotate(0.001deg);
+   animation: logql-chain-drift 18s linear infinite;
+ }
+
+ .logql-chain-visual:hover {
+   border-color: rgba(26, 137, 23, 0.45);
+   box-shadow: 0 28px 80px rgba(0, 0, 0, 0.14);
+ }
+
+ body.logql-chain-open {
+   overflow: hidden;
+ }
+
+ body.logql-chain-open::before {
+   content: "";
+   position: fixed;
+   inset: 0;
+   z-index: 9998;
+   background: rgba(248, 250, 253, 0.45);
+   backdrop-filter: blur(22px) saturate(140%);
+   -webkit-backdrop-filter: blur(22px) saturate(140%);
+   animation: logql-chain-backdrop-in 0.22s ease both;
+ }
+
+ .logql-chain-visual.is-expanded {
+   position: fixed;
+   inset: clamp(12px, 3vw, 34px);
+   z-index: 9999;
+   display: flex;
+   flex-direction: column;
+   width: auto;
+   max-width: none;
+   max-height: calc(100dvh - clamp(24px, 6vw, 68px));
+   margin: 0;
+   padding: clamp(18px, 3vw, 34px);
+   overflow: auto;
+   cursor: default;
+   border-color: rgba(26, 137, 23, 0.55);
+   box-shadow: 0 34px 120px rgba(0, 0, 0, 0.34);
+   animation: logql-chain-expand-in 0.34s cubic-bezier(0.16, 1, 0.3, 1) both;
  }
 
  .logql-chain-visual * {
@@ -70,6 +126,39 @@
    text-align: left;
  }
 
+ .logql-chain-head {
+   display: grid;
+   grid-template-columns: minmax(0, 1fr) auto;
+   gap: 14px;
+   align-items: start;
+ }
+
+ .logql-chain-expand {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   min-height: 40px;
+   padding: 9px 13px;
+   border: 1px solid var(--bd);
+   border-radius: 999px;
+   background: rgba(255, 255, 255, 0.72);
+   color: var(--t1);
+   cursor: pointer;
+   font-family: var(--font-body);
+   font-size: 12px;
+   font-weight: 700;
+   line-height: 1;
+   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+   transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+ }
+
+ .logql-chain-expand:hover,
+ .logql-chain-expand:focus-visible {
+   border-color: var(--ac);
+   background: rgba(26, 137, 23, 0.09);
+   transform: translateY(-1px);
+ }
+
  .logql-chain-kicker {
    display: inline-flex;
    margin-bottom: 10px;
@@ -81,14 +170,16 @@
    text-transform: uppercase;
  }
 
- .post-content .logql-chain-title {
+ .post-content .logql-chain-title,
+ .logql-chain-visual .logql-chain-title {
    color: var(--t1);
    font-family: var(--font-heading);
    font-size: clamp(21px, 3.8vw, 30px);
    line-height: 1.2;
  }
 
- .post-content .logql-chain-intro {
+ .post-content .logql-chain-intro,
+ .logql-chain-visual .logql-chain-intro {
    max-width: 660px;
    margin-top: 10px;
    color: var(--t2);
@@ -123,6 +214,16 @@
    background: var(--ac);
    transform: translateY(-50%);
    transition: width 0.5s ease;
+   overflow: hidden;
+ }
+
+ .logql-chain-progress::after {
+   content: "";
+   position: absolute;
+   inset: 0;
+   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+   transform: translateX(-100%);
+   animation: logql-chain-shimmer 1.7s linear infinite;
  }
 
  .logql-chain-packet {
@@ -137,6 +238,37 @@
    box-shadow: 0 0 0 7px rgba(26, 137, 23, 0.12), 0 12px 24px rgba(0, 0, 0, 0.20);
    transform: translate(-50%, -50%);
    transition: left 0.5s ease;
+   animation: logql-chain-pulse 1.8s ease-in-out infinite;
+ }
+
+ .logql-chain-stream {
+   position: absolute;
+   inset: 0;
+   pointer-events: none;
+ }
+
+ .logql-chain-stream span {
+   position: absolute;
+   top: 50%;
+   width: 7px;
+   height: 7px;
+   border-radius: 999px;
+   background: var(--ac);
+   opacity: 0;
+   transform: translateY(-50%);
+   animation: logql-chain-dot-run 3.6s ease-in-out infinite;
+ }
+
+ .logql-chain-stream span:nth-child(2) {
+   animation-delay: 0.6s;
+ }
+
+ .logql-chain-stream span:nth-child(3) {
+   animation-delay: 1.2s;
+ }
+
+ .logql-chain-stream span:nth-child(4) {
+   animation-delay: 1.8s;
  }
 
  .logql-chain-nodes {
@@ -172,6 +304,7 @@
 
  .logql-chain-node.is-active {
    transform: translateY(-1px);
+   animation: logql-chain-node-pop 0.42s ease both;
  }
 
  .logql-chain-number {
@@ -211,6 +344,7 @@
  .logql-chain-card,
  .logql-chain-output,
  .logql-chain-prompt-card {
+   min-width: 0;
    border: 1px solid var(--bd);
    border-radius: 14px;
    background: rgba(255, 255, 255, 0.58);
@@ -219,6 +353,24 @@
  .logql-chain-card,
  .logql-chain-output {
    padding: 18px;
+ }
+
+ .logql-chain-output {
+   position: relative;
+   overflow: hidden;
+ }
+
+ .logql-chain-output::after {
+   content: "";
+   position: absolute;
+   left: 18px;
+   right: 18px;
+   bottom: 18px;
+   height: 2px;
+   border-radius: 999px;
+   background: linear-gradient(90deg, transparent, var(--ac), transparent);
+   opacity: 0.62;
+   animation: logql-chain-scan 2.4s ease-in-out infinite;
  }
 
  .logql-chain-label,
@@ -233,14 +385,16 @@
    text-transform: uppercase;
  }
 
- .post-content .logql-chain-stage-title {
+ .post-content .logql-chain-stage-title,
+ .logql-chain-visual .logql-chain-stage-title {
    color: var(--t1);
    font-family: var(--font-heading);
    font-size: 20px;
    line-height: 1.25;
  }
 
- .post-content .logql-chain-change {
+ .post-content .logql-chain-change,
+ .logql-chain-visual .logql-chain-change {
    margin-top: 10px;
    color: var(--t2);
    font-size: 15px;
@@ -248,6 +402,7 @@
  }
 
  .logql-chain-output pre {
+   max-width: 100%;
    min-height: 154px;
    margin: 0;
    padding: 14px;
@@ -261,6 +416,29 @@
    line-height: 1.65;
    text-align: left;
    white-space: pre;
+ }
+
+ .logql-chain-visual.is-changing .logql-chain-card,
+ .logql-chain-visual.is-changing .logql-chain-output {
+   animation: logql-chain-card-swap 0.36s ease both;
+ }
+
+ .logql-chain-visual.is-expanded .logql-chain-track {
+   margin-top: 34px;
+   margin-bottom: 22px;
+ }
+
+ .logql-chain-visual.is-expanded .logql-chain-nodes {
+   grid-template-columns: repeat(9, minmax(86px, 1fr));
+ }
+
+ .logql-chain-visual.is-expanded .logql-chain-detail {
+   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+ }
+
+ .logql-chain-visual.is-expanded .logql-chain-output pre {
+   min-height: 230px;
+   font-size: 13px;
  }
 
  .logql-chain-prompts {
@@ -294,9 +472,14 @@
 
  html[data-theme="dark"] .logql-chain-visual {
    background:
+     linear-gradient(115deg, rgba(255, 255, 255, 0.04), transparent 24%, rgba(85, 190, 110, 0.10) 48%, transparent 70%),
      radial-gradient(circle at top left, rgba(85, 190, 110, 0.16), transparent 40%),
      linear-gradient(180deg, rgba(24, 27, 33, 0.95), rgba(10, 12, 16, 0.95));
    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+ }
+
+ html[data-theme="dark"] body.logql-chain-open::before {
+   background: rgba(3, 5, 8, 0.58);
  }
 
  html[data-theme="dark"] .logql-chain-node,
@@ -306,6 +489,10 @@
    background: rgba(255, 255, 255, 0.04);
  }
 
+ html[data-theme="dark"] .logql-chain-expand {
+   background: rgba(255, 255, 255, 0.06);
+ }
+
  html[data-theme="dark"] .logql-chain-node.is-active,
  html[data-theme="dark"] .logql-chain-node:hover,
  html[data-theme="dark"] .logql-chain-node:focus-visible {
@@ -313,6 +500,14 @@
  }
 
  @media (max-width: 760px) {
+   .logql-chain-head {
+     grid-template-columns: 1fr;
+   }
+
+   .logql-chain-expand {
+     justify-self: start;
+   }
+
    .logql-chain-nodes,
    .logql-chain-prompts,
    .logql-chain-detail {
@@ -330,11 +525,50 @@
    .logql-chain-output pre {
      min-height: 128px;
    }
+
+   .logql-chain-visual.is-expanded {
+     inset: 10px;
+     max-height: calc(100dvh - 20px);
+   }
+ }
+
+ @media (max-width: 1100px) {
+   .logql-chain-visual.is-expanded .logql-chain-nodes {
+     grid-template-columns: repeat(3, minmax(0, 1fr));
+   }
+ }
+
+ @media (max-width: 760px) {
+   .logql-chain-visual.is-expanded .logql-chain-nodes,
+   .logql-chain-visual.is-expanded .logql-chain-prompts,
+   .logql-chain-visual.is-expanded .logql-chain-detail {
+     grid-template-columns: 1fr;
+   }
+
+   .logql-chain-node span:last-child {
+     font-size: 12px;
+   }
+
+   .logql-chain-visual.is-expanded .logql-chain-output pre {
+     min-height: 150px;
+     font-size: 11px;
+     white-space: pre-wrap;
+     overflow-wrap: anywhere;
+   }
  }
 
  @media (prefers-reduced-motion: reduce) {
+   .logql-chain-visual::before,
+   .logql-chain-progress::after,
+   .logql-chain-packet,
+   .logql-chain-stream span,
+   .logql-chain-output::after {
+     animation: none;
+   }
+
    .logql-chain-progress,
    .logql-chain-packet,
+   .logql-chain-expand,
    .logql-chain-node {
      transition: none;
    }
@@ -342,6 +576,55 @@
    .logql-chain-node.is-active {
      transform: none;
    }
+ }
+
+ @keyframes logql-chain-backdrop-in {
+   from { opacity: 0; }
+   to { opacity: 1; }
+ }
+
+ @keyframes logql-chain-expand-in {
+   from { opacity: 0; transform: translateY(24px) scale(0.96); }
+   to { opacity: 1; transform: translateY(0) scale(1); }
+ }
+
+ @keyframes logql-chain-drift {
+   from { transform: translateX(-18%) rotate(0.001deg); }
+   to { transform: translateX(18%) rotate(0.001deg); }
+ }
+
+ @keyframes logql-chain-shimmer {
+   from { transform: translateX(-100%); }
+   to { transform: translateX(100%); }
+ }
+
+ @keyframes logql-chain-pulse {
+   0%, 100% { box-shadow: 0 0 0 7px rgba(26, 137, 23, 0.12), 0 12px 24px rgba(0, 0, 0, 0.20); }
+   50% { box-shadow: 0 0 0 14px rgba(26, 137, 23, 0.04), 0 18px 32px rgba(0, 0, 0, 0.24); }
+ }
+
+ @keyframes logql-chain-dot-run {
+   0% { left: 0%; opacity: 0; transform: translate(-50%, -50%) scale(0.65); }
+   12% { opacity: 0.75; }
+   72% { opacity: 0.75; }
+   100% { left: 100%; opacity: 0; transform: translate(-50%, -50%) scale(1.15); }
+ }
+
+ @keyframes logql-chain-node-pop {
+   0% { transform: translateY(0) scale(0.98); }
+   55% { transform: translateY(-2px) scale(1.02); }
+   100% { transform: translateY(-1px) scale(1); }
+ }
+
+ @keyframes logql-chain-card-swap {
+   0% { opacity: 0.65; transform: translateY(8px); }
+   100% { opacity: 1; transform: translateY(0); }
+ }
+
+ @keyframes logql-chain-scan {
+   0%, 100% { transform: translateX(-45%); opacity: 0.15; }
+   45% { opacity: 0.72; }
+   50% { transform: translateX(45%); }
  }
  </style>
 </head>
@@ -659,12 +942,18 @@
  <p>The important correction is this: once the JSON files are uploaded, the first real shaping layer is jq. Evidence Intelligence does not start from the full raw file. It starts from the workflow output created by those jq checks.</p>
 
  <section class="logql-chain-visual" aria-labelledby="logql-chain-title">
+ <div class="logql-chain-head">
+ <div>
  <span class="logql-chain-kicker">Animated chain</span>
  <h3 class="logql-chain-title" id="logql-chain-title">How the data changes before the local LLM sees it</h3>
  <p class="logql-chain-intro">The packet below moves through the same idea as the application: upload, scope, jq extraction, workflow chaining, evidence scoring, chunking, prompt packing, then local LLM review.</p>
+ </div>
+ <button type="button" class="logql-chain-expand" aria-expanded="false" data-chain-expand>Full screen</button>
+ </div>
 
  <div class="logql-chain-track" aria-hidden="true">
  <span class="logql-chain-line"></span>
+ <span class="logql-chain-stream"><span></span><span></span><span></span><span></span></span>
  <span class="logql-chain-progress"></span>
  <span class="logql-chain-packet"></span>
  </div>
@@ -863,12 +1152,15 @@ reports/2026-07-13/loki2_report.json</pre>
    ];
 
    var buttons = Array.prototype.slice.call(root.querySelectorAll("[data-chain-step]"));
+   var expandButton = root.querySelector("[data-chain-expand]");
    var title = root.querySelector("[data-chain-title]");
    var change = root.querySelector("[data-chain-change]");
    var output = root.querySelector("[data-chain-output]");
    var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
    var index = 0;
    var timer = null;
+   var animationTimer = null;
+   var placeholder = null;
 
    function setStep(nextIndex) {
      index = nextIndex;
@@ -882,6 +1174,15 @@ reports/2026-07-13/loki2_report.json</pre>
      title.textContent = steps[index].title;
      change.textContent = steps[index].change;
      output.textContent = steps[index].output;
+     if (!reduceMotion) {
+       root.classList.remove("is-changing");
+       void root.offsetWidth;
+       root.classList.add("is-changing");
+       window.clearTimeout(animationTimer);
+       animationTimer = window.setTimeout(function () {
+         root.classList.remove("is-changing");
+       }, 420);
+     }
    }
 
    function stopAutoPlay() {
@@ -898,14 +1199,76 @@ reports/2026-07-13/loki2_report.json</pre>
      }, 3600);
    }
 
+   function openFullScreen() {
+     if (root.classList.contains("is-expanded")) return;
+     placeholder = document.createComment("logql-chain-placeholder");
+     root.parentNode.insertBefore(placeholder, root);
+     document.body.appendChild(root);
+     document.body.classList.add("logql-chain-open");
+     root.classList.add("is-expanded");
+     if (expandButton) {
+       expandButton.textContent = "Close";
+       expandButton.setAttribute("aria-expanded", "true");
+     }
+     startAutoPlay();
+   }
+
+   function closeFullScreen() {
+     if (!root.classList.contains("is-expanded")) return;
+     root.classList.remove("is-expanded");
+     document.body.classList.remove("logql-chain-open");
+     if (placeholder && placeholder.parentNode) {
+       placeholder.parentNode.insertBefore(root, placeholder);
+       placeholder.parentNode.removeChild(placeholder);
+       placeholder = null;
+     }
+     if (expandButton) {
+       expandButton.textContent = "Full screen";
+       expandButton.setAttribute("aria-expanded", "false");
+       expandButton.focus();
+     }
+   }
+
    buttons.forEach(function (button) {
-     button.addEventListener("click", function () {
+     button.addEventListener("click", function (event) {
        stopAutoPlay();
        setStep(Number(button.getAttribute("data-chain-step")));
+       if (!root.classList.contains("is-expanded")) {
+         openFullScreen();
+       }
+       event.stopPropagation();
      });
    });
 
-   root.addEventListener("mouseenter", stopAutoPlay);
+   if (expandButton) {
+     expandButton.addEventListener("click", function (event) {
+       event.stopPropagation();
+       if (root.classList.contains("is-expanded")) {
+         closeFullScreen();
+       } else {
+         openFullScreen();
+       }
+     });
+   }
+
+   root.addEventListener("click", function () {
+     openFullScreen();
+   });
+   document.addEventListener("keydown", function (event) {
+     if (event.key === "Escape") {
+       closeFullScreen();
+     }
+   });
+   document.addEventListener("click", function (event) {
+     if (root.classList.contains("is-expanded") && !root.contains(event.target)) {
+       closeFullScreen();
+     }
+   });
+   root.addEventListener("mouseenter", function () {
+     if (!root.classList.contains("is-expanded")) {
+       stopAutoPlay();
+     }
+   });
    root.addEventListener("mouseleave", startAutoPlay);
    root.addEventListener("focusin", stopAutoPlay);
    setStep(0);
