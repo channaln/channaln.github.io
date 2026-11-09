@@ -813,15 +813,15 @@
 
  <div class="post-content">
 
- <p>A small model on a laptop cannot read a 6&nbsp;MB server report. It doesn't have to. If deterministic code first reduces the report to a few kilobytes of ranked, traceable evidence, a 2-billion-parameter model can explain it well enough to be useful, and nothing has to leave the building.</p>
+ <p>Small language models running on local hardware are a practical option for infrastructure teams that cannot send operational data to public AI services. Their main limitation is input size. A single server health-check report in this project is 6.1&nbsp;MB, while a locally served model typically works with a context window of only a few thousand tokens. This post describes how <strong>LogQL-Interface</strong>, an internal review tool, closes that gap by reducing each report to a small set of ranked, traceable evidence before a model is involved.</p>
 
- <p>This post explains how I built that middle layer into <strong>LogQL-Interface</strong>, a small internal tool for reviewing server health checks. Every number below comes from one real report run through the tool.</p>
+ <p>The approach is evaluated using a real report from a Grafana Loki server. All figures in this post are measured from that report or from the tool's output for it.</p>
 
  <section class="logql-chain-visual lq-card lq-reveal" data-lq-stats aria-labelledby="lq-stats-title">
  <div class="logql-chain-head">
  <div>
  <span class="logql-chain-kicker">At a glance</span>
- <h3 class="logql-chain-title" id="lq-stats-title">Measured on one real report</h3>
+ <h3 class="logql-chain-title" id="lq-stats-title">Key figures from the Loki report</h3>
  </div>
  <button type="button" class="logql-chain-expand" aria-expanded="false" data-lq-expand>Full screen</button>
  </div>
@@ -833,22 +833,22 @@
  </div>
  </section>
 
- <h2>The Problem</h2>
+ <h2>Background and Constraints</h2>
 
- <p>A customer asked for a health check across 150+ servers: database clusters, Java middleware and application nodes. Collection was already solved. An Ansible playbook pulled hardware, storage, services, SELinux, NTP and filtered <code>messages</code>/<code>secure</code> logs from each host and saved one JSON file per server. What we lacked was a <em>review</em> engine. Someone still had to read every file, and that week it was me.</p>
+ <p>The project began with a health-check engagement covering more than 150 servers, including database clusters, Java middleware and application nodes. Data collection was already automated. An Ansible playbook gathers hardware, storage, service, SELinux, NTP and network details from each host, along with filtered <code>messages</code> and <code>secure</code> logs, and writes one JSON report per server. The missing piece was the review itself, which still required an engineer to read every report manually.</p>
 
- <p>The obvious shortcut, pasting reports into a public AI service, was off the table. These were banking-sector environments, and a health-check report is full of things policy doesn't allow to leave the network: hostnames, internal IPs, service accounts, log lines and topology clues. A model running locally keeps the data in place, but it brings two problems of its own: weaker reasoning, and a very small working memory.</p>
+ <p>Using a public AI service to speed up the review was not an option. The environments belong to banking-sector customers, and the reports contain data that policy does not allow to leave the network, including hostnames, internal IP addresses, service accounts and log content. A locally hosted model meets this data-residency requirement, but it introduces two technical constraints: smaller models reason less reliably, and they can process only a limited amount of input at a time.</p>
 
- <h2>Why Raw Data Breaks a Small Model</h2>
+ <h2>Why Raw Reports Do Not Work</h2>
 
- <p>Language models read <strong>tokens</strong> (about 4 characters of English each), and they can only attend to a fixed number of them at once: the <strong>context window</strong>. Granite 3.1 2B was trained for a 128K window, but the runtime decides how much you actually get. Ollama allocates 4,096 tokens by default on machines with less than 24&nbsp;GiB of VRAM, because the KV cache, the memory holding attention state, grows with every token you allow. Anything past <code>num_ctx</code> is silently cut off.</p>
+ <p>Language models process text as <strong>tokens</strong>, which average roughly four characters of English text, and each request is limited by the model's <strong>context window</strong>. Granite 3.1 2B, the model used in this project, supports a 128K-token context, but the runtime determines how much of it is allocated. Ollama defaults to 4,096 tokens on machines with less than 24&nbsp;GiB of VRAM, because the KV cache, which stores attention state for each token, grows with the context length. Input that exceeds the configured <code>num_ctx</code> value is truncated without warning. The chart below compares the size of one log field with that limit.</p>
 
  <section class="logql-chain-visual lq-card lq-reveal" data-lq-budget aria-labelledby="lq-budget-title">
  <div class="logql-chain-head">
  <div>
  <span class="logql-chain-kicker">Token budget · log scale</span>
  <h3 class="logql-chain-title" id="lq-budget-title">One host's log field vs. what the model can see</h3>
- <p class="logql-chain-intro">Estimates use ~4 characters per token. Raw logs tokenise worse than prose, so the real raw figure is higher.</p>
+ <p class="logql-chain-intro">Estimates assume about 4 characters per token. Log data usually tokenises less efficiently than prose, so the actual raw figure is higher.</p>
  </div>
  <button type="button" class="logql-chain-expand" aria-expanded="false" data-lq-expand>Full screen</button>
  </div>
@@ -860,10 +860,10 @@
  <div class="lq-bmarker" data-v="4096" aria-hidden="true"><span>Ollama default 4,096</span></div>
  </div>
  <div class="lq-baxis" aria-hidden="true"><div></div><div class="lq-baxis-ticks" data-ticks="100,1000,10000,100000,1000000"></div></div>
- <p class="lq-note">Everything right of the red line is truncated before the model sees it. Raising <code>num_ctx</code> helps only as far as your RAM allows, and quality still drops: models use information in the middle of long prompts noticeably worse than information at the start or end.</p>
+ <p class="lq-note">Input to the right of the red line is truncated before it reaches the model. Increasing <code>num_ctx</code> is possible only within available memory, and accuracy still declines with longer prompts, because models use information in the middle of a long context less effectively than information at the beginning or end.</p>
  </section>
 
- <p>Size isn't the only problem. Look at what those 27,397 lines contain, and when each one was written:</p>
+ <p>Volume is only part of the problem. The composition of the log matters as much as its size, and in this report a single recurring error accounts for almost all of the content.</p>
 
  <section class="logql-chain-visual lq-card lq-reveal" data-lq-logmix aria-labelledby="lq-mix-title">
  <div class="logql-chain-head">
@@ -885,59 +885,59 @@
  <div class="lq-legend">
  <div style="--c: var(--lq-red)"><b>27,310</b>Promtail <code>permission denied</code>, exactly 720 per hour</div>
  <div style="--c: var(--lq-amber)"><b>84</b>the health check's own Ansible commands</div>
- <div style="--c: var(--lq-blue)"><b>3</b>Grafana plugin errors, too thin to see at this scale</div>
+ <div style="--c: var(--lq-blue)"><b>3</b>Grafana plugin errors, not visible at this scale</div>
  </div>
  </div>
  <div class="lq-divider"></div>
- <span class="lq-chart-title">38 hours of the same log, per hour</span>
- <p class="lq-chart-sub">The noise is a flat line. The things worth reading are moments, and they barely register in the volume.</p>
+ <span class="lq-chart-title">Log volume per hour over 38 hours</span>
+ <p class="lq-chart-sub">The repeated error forms a constant baseline. The relevant events occur at specific times and are barely visible in the overall volume.</p>
  <div class="lq-timeline" data-lq-timeline></div>
  <div class="lq-ev-legend"><span style="--c: var(--lq-amber)">8 failed SSH logins (secure log)</span><span style="--c: var(--lq-blue)">3 Grafana errors</span><span style="--c: var(--t3)">health-check collector runs</span></div>
- <p class="lq-note">Because the collector pre-filters with <code>egrep fail|invalid|error</code>, <em>every</em> line already matches an error keyword. Keyword search alone ranks nothing here.</p>
+ <p class="lq-note">Because the collector pre-filters with <code>egrep fail|invalid|error</code>, <em>every</em> line already matches an error keyword, so keyword matching alone cannot prioritise them.</p>
  </section>
 
- <p>Hand that to a 2B model and you get one of three outcomes:</p>
+ <p>When this data is passed to a 2B model without preprocessing, the result typically falls into one of three patterns:</p>
 
  <ul>
- <li><strong>Truncation:</strong> the window fills up and the model never sees the end of the log.</li>
- <li><strong>Domination:</strong> the repeated line drowns everything else, so the answer is "fix Promtail" and nothing more.</li>
- <li><strong>Hedging:</strong> the model falls back to "monitor the system".</li>
+ <li><strong>Truncation:</strong> the context window fills before the end of the log, so later events are never seen.</li>
+ <li><strong>Dominance:</strong> the repeated Promtail error outweighs every other signal, and the model reports only that issue.</li>
+ <li><strong>Generic output:</strong> without clear evidence to work from, the model falls back to advice such as "monitor the system".</li>
  </ul>
 
- <p>None of these are really the model's fault. The input was bad.</p>
+ <p>In each case, the limiting factor is the quality of the input rather than the capability of the model. The design of LogQL-Interface follows from this observation.</p>
 
- <h2>The Architecture: Reduce, Then Explain</h2>
+ <h2>Solution Architecture</h2>
 
  <blockquote>
- <p>Deterministic code decides what the model sees.<br>
+ <p>Deterministic code selects the evidence.<br>
  The model explains it.<br>
- A human approves it.</p>
+ An engineer approves the result.</p>
  </blockquote>
 
- <p>Every stage runs inside the local network. The only thing that crosses into the model is a small, task-specific evidence pack.</p>
+ <p>All stages run inside the customer's network. The model receives only a small, task-specific evidence pack, and every statement it produces can be traced back to the rows in that pack. The pipeline has five stages, which are described in the following sections.</p>
 
  <section class="logql-chain-visual lq-card lq-reveal" aria-labelledby="lq-arch-title">
  <div class="logql-chain-head">
  <div>
  <span class="logql-chain-kicker">Pipeline</span>
  <h3 class="logql-chain-title" id="lq-arch-title">From server to report, without leaving the trust boundary</h3>
- <p class="logql-chain-intro">Blue = the evidence layer (the actual product). Green = the only stage that uses an LLM to read data. Click a stage to jump to its section.</p>
+ <p class="logql-chain-intro">Blue marks the evidence layer, which is the core of the tool. Green marks the only stage where an LLM reads report data. Select a stage to jump to its section.</p>
  </div>
  <button type="button" class="logql-chain-expand" aria-expanded="false" data-lq-expand>Full screen</button>
  </div>
  <div class="lq-body" data-lq-arch></div>
  </section>
 
- <h2 id="collect">1. Collect and Scope</h2>
+ <h2 id="collect">1. Collection and Scoping</h2>
 
- <p>Reports are uploaded into a dated directory such as <code>reports/2026-07-13</code>. Servers can be grouped manually, by suggested rules (hostname patterns, roles, domains, IP ranges), or by asking the local model to "group the application servers together". Grouping matters because every later stage runs against the <em>active scope</em>, not everything you uploaded.</p>
+ <p>Reports are uploaded into a dated directory, such as <code>reports/2026-07-13</code>, and can be organised into server groups. Groups can be created manually, generated from suggested rules based on hostname patterns, roles, domains and IP ranges, or requested from the local model in plain language. Every later stage operates on the active group rather than on all uploaded files, which keeps each review focused.</p>
 
  <figure class="post-cover lq-reveal">
  <img src="../images/post/logql-upload-server-grouping.png" alt="LogQL-Interface upload workspace showing server report selection and server grouping" loading="lazy">
- <figcaption><strong>Upload and grouping.</strong> Four reports in <code>reports/2026-07-13</code>, with suggested or LLM-assisted server groups.</figcaption>
+ <figcaption><strong>Upload and grouping.</strong> Reports from <code>reports/2026-07-13</code> with suggested and LLM-assisted server groups.</figcaption>
  </figure>
 
- <p>Each report shares one schema, which is what makes the next step reliable:</p>
+ <p>All reports share the same schema, which allows the extraction stage to use fixed, reusable queries:</p>
 
  <div class="code-block"><pre><code>{
   "hostname": "loki.ocp.kuwaitnet.lab",   "date": "2026-03-09",
@@ -950,16 +950,16 @@
   "logs":        { "messages": "&lt;5.9 MB&gt;", "secure": "&lt;10 KB&gt;" }
 }</code></pre></div>
 
- <h2 id="extract">2. Extract with jq</h2>
+ <h2 id="extract">2. Extraction with jq</h2>
 
- <p>The first filter is <a href="https://jqlang.org/manual/" target="_blank" rel="noopener">jq</a>, not AI. Each saved query is a small lens over the JSON (hostnames, inventory, disk, top log errors), and a <strong>workflow</strong> chains several lenses into one repeatable review. The "Focused Log Review" workflow turns the 6.1&nbsp;MB Loki report into 24 rows.</p>
+ <p>The first filter is <a href="https://jqlang.org/manual/" target="_blank" rel="noopener">jq</a>, a deterministic JSON processor. Each saved query extracts one view of a report, such as hostnames, inventory, disk usage or top log errors, and a <strong>workflow</strong> chains several queries into a repeatable review. Applied to the Loki report, the "Focused Log Review" workflow reduces 6.1&nbsp;MB of JSON to 24 rows.</p>
 
  <figure class="post-cover lq-reveal">
  <img src="../images/post/logql-workflow-builder.png" alt="LogQL-Interface workflow builder chaining selected checks into a focused review" loading="lazy">
- <figcaption><strong>Workflow builder.</strong> Saved checks chained into "Focused Log Review", with an optional AI prompt per workflow.</figcaption>
+ <figcaption><strong>Workflow builder.</strong> Saved checks combined into the Focused Log Review workflow, with an optional AI prompt for each workflow.</figcaption>
  </figure>
 
- <p>That run taught me the most important lesson in the project. My first "Top Log Errors" query took the first 20 matching lines, and all 20 were the same Promtail error. The fix is to <strong>group first, then cap</strong>:</p>
+ <p>The order of operations inside a query is important. The first version of the "Top Log Errors" query returned the first 20 matching lines, and all 20 were the same Promtail error, which hid every other event. The corrected query groups lines into patterns first and applies the limit afterwards:</p>
 
  <div class="code-block"><pre><code># Group log lines into patterns, then return the top 20 by frequency
 .hostname as $h
@@ -973,18 +973,18 @@
 | sort_by(-.count)
 | .[:20]</code></pre></div>
 
- <p>On the real report this returns 11 patterns in about 3.5 seconds, with the 27,310-line Promtail error as one row next to everything it used to hide.</p>
+ <p>Against the Loki report, this query runs in about 3.5 seconds and returns 11 distinct patterns. The 27,310 Promtail lines become a single row, and the less frequent events that were previously hidden appear alongside it.</p>
 
- <p>Not everyone writes jq. The <strong>Smart JQ Builder</strong> lets a user describe the filter in plain language ("show disks above 80%"). The local model drafts the query, and the app runs it against the uploaded fields before it can be saved. The LLM writes the <em>filter</em>, never the finding, so a wrong guess fails visibly instead of producing a confident paragraph.</p>
+ <p>To make extraction accessible to engineers who do not write jq, the <strong>Smart JQ Builder</strong> accepts a plain-language description such as "show disks above 80%". The local model drafts a query, and the application tests it against the uploaded data before it can be saved. In this role, the model generates a filter rather than a conclusion, so an incorrect query fails visibly instead of producing a misleading summary.</p>
 
  <figure class="post-cover lq-reveal">
  <img src="../images/post/logql-smart-jq-builder.png" alt="LogQL-Interface Smart JQ Builder generating and testing filtering queries" loading="lazy">
- <figcaption><strong>Smart JQ Builder.</strong> Describe → Generate + Test → Save tested query.</figcaption>
+ <figcaption><strong>Smart JQ Builder.</strong> A plain-language request is converted to jq, tested against real fields, and saved only after it passes.</figcaption>
  </figure>
 
- <h2 id="evidence">3. Normalise, Group and Score</h2>
+ <h2 id="evidence">3. Normalisation, Grouping and Scoring</h2>
 
- <p>Workflow output feeds <strong>Evidence Intelligence</strong>, the core of the tool. It splits rows into metric chunks (CPU, RAM, disk, inventory) and log chunks, then does what an experienced engineer does by instinct. It masks the parts that change, groups what's left into a <strong>log template</strong> (the same idea log-template miners such as Drain use), and ranks the result.</p>
+ <p>The workflow output is processed by <strong>Evidence Intelligence</strong>, the central component of the tool. It separates rows into metric chunks (CPU, memory, disk and inventory) and log chunks. Log lines are normalised by masking values that change between occurrences, such as timestamps and process IDs, and identical results are grouped into a single <strong>log template</strong> with a count. Log-template mining tools such as Drain use the same principle. The demonstration below applies these steps to real lines from the Loki report.</p>
 
  <section class="logql-chain-visual lq-card lq-reveal" data-lq-collapse aria-labelledby="lq-collapse-title">
  <div class="logql-chain-head">
@@ -1013,7 +1013,7 @@
  </div>
  </section>
 
- <p>Each chunk then gets a score from 0 to 100, built from explainable signals rather than model judgement: error keywords, how often a pattern repeats, how many hosts it affects, and utilisation thresholds such as disk ≥ 90%. These are the actual scores for the Loki run:</p>
+ <p>Each chunk is then scored from 0 to 100 using explainable rules rather than model judgement. The signals include error keywords, repetition count, the number of affected hosts, and utilisation thresholds such as disk usage of 90% or more. The table below shows the scores produced for the Loki report.</p>
 
  <div class="lq-table-wrap lq-reveal" data-lq-scores>
  <table class="compare-table">
@@ -1027,7 +1027,7 @@
  </table>
  </div>
 
- <p>Notice the disk row: it scores high, but it's a false positive (explained below). That's why scoring alone isn't enough. Every chunk has four reviewer controls: <strong>Include</strong>, <strong>Exclude</strong>, <strong>Important</strong> and <strong>Force to prompt</strong>, plus a free-text note. This is where engineering knowledge enters the loop. One click excludes the snap loop devices, and one note ("squashfs, always 100%") stops the model drawing a false disk conclusion.</p>
+ <p>The disk row shows why scoring alone is not sufficient. It scores 43 because <code>/dev/loop0</code> reports 100% usage, but this is a false positive, as explained in the findings below. For this reason, every chunk has four reviewer controls (<strong>Include</strong>, <strong>Exclude</strong>, <strong>Important</strong> and <strong>Force to prompt</strong>) and a free-text note. These controls allow an engineer to apply domain knowledge before the model runs. In this case, excluding the loop devices and noting that squashfs mounts always report 100% prevents an incorrect disk-capacity conclusion.</p>
 
  <figure class="post-cover lq-reveal">
  <img src="../images/post/logql-evidence-intelligence.png" alt="LogQL-Interface Evidence Intelligence middle layer scoring chunks and preparing local LLM context" loading="lazy">
@@ -1039,16 +1039,16 @@
  <figcaption><strong>Event families.</strong> Log evidence grouped into collector, memory/OOM, auth, SELinux, services, storage and kernel families, with a priority queue.</figcaption>
  </figure>
 
- <h2 id="packs">4. Build Task-Specific Prompt Packs</h2>
+ <h2 id="packs">4. Prompt Pack Construction</h2>
 
- <p>The model is never asked to "analyse this server". Each report section gets its own <strong>prompt pack</strong> containing only the evidence relevant to that question, plus source counts so every claim traces back to a row. The disk question gets disk rows; the conclusion gets the top-ranked findings plus the earlier sections and reviewer notes.</p>
+ <p>The model is never asked to analyse a server as a whole. Instead, each report section receives its own <strong>prompt pack</strong> containing only the evidence relevant to that section, together with source counts that allow each statement to be traced to a row. For example, the disk recommendations section receives only disk rows, while the conclusion receives the highest-ranked findings, the earlier sections and the reviewer notes. As the chart shows, every pack fits within the default 4K context window.</p>
 
  <section class="logql-chain-visual lq-card lq-reveal" data-lq-packs aria-labelledby="lq-packs-title">
  <div class="logql-chain-head">
  <div>
  <span class="logql-chain-kicker">Prompt packs generated for loki</span>
  <h3 class="logql-chain-title" id="lq-packs-title">Every pack fits a 4K window</h3>
- <p class="logql-chain-intro">Characters of evidence per pack, with room left for the instructions and the answer.</p>
+ <p class="logql-chain-intro">Characters of evidence in each pack. Each pack leaves room in the context window for instructions and the model's response.</p>
  </div>
  <button type="button" class="logql-chain-expand" aria-expanded="false" data-lq-expand>Full screen</button>
  </div>
@@ -1060,7 +1060,7 @@
  </div>
  </section>
 
- <p>This is <strong>not training</strong>. The model's weights never change. It is closer to retrieval-augmented generation (RAG), except the retrieval step is deterministic jq plus scoring rules instead of an embedding search, which makes it easy to audit:</p>
+ <p>This approach does not involve training, and the model's weights are never modified. It is closest to retrieval-augmented generation (RAG), with one important difference: evidence is selected by deterministic jq queries, scoring rules and reviewer decisions rather than by embedding similarity, which makes the selection straightforward to audit.</p>
 
  <div class="lq-table-wrap lq-reveal">
  <table class="compare-table">
@@ -1077,7 +1077,7 @@
 
  <h2 id="infer">5. Local Inference and Human Review</h2>
 
- <p>The packs go to <code>granite3.1-dense:2b</code> on Ollama inside the private network: a 2.5B-parameter dense model built for summarisation and RAG-style tasks. The UI streams progress per host, then the output moves through <em>AI Analysis → AI Findings → Report Prompts → Report Preview</em> before export to DOCX or PDF. Nothing is final until a person has read it against the evidence beside it.</p>
+ <p>Prompt packs are sent to <code>granite3.1-dense:2b</code>, served by Ollama within the private network. Granite 3.1 2B is a 2.5-billion-parameter dense model designed for summarisation and RAG-style tasks. The interface streams progress for each host, and the output then passes through four review stages (AI Analysis, AI Findings, Report Prompts and Report Preview) before export to DOCX or PDF. No result is treated as final until an engineer has checked it against the supporting evidence.</p>
 
  <figure class="post-cover lq-reveal">
  <img src="../images/post/logql-host-analyzer-ai-summary.png" alt="LogQL-Interface host analyzer showing selected host evidence and live AI summary progress" loading="lazy">
@@ -1089,16 +1089,16 @@
  <figcaption><strong>Operational dashboard.</strong> Node health, resource pressure, capacity exposure and risk bands, ready before any AI text is written.</figcaption>
  </figure>
 
- <h2>Worked Example: One Loki Server, End to End</h2>
+ <h2>Case Study: Loki Server Review</h2>
 
- <p>The chain below follows the real Loki report through every stage. It plays on its own; click any stage or use <em>Full screen</em> to read the output at each step.</p>
+ <p>The animated chain below follows the Loki report through each stage of the pipeline and shows how the data changes at every step. It advances automatically; select any stage, or open the chain in full screen, to review the output in detail.</p>
 
  <section class="logql-chain-visual lq-reveal" data-chain-example="loki" aria-labelledby="logql-loki-chain-title">
  <div class="logql-chain-head">
  <div>
  <span class="logql-chain-kicker">Real example</span>
  <h3 class="logql-chain-title" id="logql-loki-chain-title">loki.ocp.kuwaitnet.lab, through the same chain</h3>
- <p class="logql-chain-intro">Shaped from the real Loki JSON report and the saved Focused Log Review workflow: hostname, inventory, summary, disk and real <code>messages</code> evidence.</p>
+ <p class="logql-chain-intro">Based on the real Loki JSON report and the saved Focused Log Review workflow, covering hostname, inventory, summary, disk and <code>messages</code> evidence.</p>
  </div>
  <button type="button" class="logql-chain-expand" aria-expanded="false" data-chain-expand>Full screen</button>
  </div>
@@ -1141,34 +1141,34 @@
  </div>
  </section>
 
- <p>Here is what a reviewer takes away, including what the model got right and what the evidence layer had to supply:</p>
+ <p>The review produced the following findings. They include the issue the model identified correctly, as well as the context that the evidence layer and the reviewer had to supply.</p>
 
  <div class="lq-table-wrap lq-reveal">
  <table class="compare-table">
  <thead><tr><th>Type</th><th>Finding</th><th>Action</th></tr></thead>
  <tbody>
- <tr><td><span class="lq-tag" style="--c: var(--lq-red)">Real issue</span></td><td>Promtail can't read <code>/var/log/messages</code>. It retried every 5 s for 38 hours, so Loki isn't receiving this host's syslog.</td><td>Grant read access (for example with an ACL). Check SELinux AVC denials, since the host is enforcing. Promtail has been end-of-life since 2 March 2026, so plan the move to Grafana Alloy.</td></tr>
- <tr><td><span class="lq-tag" style="--c: var(--lq-amber)">Buried signal</span></td><td>8 failed SSH password logins (5 <code>ansible</code>, 3 <code>root</code>) from an internal host, 11:45–11:50, about 20 minutes before the first collector run.</td><td>Probably credential setup for the run, but confirm it, and review <code>PermitRootLogin</code>. The capped query never surfaced this.</td></tr>
- <tr><td><span class="lq-tag" style="--c: var(--t3)">Noise</span></td><td>Twelve <code>/dev/loop*</code> mounts at 100%. Snap packages are read-only squashfs images, so they're always "full".</td><td>Exclude them. The real filesystems are healthy: <code>/</code> at 20%, <code>/boot</code> at 48%.</td></tr>
- <tr><td><span class="lq-tag" style="--c: var(--lq-blue)">Self-noise</span></td><td>The collector's <code>sudo egrep</code> runs add 84 lines to <code>messages</code> and 71 to <code>secure</code>.</td><td>Make this a permanent exclude rule.</td></tr>
- <tr><td><span class="lq-tag" style="--c: var(--ac)">Context</span></td><td>CPU 0.6%, load 0.05, about 0.6–0.7 GB of 1.6 GB RAM available.</td><td>RAM is tight for a Loki and Grafana box, but it isn't the incident.</td></tr>
+ <tr><td><span class="lq-tag" style="--c: var(--lq-red)">Real issue</span></td><td>Promtail cannot read <code>/var/log/messages</code>. The error repeats every 5 seconds for 38 hours, which means Loki is not receiving this host's system log.</td><td>Grant Promtail read access, for example with an ACL, and check for SELinux AVC denials because SELinux is enforcing. Promtail reached end of life on 2 March 2026, so a migration to Grafana Alloy should also be planned.</td></tr>
+ <tr><td><span class="lq-tag" style="--c: var(--lq-amber)">Buried signal</span></td><td>Eight failed SSH password logins (five for <code>ansible</code>, three for <code>root</code>) from an internal host between 11:45 and 11:50, about 20 minutes before the first collector run.</td><td>Likely related to credential setup for the run, but this should be confirmed. Review the <code>PermitRootLogin</code> setting. The original capped query did not surface these events.</td></tr>
+ <tr><td><span class="lq-tag" style="--c: var(--t3)">Noise</span></td><td>Twelve <code>/dev/loop*</code> mounts report 100% usage. These are read-only squashfs images used by snap packages, and they always appear full.</td><td>Exclude them from capacity checks. The real filesystems are healthy: <code>/</code> is at 20% and <code>/boot</code> is at 48%.</td></tr>
+ <tr><td><span class="lq-tag" style="--c: var(--lq-blue)">Self-noise</span></td><td>The collector's own <code>sudo egrep</code> commands add 84 lines to <code>messages</code> and 71 lines to <code>secure</code>.</td><td>Add a permanent exclusion rule for collector activity.</td></tr>
+ <tr><td><span class="lq-tag" style="--c: var(--ac)">Context</span></td><td>CPU usage is 0.6%, the load average is 0.05, and approximately 0.6–0.7 GB of 1.6 GB of memory is available.</td><td>Memory headroom is limited for a host running Loki and Grafana, but resource usage is not related to the identified issue.</td></tr>
  </tbody>
  </table>
  </div>
 
- <h2>Limits and What's Next</h2>
+ <h2>Limitations and Next Steps</h2>
 
  <ul>
- <li><strong>The scores are heuristics.</strong> They are transparent and easy to tune, but a high score still needs a human. The loop device proved that.</li>
- <li><strong>Cap after grouping, everywhere.</strong> Any query that truncates before grouping can hide the one line that matters.</li>
- <li><strong>A 2B model still makes mistakes.</strong> It summarises grounded evidence well. It doesn't diagnose novel failures. Larger local models (8B and up) are a config change when hardware allows.</li>
- <li><strong>Make noise rules first-class.</strong> Known false positives (snap loops, collector self-noise) should ship as reusable exclude rules, not one-off clicks.</li>
- <li><strong>The name.</strong> I know. It has nothing to do with Grafana Loki's LogQL query language, which is awkward given the example above.</li>
+ <li><strong>Scoring is heuristic.</strong> The rules are transparent and easy to tune, but high scores still require review, as the loop-device result shows.</li>
+ <li><strong>Limits must be applied after grouping.</strong> Any query that truncates before grouping can hide low-frequency events, so this rule should apply to every saved query.</li>
+ <li><strong>Small models have limited reasoning ability.</strong> A 2B model summarises grounded evidence well but cannot reliably diagnose unfamiliar failures. Larger local models, such as 8B variants, can be adopted through configuration when hardware allows.</li>
+ <li><strong>Noise rules should be reusable.</strong> Known false positives, such as snap loop devices and collector activity, should be stored as shared exclusion rules rather than applied manually in each review.</li>
+ <li><strong>Naming.</strong> Despite its name, LogQL-Interface is unrelated to LogQL, the query language used by Grafana Loki.</li>
  </ul>
 
- <blockquote>
- <p>In sensitive environments, AI for infrastructure shouldn't start with a chatbot. It should start with evidence. Get the evidence right, and even a small private model earns its place in the workflow.</p>
- </blockquote>
+ <h2>Conclusion</h2>
+ <p>In environments where data cannot leave the network, the effectiveness of AI-assisted troubleshooting depends less on the size of the model than on the quality of the evidence it receives. By preparing that evidence with deterministic extraction, pattern grouping, transparent scoring and human review, LogQL-Interface reduced a 6.1&nbsp;MB report to a 4.5&nbsp;KB evidence profile and enabled a 2B-parameter local model to produce a useful, verifiable review.</p>
+
 
  <h2>Glossary</h2>
 
@@ -1181,7 +1181,7 @@
  <tr><td><code>num_ctx</code></td><td>Ollama's runtime context size. Defaults to 4,096 on typical laptops; input beyond it is truncated.</td></tr>
  <tr><td>KV cache</td><td>Per-token attention memory. It grows with context length, which is why bigger windows cost RAM/VRAM.</td></tr>
  <tr><td>Grounding</td><td>Giving the model the evidence to answer from, so its claims can be checked against source rows.</td></tr>
- <tr><td>Hallucination</td><td>A fluent but unsupported claim. It's most likely when evidence is missing, truncated or drowned in noise.</td></tr>
+ <tr><td>Hallucination</td><td>A fluent but unsupported claim. It is most likely when evidence is missing, truncated or obscured by noise.</td></tr>
  <tr><td>Log template</td><td>A log line with its variables masked, so repeated events collapse into one counted pattern.</td></tr>
  <tr><td>Prompt pack</td><td>A task-specific evidence bundle for one report section, sized to fit the context window.</td></tr>
  <tr><td>Trust boundary</td><td>The perimeter sensitive data must not cross; here, the local workspace and internal network.</td></tr>
