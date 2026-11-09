@@ -4,13 +4,14 @@
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1">
  <script src="../js/theme-init.js"></script>
+ <script>document.documentElement.classList.add("lq-js");</script>
  <title>Making Small Local LLMs Useful for Sensitive Troubleshooting - Channa Sandaruwan</title>
- <meta name="description" content="A practical idea for using a private local LLM with an intelligent evidence layer so sensitive server logs and health-check data can be reviewed without sending raw data to a global AI service.">
+ <meta name="description" content="How LogQL-Interface turns a 6 MB server health-check report into a 4.5 KB evidence pack so a 2B-parameter local LLM can review sensitive infrastructure data without sending anything to a public AI service.">
  <meta name="author" content="Channa Sandaruwan">
  <meta property="og:type" content="article">
  <meta property="og:url" content="https://channaln.github.io/blog/making-small-local-llms-useful-for-sensitive-troubleshooting.html">
  <meta property="og:title" content="Making Small Local LLMs Useful for Sensitive Troubleshooting">
- <meta property="og:description" content="A practical idea for using a private local LLM with a middle layer that filters, ranks, and context-packs sensitive troubleshooting evidence before AI review.">
+ <meta property="og:description" content="27,397 log lines, 11 patterns, one 2B model on a laptop: how an evidence layer of jq, pattern grouping and scoring makes private AI useful for server health checks.">
  <meta property="og:image" content="https://channaln.github.io/images/post/making-small-local-llms-sensitive-troubleshooting-og.png">
  <meta property="og:image:width" content="1200">
  <meta property="og:image:height" content="630">
@@ -18,9 +19,10 @@
  <meta property="og:site_name" content="Channa Sandaruwan">
  <meta property="article:author" content="Channa Sandaruwan">
  <meta property="article:published_time" content="2026-07-14">
+ <meta property="article:modified_time" content="2026-11-09">
  <meta name="twitter:card" content="summary_large_image">
  <meta name="twitter:title" content="Making Small Local LLMs Useful for Sensitive Troubleshooting">
- <meta name="twitter:description" content="How a simple local app, clean evidence layer, and private LLM can help troubleshoot sensitive health-check data without sending it to global AI.">
+ <meta name="twitter:description" content="A 6 MB health-check report becomes a 4.5 KB evidence pack, and a 2B local model becomes useful. The middle layer is the product.">
  <meta name="twitter:image" content="https://channaln.github.io/images/post/making-small-local-llms-sensitive-troubleshooting-og.png">
  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f7fb">
  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#050506">
@@ -30,9 +32,10 @@
    "@context": "https://schema.org",
    "@type": "BlogPosting",
    "headline": "Making Small Local LLMs Useful for Sensitive Troubleshooting",
-   "description": "A practical idea for using a private local LLM with an intelligent evidence layer so sensitive server logs and health-check data can be reviewed without sending raw data to a global AI service.",
+   "description": "How LogQL-Interface turns a 6 MB server health-check report into a 4.5 KB evidence pack so a 2B-parameter local LLM can review sensitive infrastructure data without sending anything to a public AI service.",
    "url": "https://channaln.github.io/blog/making-small-local-llms-useful-for-sensitive-troubleshooting.html",
    "datePublished": "2026-07-14",
+   "dateModified": "2026-11-09",
    "author": { "@type": "Person", "name": "Channa Sandaruwan", "url": "https://channaln.github.io" },
    "publisher": { "@type": "Person", "name": "Channa Sandaruwan" },
    "image": "https://channaln.github.io/images/post/making-small-local-llms-sensitive-troubleshooting-og.png"
@@ -629,6 +632,152 @@
    45% { opacity: 0.72; }
    50% { transform: translateX(45%); }
  }
+
+ /* =====================================================================
+    Shared visual system for this post (built on the logql-chain card)
+    ===================================================================== */
+ :root { --lq-amber: #c98a0b; --lq-red: #c9402f; --lq-blue: #2f6fd6; --lq-soft: rgba(26, 137, 23, 0.08); }
+ html[data-theme="dark"] { --lq-amber: #e3a72f; --lq-red: #ef6a5a; --lq-blue: #6aa2ff; --lq-soft: rgba(63, 185, 80, 0.12); }
+
+ /* flex-item fix: without it, wide code blocks stretch the card past a phone viewport */
+ body.page-root .post-wrap { min-width: 0; width: 100%; }
+ .post-content .code-block { max-width: 100%; }
+ .post-content h2, .post-content h3 { text-align: left; }
+
+ .logql-chain-visual.lq-card { cursor: default; }
+ .lq-card .lq-body { margin-top: 18px; }
+ .lq-card .logql-chain-intro code, .lq-note code { font-family: var(--font-mono), monospace; font-size: 12px; padding: 1px 5px; border: 1px solid var(--bd); border-radius: 4px; background: var(--bg); color: var(--t1); }
+ .lq-note { margin-top: 14px; color: var(--t2); font-size: 13px; line-height: 1.55; }
+ .lq-btn { display: inline-flex; align-items: center; min-height: 34px; padding: 7px 13px; border: 1px solid var(--bd); border-radius: 999px; background: rgba(255,255,255,.6); color: var(--t1); font: 600 12px/1 var(--font-body); cursor: pointer; transition: border-color .18s ease, transform .18s ease, background .18s ease; }
+ html[data-theme="dark"] .lq-btn { background: rgba(255,255,255,.05); }
+ .lq-btn:hover, .lq-btn:focus-visible { border-color: var(--ac); background: var(--lq-soft); transform: translateY(-1px); outline: none; }
+ .lq-btn[aria-pressed="true"] { border-color: var(--ac); background: var(--lq-soft); color: var(--ac); }
+
+ /* scroll reveal (only when JS is running) */
+ .lq-js .lq-reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .8s cubic-bezier(.16,1,.3,1); }
+ .lq-js .lq-reveal.is-in { opacity: 1; transform: none; }
+ .post-content figure.post-cover img { transition: transform .6s cubic-bezier(.16,1,.3,1); }
+ .post-content figure.post-cover:hover img { transform: scale(1.012); }
+ .post-content figure.post-cover figcaption { padding: 12px 16px 14px; font: 13.5px/1.55 var(--font-body); color: var(--t2); text-align: left; background: var(--bg2); border-top: 1px solid var(--bd); }
+ .post-content figure.post-cover figcaption strong { color: var(--t1); }
+
+ /* stat tiles */
+ .lq-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+ .lq-stat { padding: 14px; border: 1px solid var(--bd); border-radius: 14px; background: rgba(255,255,255,.58); }
+ html[data-theme="dark"] .lq-stat { background: rgba(255,255,255,.04); }
+ .lq-stat-from { color: var(--t3); font: 500 11.5px/1.3 var(--font-mono), monospace; text-decoration: line-through; text-decoration-color: var(--lq-red); }
+ .lq-stat-to { display: block; margin-top: 6px; color: var(--ac); font: 700 clamp(20px, 3vw, 26px)/1.1 var(--font-body); letter-spacing: -0.02em; }
+ .lq-stat-label { display: block; margin-top: 6px; color: var(--t2); font-size: 12.5px; line-height: 1.4; }
+ @media (max-width: 640px) { .lq-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+ /* token budget */
+ .lq-budget-rows { position: relative; margin-top: 30px; display: grid; gap: 12px; }
+ .lq-brow { display: grid; grid-template-columns: minmax(130px, 34%) 1fr; gap: 12px; align-items: center; }
+ .lq-blabel { font-size: 13px; line-height: 1.35; color: var(--t1); }
+ .lq-blabel small { display: block; color: var(--t3); font: 500 11px/1.3 var(--font-mono), monospace; }
+ .lq-btrack { position: relative; height: 22px; border-radius: 6px; background: var(--bg3); }
+ .lq-bfill { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: 6px; background: var(--ac); transition: width 1.4s cubic-bezier(.16,1,.3,1); }
+ .lq-bfill.is-bad { background: linear-gradient(90deg, var(--lq-amber), var(--lq-red)); }
+ .lq-bfill.is-ref { background: repeating-linear-gradient(135deg, var(--bd2) 0 6px, transparent 6px 11px); border: 1px solid var(--bd2); }
+ .lq-bval { position: absolute; top: 50%; left: calc(var(--w, 0%) + 8px); transform: translateY(-50%); white-space: nowrap; font: 600 11.5px var(--font-mono), monospace; color: var(--t1); opacity: 0; transition: opacity .4s ease 1s; }
+ .lq-bval.is-inside { left: auto; color: #fff; }
+ .is-in .lq-bval { opacity: 1; }
+ .lq-bmarker { position: absolute; top: -8px; bottom: -8px; width: 0; border-left: 2px dashed var(--lq-red); pointer-events: none; }
+ .lq-bmarker span { position: absolute; top: -20px; left: -1px; transform: translateX(-50%); white-space: nowrap; font: 700 10px var(--font-mono), monospace; color: var(--lq-red); }
+ .lq-baxis { display: grid; grid-template-columns: minmax(130px, 34%) 1fr; gap: 12px; margin-top: 6px; }
+ .lq-baxis-ticks { position: relative; height: 16px; font: 500 10px var(--font-mono), monospace; color: var(--t3); }
+ .lq-baxis-ticks span { position: absolute; transform: translateX(-50%); }
+ @media (max-width: 560px) { .lq-brow, .lq-baxis { grid-template-columns: 1fr; gap: 4px; } .lq-baxis > :first-child { display: none; } }
+
+ /* donut + timeline */
+ .lq-donut-row { display: grid; grid-template-columns: 210px 1fr; gap: 22px; align-items: center; }
+ .lq-donut { width: 210px; height: 210px; }
+ .lq-donut circle { fill: none; stroke-width: 26; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dasharray 1.6s cubic-bezier(.16,1,.3,1); }
+ .lq-donut .track { stroke: var(--bg3); }
+ .lq-donut text { font-family: var(--font-body); fill: var(--t1); text-anchor: middle; }
+ .lq-legend { display: grid; gap: 10px; }
+ .lq-legend div { padding-left: 11px; border-left: 3px solid var(--c); color: var(--t2); font-size: 13.5px; line-height: 1.45; }
+ .lq-legend b { display: block; color: var(--t1); font: 700 15px var(--font-mono), monospace; }
+ .lq-legend code { font-family: var(--font-mono), monospace; font-size: 12px; }
+ .lq-divider { height: 1px; margin: 22px 0 16px; background: var(--bd); }
+ .lq-chart-title { display: block; margin-bottom: 4px; color: var(--t1); font: 650 14px/1.4 var(--font-body); }
+ .lq-chart-sub { color: var(--t2); font-size: 13px; line-height: 1.5; }
+ .lq-timeline svg { display: block; width: 100%; height: auto; overflow: visible; }
+ .lq-timeline text { font-family: var(--font-mono), monospace; font-size: 10.5px; fill: var(--t3); }
+ .lq-timeline .grid { stroke: var(--bd); stroke-width: 1; }
+ .lq-timeline .line { fill: none; stroke: var(--lq-red); stroke-width: 2.4; stroke-linejoin: round; }
+ .lq-timeline .area { fill: url(#lqArea); opacity: 0; transition: opacity 1s ease 1.2s; }
+ .lq-timeline .ev line { stroke-width: 2; stroke-dasharray: 3 3; }
+ .lq-timeline .ev circle { stroke: var(--bg); stroke-width: 2; }
+ .lq-timeline .ev text { font-weight: 700; font-size: 11px; }
+ .lq-timeline .ev { opacity: 0; transform: translateY(-6px); transition: opacity .45s ease, transform .45s ease; }
+ .lq-timeline.is-drawn .area { opacity: .9; }
+ .lq-timeline.is-drawn .ev { opacity: 1; transform: none; }
+ .lq-ev-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 10px; font-size: 12.5px; color: var(--t2); }
+ .lq-ev-legend span::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 6px; border-radius: 50%; background: var(--c); vertical-align: 0; }
+ @media (max-width: 600px) { .lq-donut-row { grid-template-columns: 1fr; justify-items: center; } .lq-legend { width: 100%; } }
+
+ /* pipeline svg */
+ .lq-arch-svg { display: block; width: 100%; height: auto; overflow: visible; }
+ .lq-arch-svg text { font-family: var(--font-body); fill: var(--t1); }
+ .lq-arch-svg a { text-decoration: none; }
+ .lq-arch-svg .n-box { fill: var(--bg); stroke: var(--bd2); stroke-width: 1.2; transition: stroke .2s ease; }
+ .lq-arch-svg .n-box.is-ai { stroke: var(--ac); stroke-width: 1.8; }
+ .lq-arch-svg .n-box.is-core { stroke: var(--lq-blue); stroke-width: 1.8; }
+ .lq-arch-svg .n-step { font: 700 10px var(--font-mono), monospace; fill: var(--t3); letter-spacing: .08em; }
+ .lq-arch-svg .n-title { font-weight: 650; font-size: 13.5px; }
+ .lq-arch-svg .n-meta { font: 500 10.5px var(--font-mono), monospace; fill: var(--ac); }
+ .lq-arch-svg .wire { fill: none; stroke: var(--bd2); stroke-width: 1.6; stroke-dasharray: 5 6; animation: lq-dash 1.2s linear infinite; }
+ .lq-arch-svg .fence { fill: none; stroke: var(--ac); stroke-width: 1.4; stroke-dasharray: 3 5; opacity: .75; }
+ .lq-arch-svg .fence-label { font: 700 10px var(--font-mono), monospace; fill: var(--ac); letter-spacing: .1em; }
+ .lq-arch-svg .blocked { stroke: var(--lq-red); stroke-width: 1.6; stroke-dasharray: 4 5; fill: none; }
+ .lq-arch-svg .cloud { fill: var(--bg); stroke: var(--lq-red); stroke-width: 1.4; }
+ .lq-arch-svg .cloud-t { font-size: 12px; fill: var(--lq-red); font-weight: 600; }
+ .lq-arch-svg .pkt { fill: var(--ac); }
+ .lq-arch-svg .pkt-big { fill: var(--lq-amber); }
+ .lq-arch-svg a:hover .n-box, .lq-arch-svg a:focus .n-box { stroke: var(--ac); }
+ @keyframes lq-dash { to { stroke-dashoffset: -22; } }
+
+ /* pattern collapse */
+ .lq-collapse-stage { position: relative; padding: 14px; min-height: 236px; border: 1px solid var(--bd); border-radius: 10px; background: #0d1117; color: #c9d1d9; font: 12px/1.75 var(--font-mono), ui-monospace, monospace; overflow: hidden; }
+ .lq-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: opacity .5s ease, transform .6s cubic-bezier(.16,1,.3,1), max-height .6s ease; max-height: 24px; }
+ .lq-line .v { border-radius: 3px; transition: background .35s ease, color .35s ease; }
+ .lq-collapse-stage.s-mark .lq-line .v { background: rgba(227, 167, 47, 0.25); color: #f3c86a; }
+ .lq-collapse-stage.s-mask .lq-line .v { background: rgba(63, 185, 80, 0.18); color: #7ee787; }
+ .lq-collapse-stage.s-group .lq-line:not(:first-child) { opacity: 0; transform: translateY(-14px); max-height: 0; }
+ .lq-tpl { position: absolute; left: 14px; right: 14px; bottom: 14px; display: flex; align-items: center; gap: 14px; padding: 12px 14px; border: 1px solid rgba(63, 185, 80, 0.5); border-radius: 10px; background: rgba(63, 185, 80, 0.08); opacity: 0; transform: translateY(12px) scale(.98); transition: opacity .5s ease, transform .6s cubic-bezier(.16,1,.3,1); font-family: var(--font-body); }
+ .lq-collapse-stage.s-group .lq-tpl { opacity: 1; transform: none; }
+ .lq-tpl-count { flex: 0 0 auto; font: 700 26px/1 var(--font-mono), monospace; color: #7ee787; }
+ .lq-tpl-text { font-size: 12.5px; line-height: 1.45; color: #c9d1d9; }
+ .lq-tpl-text b { color: #fff; }
+ .lq-collapse-steps { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+ .lq-collapse-caption { margin-top: 10px; min-height: 44px; color: var(--t2); font-size: 13.5px; line-height: 1.55; }
+
+ /* prompt pack bars */
+ .lq-packs { display: grid; gap: 10px; }
+ .lq-pack { display: grid; grid-template-columns: 160px 1fr 92px; gap: 12px; align-items: center; font-size: 13px; color: var(--t1); }
+ .lq-pack-bar { height: 12px; border-radius: 6px; background: var(--bg3); overflow: hidden; }
+ .lq-pack-bar i { display: block; height: 100%; width: 0; border-radius: 6px; background: var(--ac); transition: width 1.2s cubic-bezier(.16,1,.3,1); }
+ .lq-pack-n { text-align: right; font: 600 12px var(--font-mono), monospace; }
+ .lq-pack-n small { display: block; color: var(--t3); font-weight: 500; font-size: 10.5px; }
+ @media (max-width: 560px) { .lq-pack { grid-template-columns: 1fr 80px; } .lq-pack-bar { grid-column: 1 / -1; grid-row: 2; } }
+
+ /* tables (compare-table based) */
+ .lq-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 12px 0 28px; }
+ .lq-table-wrap .compare-table { margin: 0; min-width: 520px; font-family: var(--font-body); }
+ .post-content .compare-table td { text-align: left; }
+ .lq-scorebar { display: flex; align-items: center; gap: 8px; min-width: 110px; }
+ .lq-scorebar span { position: relative; flex: 1; height: 8px; border-radius: 4px; background: var(--bg3); overflow: hidden; }
+ .lq-scorebar span i { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: 4px; background: var(--lq-amber); transition: width 1.2s cubic-bezier(.16,1,.3,1); }
+ .lq-scorebar.lo span i { background: var(--t3); }
+ .lq-scorebar b { font: 700 12px var(--font-mono), monospace; color: var(--t1); min-width: 20px; }
+ .lq-tag { display: inline-block; padding: 2px 8px; border-radius: 999px; font: 700 10.5px/1.5 var(--font-mono), monospace; letter-spacing: .06em; text-transform: uppercase; color: #fff; background: var(--c); white-space: nowrap; }
+ .lq-chip { display: inline-block; padding: 1px 8px; margin: 1px 2px 1px 0; border: 1px solid var(--bd); border-radius: 999px; font: 600 11px/1.6 var(--font-mono), monospace; color: var(--t2); white-space: nowrap; }
+
+ @media (prefers-reduced-motion: reduce) {
+   .lq-js .lq-reveal { opacity: 1; transform: none; transition: none; }
+   .logql-chain-visual *, .lq-arch-svg .wire { transition: none !important; animation: none !important; }
+ }
  </style>
 </head>
 <body class="page-root">
@@ -655,7 +804,7 @@
 
  <div class="post-header">
  <h1 class="post-title">Making Small Local LLMs Useful for Sensitive Troubleshooting</h1>
- <p class="post-meta">Jul 14, 2026 · Channa Sandaruwan · <span class="post-meta-topic">Private AI</span></p>
+ <p class="post-meta">Jul 14, 2026 · Updated Nov 9, 2026 · Channa Sandaruwan · <span class="post-meta-topic">Private AI</span></p>
  </div>
 
  <figure class="post-cover">
@@ -664,380 +813,292 @@
 
  <div class="post-content">
 
- <h2>Introduction</h2>
+ <p>A small model on a laptop cannot read a 6&nbsp;MB server report. It doesn't have to. If deterministic code first reduces the report to a few kilobytes of ranked, traceable evidence, a 2-billion-parameter model can explain it well enough to be useful, and nothing has to leave the building.</p>
 
- <p>For some time now, I have been thinking about one practical problem that I have been facing in infrastructure and support work.</p>
+ <p>This post explains how I built that middle layer into <strong>LogQL-Interface</strong>, a small internal tool for reviewing server health checks. Every number below comes from one real report run through the tool.</p>
 
- <h3>The Operational Trigger</h3>
-
- <p>In infrastructure and support work, server health checks for multiple clients are normal, but they are also slow, time-consuming, and heavily manual. One request pushed this idea into action: a customer needed a health check for 150+ servers across different environments, including DB clusters, application servers, Java middleware servers, and other critical systems.</p>
-
- <p>To be honest, our team did not have a proper automated analysis tool for this. We had a collection method, but not a review engine. The collection side was okay because Ansible could gather hostname, compute, storage, services, messages, audit, application, NTP, and other standard outputs. Each server output could be saved as JSON. But after that, somebody still had to read the output and make sense of it.</p>
-
- <p>And my dear audience, guess what? I was the person responsible for it during that shift. Call me Gen Z, but I was not ready to manually read 150+ server reports and pretend that was the best use of time.</p>
-
- <h3>Why Global AI Was Out</h3>
-
- <p>The obvious shortcut sounds simple: throw the reports into GPT, Claude, or another global AI model and ask for findings. But these environments were related to banking-sector infrastructure. Even if the visible risk looks small, policies are strict, and the reports can still expose hostnames, IPs, network information, logs, service names, and operational clues.</p>
-
- <p>So "use GPT" was out of the window from the first look. A health-check report may look simple, but in the wrong place it can still create a security and compliance problem.</p>
-
- <h3>Why Local AI Was Not Enough By Itself</h3>
-
- <p>The answer I wanted to test was local AI. Run a private LLM locally, keep the data inside the machine or internal network, and use that local model to help with troubleshooting and health-check review.</p>
-
- <p>That sounded like the fastest practical direction because preparing a small local environment was easier than building a full enterprise platform. I did not have time to research and prepare a completely new environment for this request.</p>
-
- <p>Small local LLMs are safer, but they are not as strong as the big global models. They usually have less reasoning power, smaller context windows, and weaker recommendations when we throw too much messy data at them.</p>
-
- <h3>The Actual Problem Statement</h3>
-
- <blockquote>
- <p>How do I analyze large sensitive health-check data<br>
- using a small local LLM?</p>
- </blockquote>
-
- <p>A small model running on a laptop or small server cannot magically understand thousands of mixed log lines, repeated errors, normal messages, irrelevant output, and noisy health-check data. If I just dump everything into the model, I will get weak answers, hallucinations, or missed findings.</p>
-
- <p>So the problem was not only "which model should I use?" The better question was: how do I reduce, group, label, and organize the data before the model sees it?</p>
-
- <h3>The Missing Middle Layer</h3>
-
- <p>What I understood was that I needed a middle layer. Not magic, but something practical: reduce the input, remove repeated noise, group similar log patterns, label the data by condition, and keep the important evidence small enough for a local model to review.</p>
-
- <p>This layer also had to be customizable. Engineers should be able to add their own filtering logic, adjust patterns, and reuse working checks. I did not want an application where the AI decides everything. I wanted engineer knowledge in the loop, because that is where real troubleshooting experience lives.</p>
-
- <h3>How The First Version Started</h3>
-
- <p>That is the idea behind LogQL-Interface.</p>
-
- <p>I know, I know, not a good name. Just forget it and hear me out on the idea.</p>
-
- <p>I started with an Ansible playbook to gather server information and save each server output as JSON. Then I created a small web application around jq so I could upload those JSON reports and run predefined queries against them.</p>
-
- <p>The first version was simple: create, edit, update, and test jq queries; filter the JSON; and show the data in a way I could actually review. There was no LLM at this stage, but it was already useful. I could use my own knowledge to identify focus points, critical errors, resource issues, and suspicious patterns much faster than reading raw files.</p>
-
- <p>Then I added workflows. Instead of running one query at a time, I could select multiple queries, chain them together, analyze the reports, and save that workflow for reuse.</p>
-
- <blockquote>
- <p>JSON report<br>
- &rarr; jq output<br>
- &rarr; workflow sections<br>
- &rarr; focused output</p>
- </blockquote>
-
- <p>That solved almost half of the problem. The next question was how to make the local LLM useful on top of this filtered and organized evidence. That is where the real idea started.</p>
-
- <h2>The Real Idea</h2>
-
- <p>The real idea is not to replace GPT with a local model and send the same huge raw file to it.</p>
-
- <p>That will not work well.</p>
-
- <p>A small model running locally on a laptop or small server cannot magically understand everything if we give it thousands of mixed log lines, repeated errors, normal messages, irrelevant output, and noisy health-check data.</p>
-
- <p>The better idea is:</p>
-
- <blockquote>
- <p>Raw sensitive data<br>
- &rarr; intelligent middle layer<br>
- &rarr; clean evidence package<br>
- &rarr; local private LLM<br>
- &rarr; evidence-backed explanation</p>
- </blockquote>
-
- <p>This middle layer is the important part.</p>
-
- <p>It reads the data before the LLM sees it. It filters the noise. It ranks what matters. It groups repeated findings. It reduces the context. It keeps the original evidence available. Then it gives the local model a smaller and cleaner package to review.</p>
-
- <p>That is the whole trick.</p>
-
- <p>The local model does not need to be perfect. The application around it has to prepare the work properly.</p>
-
- <h2>Why Raw Logs Are Hard For AI</h2>
-
- <p>When we troubleshoot manually, we do not read every line with the same attention.</p>
-
- <p>We look for patterns. We ignore known noise. We check which host is affected. We compare disk usage. We notice repeated failures. We separate a real problem from a harmless warning.</p>
-
- <p>But when we send raw data to a model, we often skip that thinking and expect the model to do everything.</p>
-
- <p>That is where weak local models struggle.</p>
-
- <p>They may miss the key line. They may summarize too generally. They may recommend "monitor the system" because the context was too messy. They may focus on the wrong warning because the real signal was buried under repeated noise.</p>
-
- <p>This is not always the model's fault.</p>
-
- <p>Sometimes the input is simply bad.</p>
-
- <p>If the input is messy, the answer will also be messy.</p>
-
- <p>That is why I started thinking less about "how to make the LLM smarter" and more about "how to make the evidence cleaner before it reaches the LLM."</p>
-
- <h2>This Is Not LLM Training</h2>
-
- <p>One important point: this is not LLM training.</p>
-
- <p>The application is not changing the model. It is not fine-tuning it. It is not teaching the model new knowledge permanently.</p>
-
- <p>The model stays the same.</p>
-
- <p>What changes is the context given to the model.</p>
-
- <p>Instead of sending a large raw dump, the application sends a prepared evidence pack:</p>
-
- <ul>
- <li>which server is affected</li>
- <li>what issue was detected</li>
- <li>how often it repeated</li>
- <li>which log line proves it</li>
- <li>whether it is disk, memory, login, service, kernel, or security related</li>
- <li>whether similar noise was seen before</li>
- <li>what the reviewer marked as important</li>
- </ul>
-
- <p>This is closer to evidence filtering, context reduction, and prompt grounding.</p>
-
- <p>In simple words: do not train the model first. Clean the evidence first.</p>
-
- <p>That is how a smaller local model becomes useful.</p>
-
- <h2>The Middle Layer Is The Product</h2>
-
- <p>At first, it is easy to think the LLM is the product.</p>
-
- <p>But in this type of tool, I think the middle layer is the real product.</p>
-
- <p>The local LLM is only the brain that writes and explains. The middle layer is the system that decides what the brain should see.</p>
-
- <p>It should understand that not every line has the same value.</p>
-
- <p>A repeated authentication failure is more important than a normal startup message. A kernel panic or OOM event should not be buried under informational logs. A real filesystem at 95 percent usage matters more than a pseudo-filesystem showing 100 percent. A known false positive should not dominate the report again and again.</p>
-
- <p>This middle layer should:</p>
-
- <ul>
- <li>detect useful evidence</li>
- <li>remove obvious noise</li>
- <li>group repeated patterns</li>
- <li>rank high-risk findings</li>
- <li>reduce context size</li>
- <li>prepare task-specific context</li>
- <li>keep traceability to the original source</li>
- <li>allow the user to approve or correct the finding</li>
- </ul>
-
- <p>That is the layer that makes private AI practical.</p>
-
- <p>Without it, we are only running a weak local chatbot against difficult operational data.</p>
-
- <p>With it, even a small local LLM can help.</p>
-
- <h2>Why The Interface Matters</h2>
-
- <p>There is another problem that is easy to miss.</p>
-
- <p>Even if filtering is the right solution, who will do the filtering?</p>
-
- <p>A senior engineer may know how to reduce a log file, choose the right evidence, and write a strong prompt. But many users do not. A junior admin, a small IT team, or a non-technical user may only know that they have a health-check file and need to understand what is wrong.</p>
-
- <p>They may not know:</p>
-
- <ul>
- <li>which log lines matter</li>
- <li>what to remove from the context</li>
- <li>how to fit the model's context window</li>
- <li>how to ask the model properly</li>
- <li>what evidence a vendor needs</li>
- <li>how to separate real risk from normal noise</li>
- </ul>
-
- <p>So the interface cannot just be a blank prompt box.</p>
-
- <p>The tool should not force the user to become a prompt engineer.</p>
-
- <p>Instead, the interface should offer guided actions:</p>
-
- <ul>
- <li>Check overall health</li>
- <li>Find urgent risks</li>
- <li>Explain disk issues</li>
- <li>Review login failures</li>
- <li>Summarize important log errors</li>
- <li>Prepare vendor handoff report</li>
- <li>Prepare manager summary</li>
- </ul>
-
- <p>The user chooses the intent. The application builds the technical context behind the scenes.</p>
-
- <p>That is where the middle layer becomes useful for real people. It hides the complexity of prompt engineering, but it does not hide the evidence.</p>
-
- <h2>A Simple App Can Still Be Powerful</h2>
-
- <p>This is the part I like most about the idea.</p>
-
- <p>LogQL-Interface is not a big enterprise platform. It is just a simple draft application. But even a simple application can be useful if it solves the right part of the problem.</p>
-
- <p>With a laptop, a small local LLM, and a good evidence layer, you can still troubleshoot issues and review health-check data in a private way.</p>
-
- <p>It may not replace a senior engineer. It may not beat a large global model in raw intelligence. But it can help with the first pass:</p>
-
- <ul>
- <li>what looks risky</li>
- <li>which server needs attention</li>
- <li>what evidence supports the finding</li>
- <li>what should be checked next</li>
- <li>what can be shared with a vendor</li>
- <li>what should go into the report</li>
- </ul>
-
- <p>That is already useful.</p>
-
- <p>For a small environment, this can be enough to reduce manual work and make the health-check process more consistent.</p>
-
- <p>The cool part is that the power does not come only from the model. It comes from the flow:</p>
-
- <blockquote>
- <p>small model + clean evidence + guided workflow = useful private troubleshooting</p>
- </blockquote>
-
- <p>That is the impression I want this tool to give.</p>
-
- <p>Not "look how advanced the AI is."</p>
-
- <p>More like:</p>
-
- <blockquote>
- <p>Look how much better local AI becomes<br>
- when the application prepares the evidence properly.</p>
- </blockquote>
-
- <h2>What The Draft Screens Show</h2>
-
- <p>The screenshots below are not a polished product demo. They are more like a proof of the idea: can a small local LLM become useful if the application prepares the work properly before asking the model?</p>
-
- <figure class="post-cover">
- <img src="../images/post/logql-upload-server-grouping.png" alt="LogQL-Interface upload workspace showing server report selection and server grouping" loading="lazy">
- </figure>
-
- <p><strong>Upload and grouping.</strong> This is where the sensitive health-check reports enter the local workspace. The user can choose a report folder, select servers, and create groups. The grouping can be manual, suggested from hostname and IP patterns, or helped by a local LLM when the user gives a simple instruction like "group the application servers together." The point is simple: the user does not need to know the perfect prompt or filtering logic before starting.</p>
-
- <figure class="post-cover">
- <img src="../images/post/logql-individual-queries.png" alt="LogQL-Interface saved queries screen for running individual checks" loading="lazy">
- </figure>
-
- <p><strong>Individual queries.</strong> Each saved query is a small lens over the uploaded data. One query can show hostnames, another can show server summary, disk usage, OS release, kernel version, or top log errors. The output can be searched, sorted, deduped, and filtered by host or severity. This helps even small issues become visible before they are buried inside the full report.</p>
-
- <figure class="post-cover">
- <img src="../images/post/logql-smart-jq-builder.png" alt="LogQL-Interface Smart JQ Builder generating and testing filtering queries" loading="lazy">
- </figure>
-
- <p><strong>Smart query builder.</strong> This is for the person who does not know jq, JSON paths, or prompt engineering. They can describe what they want in normal language. The configured local/private LLM can suggest a filtering query, the app tests it against the available fields, and only then the user can save it. So the LLM is not blindly answering from raw data. It is helping build the filter that prepares better evidence.</p>
-
- <figure class="post-cover">
- <img src="../images/post/logql-workflow-builder.png" alt="LogQL-Interface workflow builder chaining selected checks into a focused review" loading="lazy">
- </figure>
-
- <p><strong>Workflow builder.</strong> After individual queries are working, they can be chained into one repeatable workflow. For example, a "Focused Log Review" can run server inventory, summary, disk, and log checks together. This is useful because troubleshooting should not depend on remembering every manual step each time. The workflow becomes a small review process.</p>
-
- <figure class="post-cover">
- <img src="../images/post/logql-operational-dashboard.png" alt="LogQL-Interface operational dashboard showing critical nodes, resource pressure, log findings, and risk bands" loading="lazy">
- </figure>
-
- <p><strong>Operational dashboard.</strong> After a workflow runs, the app shows the first-pass picture: critical nodes, warning nodes, healthy nodes, disk pressure, memory pressure, log findings, platform distribution, and risk bands. This gives a clear view before AI writes a paragraph. The dashboard is not replacing the engineer. It is giving the local LLM and the human a cleaner starting point.</p>
-
- <figure class="post-cover">
- <img src="../images/post/logql-event-families-risk.png" alt="LogQL-Interface analytics showing event families, operational risk, priority queue, and impact table" loading="lazy">
- </figure>
-
- <p><strong>Log categorization and recommendations.</strong> The app groups log evidence into event families such as collector issues, memory/OOM, authentication, SELinux/audit, services, warnings, storage, and kernel/platform. This is where small recommendations can start. If a pattern repeats across hosts, the app can push it higher. If it is only noise, the reviewer can push it down. This makes the local LLM's job easier because it receives organized evidence instead of a random log dump.</p>
-
- <figure class="post-cover">
- <img src="../images/post/logql-host-analyzer-ai-summary.png" alt="LogQL-Interface host analyzer showing selected host evidence and live AI summary progress" loading="lazy">
- </figure>
-
- <p><strong>Individual server summary.</strong> Sometimes the question is not "what is wrong with the whole environment?" It is "what is happening on this one server?" The host analyzer focuses on one node, shows the selected evidence sections, and lets the local LLM summarize that host from the visible proof. That keeps the answer smaller, more private, and easier to verify.</p>
-
- <figure class="post-cover">
- <img src="../images/post/logql-evidence-intelligence.png" alt="LogQL-Interface Evidence Intelligence middle layer scoring chunks and preparing local LLM context" loading="lazy">
- </figure>
-
- <p><strong>Evidence Intelligence.</strong> This is the real middle layer. It breaks the report into metric chunks and log chunks, scores them, groups repeated patterns, tracks confidence, and shows how much context will be passed to the model. The reviewer can include, exclude, mark important, force evidence into the prompt, or add a note. This is how the application prepares a clean evidence vault for the local LLM. Day by day, that vault can make reviews more accurate because the process keeps better evidence and better reviewer decisions. But again, this is not LLM training. It is better context preparation.</p>
-
- <h2>How I See The Flow</h2>
-
- <p>The workflow I want is simple.</p>
-
- <p>The important correction is this: once the JSON files are uploaded, the first real shaping layer is jq. Evidence Intelligence does not start from the full raw file. It starts from the workflow output created by those jq checks.</p>
-
- <section class="logql-chain-visual" aria-labelledby="logql-chain-title">
+ <section class="logql-chain-visual lq-card lq-reveal" data-lq-stats aria-labelledby="lq-stats-title">
  <div class="logql-chain-head">
  <div>
- <span class="logql-chain-kicker">Animated chain</span>
- <h3 class="logql-chain-title" id="logql-chain-title">How the data changes before the local LLM sees it</h3>
- <p class="logql-chain-intro">This chart shows the full handoff path: uploaded reports are reduced by jq, joined into a workflow, converted into scored evidence, packed into small prompt-specific context, and only then sent to the local LLM.</p>
+ <span class="logql-chain-kicker">At a glance</span>
+ <h3 class="logql-chain-title" id="lq-stats-title">Measured on one real report</h3>
  </div>
- <button type="button" class="logql-chain-expand" aria-expanded="false" data-chain-expand>Full screen</button>
+ <button type="button" class="logql-chain-expand" aria-expanded="false" data-lq-expand>Full screen</button>
  </div>
-
- <div class="logql-chain-track" aria-hidden="true">
- <span class="logql-chain-line"></span>
- <span class="logql-chain-stream"><span></span><span></span><span></span><span></span></span>
- <span class="logql-chain-progress"></span>
- <span class="logql-chain-packet"></span>
- </div>
-
- <div class="logql-chain-nodes" aria-label="LogQL-Interface processing chain">
- <button type="button" class="logql-chain-node is-active" data-chain-step="0" aria-pressed="true"><span class="logql-chain-number">1</span><span>Upload JSON</span></button>
- <button type="button" class="logql-chain-node" data-chain-step="1" aria-pressed="false"><span class="logql-chain-number">2</span><span>Select scope</span></button>
- <button type="button" class="logql-chain-node" data-chain-step="2" aria-pressed="false"><span class="logql-chain-number">3</span><span>jq extraction</span></button>
- <button type="button" class="logql-chain-node" data-chain-step="3" aria-pressed="false"><span class="logql-chain-number">4</span><span>Workflow chain</span></button>
- <button type="button" class="logql-chain-node" data-chain-step="4" aria-pressed="false"><span class="logql-chain-number">5</span><span>Evidence rows</span></button>
- <button type="button" class="logql-chain-node" data-chain-step="5" aria-pressed="false"><span class="logql-chain-number">6</span><span>Score and clean</span></button>
- <button type="button" class="logql-chain-node" data-chain-step="6" aria-pressed="false"><span class="logql-chain-number">7</span><span>Host chunks</span></button>
- <button type="button" class="logql-chain-node" data-chain-step="7" aria-pressed="false"><span class="logql-chain-number">8</span><span>Prompt packs</span></button>
- <button type="button" class="logql-chain-node" data-chain-step="8" aria-pressed="false"><span class="logql-chain-number">9</span><span>Local LLM</span></button>
- </div>
-
- <div class="logql-chain-detail" aria-live="polite">
- <div class="logql-chain-card">
- <span class="logql-chain-label">Changing part</span>
- <h4 class="logql-chain-stage-title" data-chain-title>Upload JSON</h4>
- <p class="logql-chain-change" data-chain-change>Sensitive health-check files enter the local workspace. At this point, no model has seen the raw files.</p>
- </div>
- <div class="logql-chain-output">
- <span class="logql-chain-output-label">Output shape</span>
- <pre data-chain-output>reports/2026-07-13/amq1_report.json
-reports/2026-07-13/amq2_report.json
-reports/2026-07-13/loki_report.json
-reports/2026-07-13/loki2_report.json</pre>
- </div>
- </div>
-
- <div class="logql-chain-prompts" aria-label="Prompt-specific context examples">
- <div class="logql-chain-prompt-card">
- <strong>Disk prompt</strong>
- <span>Receives disk, filesystem, mount, and capacity evidence.</span>
- </div>
- <div class="logql-chain-prompt-card">
- <strong>Log prompt</strong>
- <span>Receives log chunks grouped by host, log type, and repeated pattern.</span>
- </div>
- <div class="logql-chain-prompt-card">
- <strong>Conclusion prompt</strong>
- <span>Receives top risks plus previous AI sections and reviewer notes.</span>
- </div>
+ <div class="lq-body lq-stats">
+ <div class="lq-stat"><span class="lq-stat-from">6.1 MB JSON</span><span class="lq-stat-to" data-count="4504" data-suffix=" chars">0</span><span class="lq-stat-label">evidence profile handed to the model (~1,350× smaller)</span></div>
+ <div class="lq-stat"><span class="lq-stat-from">27,397 log lines</span><span class="lq-stat-to" data-count="11" data-suffix=" patterns">0</span><span class="lq-stat-label">after masking timestamps and PIDs and grouping identical lines</span></div>
+ <div class="lq-stat"><span class="lq-stat-from">~1.5M tokens raw</span><span class="lq-stat-to" data-count="2300" data-prefix="≤" data-suffix=" tok">0</span><span class="lq-stat-label">largest prompt pack, which fits a default 4K context window</span></div>
+ <div class="lq-stat"><span class="lq-stat-from">public LLM API</span><span class="lq-stat-to" data-count="2.5" data-decimals="1" data-suffix="B params">0</span><span class="lq-stat-label">Granite 3.1 dense, served locally by Ollama</span></div>
  </div>
  </section>
 
- <p>Now here is the same chain with a real example file. This one uses the attached <a href="../files/logql-loki-report.json" target="_blank" rel="noopener">loki.ocp.kuwaitnet.lab health-check JSON</a> and shows how a normal-looking raw report becomes useful evidence before the local LLM sees it.</p>
+ <h2>The Problem</h2>
 
- <section class="logql-chain-visual" data-chain-example="loki" aria-labelledby="logql-loki-chain-title">
+ <p>A customer asked for a health check across 150+ servers: database clusters, Java middleware and application nodes. Collection was already solved. An Ansible playbook pulled hardware, storage, services, SELinux, NTP and filtered <code>messages</code>/<code>secure</code> logs from each host and saved one JSON file per server. What we lacked was a <em>review</em> engine. Someone still had to read every file, and that week it was me.</p>
+
+ <p>The obvious shortcut, pasting reports into a public AI service, was off the table. These were banking-sector environments, and a health-check report is full of things policy doesn't allow to leave the network: hostnames, internal IPs, service accounts, log lines and topology clues. A model running locally keeps the data in place, but it brings two problems of its own: weaker reasoning, and a very small working memory.</p>
+
+ <h2>Why Raw Data Breaks a Small Model</h2>
+
+ <p>Language models read <strong>tokens</strong> (about 4 characters of English each), and they can only attend to a fixed number of them at once: the <strong>context window</strong>. Granite 3.1 2B was trained for a 128K window, but the runtime decides how much you actually get. Ollama allocates 4,096 tokens by default on machines with less than 24&nbsp;GiB of VRAM, because the KV cache, the memory holding attention state, grows with every token you allow. Anything past <code>num_ctx</code> is silently cut off.</p>
+
+ <section class="logql-chain-visual lq-card lq-reveal" data-lq-budget aria-labelledby="lq-budget-title">
+ <div class="logql-chain-head">
+ <div>
+ <span class="logql-chain-kicker">Token budget · log scale</span>
+ <h3 class="logql-chain-title" id="lq-budget-title">One host's log field vs. what the model can see</h3>
+ <p class="logql-chain-intro">Estimates use ~4 characters per token. Raw logs tokenise worse than prose, so the real raw figure is higher.</p>
+ </div>
+ <button type="button" class="logql-chain-expand" aria-expanded="false" data-lq-expand>Full screen</button>
+ </div>
+ <div class="lq-budget-rows">
+ <div class="lq-brow"><div class="lq-blabel">Raw <code>logs.messages</code><small>5,944,212 chars</small></div><div class="lq-btrack"><div class="lq-bfill is-bad" data-v="1486053"></div><span class="lq-bval">≈ 1,486,000 tokens</span></div></div>
+ <div class="lq-brow"><div class="lq-blabel">Granite 3.1 trained max<small>model capability</small></div><div class="lq-btrack"><div class="lq-bfill is-ref" data-v="131072"></div><span class="lq-bval">131,072</span></div></div>
+ <div class="lq-brow"><div class="lq-blabel">Server-status prompt pack<small>9,207 chars</small></div><div class="lq-btrack"><div class="lq-bfill" data-v="2302"></div><span class="lq-bval">≈ 2,300</span></div></div>
+ <div class="lq-brow"><div class="lq-blabel">Disk prompt pack<small>1,506 chars</small></div><div class="lq-btrack"><div class="lq-bfill" data-v="377"></div><span class="lq-bval">≈ 380</span></div></div>
+ <div class="lq-bmarker" data-v="4096" aria-hidden="true"><span>Ollama default 4,096</span></div>
+ </div>
+ <div class="lq-baxis" aria-hidden="true"><div></div><div class="lq-baxis-ticks" data-ticks="100,1000,10000,100000,1000000"></div></div>
+ <p class="lq-note">Everything right of the red line is truncated before the model sees it. Raising <code>num_ctx</code> helps only as far as your RAM allows, and quality still drops: models use information in the middle of long prompts noticeably worse than information at the start or end.</p>
+ </section>
+
+ <p>Size isn't the only problem. Look at what those 27,397 lines contain, and when each one was written:</p>
+
+ <section class="logql-chain-visual lq-card lq-reveal" data-lq-logmix aria-labelledby="lq-mix-title">
+ <div class="logql-chain-head">
+ <div>
+ <span class="logql-chain-kicker">loki host · logs.messages · 8–9 Mar 2026</span>
+ <h3 class="logql-chain-title" id="lq-mix-title">99.7% of the log is one line, repeated</h3>
+ </div>
+ <button type="button" class="logql-chain-expand" aria-expanded="false" data-lq-expand>Full screen</button>
+ </div>
+ <div class="lq-body lq-donut-row">
+ <svg class="lq-donut" viewBox="0 0 210 210" role="img" aria-label="27,310 promtail errors, 84 collector lines, 3 Grafana errors">
+ <circle class="track" cx="105" cy="105" r="80"></circle>
+ <circle data-seg="27310" data-off="0" cx="105" cy="105" r="80" style="stroke: var(--lq-red)" stroke-dasharray="0 503"></circle>
+ <circle data-seg="84" data-off="27310" cx="105" cy="105" r="80" style="stroke: var(--lq-amber)" stroke-dasharray="0 503"></circle>
+ <circle data-seg="3" data-off="27394" cx="105" cy="105" r="80" style="stroke: var(--lq-blue)" stroke-dasharray="0 503"></circle>
+ <text x="105" y="104" style="font-size: 30px; font-weight: 700" data-donut-pct>0%</text>
+ <text x="105" y="126" style="font-size: 12px; fill: var(--t2)">one pattern</text>
+ </svg>
+ <div class="lq-legend">
+ <div style="--c: var(--lq-red)"><b>27,310</b>Promtail <code>permission denied</code>, exactly 720 per hour</div>
+ <div style="--c: var(--lq-amber)"><b>84</b>the health check's own Ansible commands</div>
+ <div style="--c: var(--lq-blue)"><b>3</b>Grafana plugin errors, too thin to see at this scale</div>
+ </div>
+ </div>
+ <div class="lq-divider"></div>
+ <span class="lq-chart-title">38 hours of the same log, per hour</span>
+ <p class="lq-chart-sub">The noise is a flat line. The things worth reading are moments, and they barely register in the volume.</p>
+ <div class="lq-timeline" data-lq-timeline></div>
+ <div class="lq-ev-legend"><span style="--c: var(--lq-amber)">8 failed SSH logins (secure log)</span><span style="--c: var(--lq-blue)">3 Grafana errors</span><span style="--c: var(--t3)">health-check collector runs</span></div>
+ <p class="lq-note">Because the collector pre-filters with <code>egrep fail|invalid|error</code>, <em>every</em> line already matches an error keyword. Keyword search alone ranks nothing here.</p>
+ </section>
+
+ <p>Hand that to a 2B model and you get one of three outcomes:</p>
+
+ <ul>
+ <li><strong>Truncation:</strong> the window fills up and the model never sees the end of the log.</li>
+ <li><strong>Domination:</strong> the repeated line drowns everything else, so the answer is "fix Promtail" and nothing more.</li>
+ <li><strong>Hedging:</strong> the model falls back to "monitor the system".</li>
+ </ul>
+
+ <p>None of these are really the model's fault. The input was bad.</p>
+
+ <h2>The Architecture: Reduce, Then Explain</h2>
+
+ <blockquote>
+ <p>Deterministic code decides what the model sees.<br>
+ The model explains it.<br>
+ A human approves it.</p>
+ </blockquote>
+
+ <p>Every stage runs inside the local network. The only thing that crosses into the model is a small, task-specific evidence pack.</p>
+
+ <section class="logql-chain-visual lq-card lq-reveal" aria-labelledby="lq-arch-title">
+ <div class="logql-chain-head">
+ <div>
+ <span class="logql-chain-kicker">Pipeline</span>
+ <h3 class="logql-chain-title" id="lq-arch-title">From server to report, without leaving the trust boundary</h3>
+ <p class="logql-chain-intro">Blue = the evidence layer (the actual product). Green = the only stage that uses an LLM to read data. Click a stage to jump to its section.</p>
+ </div>
+ <button type="button" class="logql-chain-expand" aria-expanded="false" data-lq-expand>Full screen</button>
+ </div>
+ <div class="lq-body" data-lq-arch></div>
+ </section>
+
+ <h2 id="collect">1. Collect and Scope</h2>
+
+ <p>Reports are uploaded into a dated directory such as <code>reports/2026-07-13</code>. Servers can be grouped manually, by suggested rules (hostname patterns, roles, domains, IP ranges), or by asking the local model to "group the application servers together". Grouping matters because every later stage runs against the <em>active scope</em>, not everything you uploaded.</p>
+
+ <figure class="post-cover lq-reveal">
+ <img src="../images/post/logql-upload-server-grouping.png" alt="LogQL-Interface upload workspace showing server report selection and server grouping" loading="lazy">
+ <figcaption><strong>Upload and grouping.</strong> Four reports in <code>reports/2026-07-13</code>, with suggested or LLM-assisted server groups.</figcaption>
+ </figure>
+
+ <p>Each report shares one schema, which is what makes the next step reliable:</p>
+
+ <div class="code-block"><pre><code>{
+  "hostname": "loki.ocp.kuwaitnet.lab",   "date": "2026-03-09",
+  "hardware":    { "cpu_usage", "total_memory_mb", "available_memory_mb", ... },
+  "storage":     { "disk_usage", "highest_disk_usage" },
+  "system":      { "os_release", "kernel", "uptime", "last_boot" },
+  "services":    { "selinux", "firewall", "ntp", "redhat_subscription" },
+  "network":     { "default_ip", "all_ips", "network_errors" },
+  "performance": { "load_average" },  "processes": { ... },
+  "logs":        { "messages": "&lt;5.9 MB&gt;", "secure": "&lt;10 KB&gt;" }
+}</code></pre></div>
+
+ <h2 id="extract">2. Extract with jq</h2>
+
+ <p>The first filter is <a href="https://jqlang.org/manual/" target="_blank" rel="noopener">jq</a>, not AI. Each saved query is a small lens over the JSON (hostnames, inventory, disk, top log errors), and a <strong>workflow</strong> chains several lenses into one repeatable review. The "Focused Log Review" workflow turns the 6.1&nbsp;MB Loki report into 24 rows.</p>
+
+ <figure class="post-cover lq-reveal">
+ <img src="../images/post/logql-workflow-builder.png" alt="LogQL-Interface workflow builder chaining selected checks into a focused review" loading="lazy">
+ <figcaption><strong>Workflow builder.</strong> Saved checks chained into "Focused Log Review", with an optional AI prompt per workflow.</figcaption>
+ </figure>
+
+ <p>That run taught me the most important lesson in the project. My first "Top Log Errors" query took the first 20 matching lines, and all 20 were the same Promtail error. The fix is to <strong>group first, then cap</strong>:</p>
+
+ <div class="code-block"><pre><code># Group log lines into patterns, then return the top 20 by frequency
+.hostname as $h
+| .logs.messages
+| split("\n")
+| map(select(length &gt; 0)
+      | sub("^\\w{3} +\\d+ [\\d:]+ \\S+ "; "")  # drop syslog prefix
+      | gsub("[0-9]+"; "&lt;n&gt;"))                  # mask numbers
+| group_by(.)
+| map({host: $h, count: length, pattern: .[0]})
+| sort_by(-.count)
+| .[:20]</code></pre></div>
+
+ <p>On the real report this returns 11 patterns in about 3.5 seconds, with the 27,310-line Promtail error as one row next to everything it used to hide.</p>
+
+ <p>Not everyone writes jq. The <strong>Smart JQ Builder</strong> lets a user describe the filter in plain language ("show disks above 80%"). The local model drafts the query, and the app runs it against the uploaded fields before it can be saved. The LLM writes the <em>filter</em>, never the finding, so a wrong guess fails visibly instead of producing a confident paragraph.</p>
+
+ <figure class="post-cover lq-reveal">
+ <img src="../images/post/logql-smart-jq-builder.png" alt="LogQL-Interface Smart JQ Builder generating and testing filtering queries" loading="lazy">
+ <figcaption><strong>Smart JQ Builder.</strong> Describe → Generate + Test → Save tested query.</figcaption>
+ </figure>
+
+ <h2 id="evidence">3. Normalise, Group and Score</h2>
+
+ <p>Workflow output feeds <strong>Evidence Intelligence</strong>, the core of the tool. It splits rows into metric chunks (CPU, RAM, disk, inventory) and log chunks, then does what an experienced engineer does by instinct. It masks the parts that change, groups what's left into a <strong>log template</strong> (the same idea log-template miners such as Drain use), and ranks the result.</p>
+
+ <section class="logql-chain-visual lq-card lq-reveal" data-lq-collapse aria-labelledby="lq-collapse-title">
+ <div class="logql-chain-head">
+ <div>
+ <span class="logql-chain-kicker">Live demo · real lines from the Loki report</span>
+ <h3 class="logql-chain-title" id="lq-collapse-title">How 27,310 lines become one row</h3>
+ </div>
+ <button type="button" class="logql-chain-expand" aria-expanded="false" data-lq-expand>Full screen</button>
+ </div>
+ <div class="lq-body">
+ <div class="lq-collapse-stage" aria-live="polite">
+ <div class="lq-line">Mar  8 <span class="v">00:00:00</span> loki promtail[<span class="v">1118</span>]: level=error ts=<span class="v">2026-03-07T21:00:00.544133388Z</span> caller=filetarget.go:426 msg="failed to start tailer" error="open /var/log/messages: permission denied"</div>
+ <div class="lq-line">Mar  8 <span class="v">00:00:05</span> loki promtail[<span class="v">1118</span>]: level=error ts=<span class="v">2026-03-07T21:00:04.991993156Z</span> caller=filetarget.go:426 msg="failed to start tailer" error="open /var/log/messages: permission denied"</div>
+ <div class="lq-line">Mar  8 <span class="v">00:00:15</span> loki promtail[<span class="v">1118</span>]: level=error ts=<span class="v">2026-03-07T21:00:14.992407763Z</span> caller=filetarget.go:426 msg="failed to start tailer" error="open /var/log/messages: permission denied"</div>
+ <div class="lq-line">Mar  8 <span class="v">00:00:20</span> loki promtail[<span class="v">1118</span>]: level=error ts=<span class="v">2026-03-07T21:00:19.993021874Z</span> caller=filetarget.go:426 msg="failed to start tailer" error="open /var/log/messages: permission denied"</div>
+ <div class="lq-line">… <span class="v">27,306</span> more …</div>
+ <div class="lq-tpl"><span class="lq-tpl-count" data-tpl-count>×0</span><span class="lq-tpl-text"><b>promtail: failed to start tailer: open /var/log/messages: permission denied</b><br>1 host · 8 Mar 00:00 → 9 Mar 13:55 · pattern 1 of 11</span></div>
+ </div>
+ <div class="lq-collapse-steps" role="group" aria-label="Demo steps">
+ <button type="button" class="lq-btn" data-collapse-step="raw">1 · Raw</button>
+ <button type="button" class="lq-btn" data-collapse-step="mark">2 · Find variables</button>
+ <button type="button" class="lq-btn" data-collapse-step="mask">3 · Mask</button>
+ <button type="button" class="lq-btn" data-collapse-step="group">4 · Group</button>
+ </div>
+ <p class="lq-collapse-caption" data-collapse-caption>Raw lines differ only in their timestamp, PID and nanosecond <code>ts</code>.</p>
+ </div>
+ </section>
+
+ <p>Each chunk then gets a score from 0 to 100, built from explainable signals rather than model judgement: error keywords, how often a pattern repeats, how many hosts it affects, and utilisation thresholds such as disk ≥ 90%. These are the actual scores for the Loki run:</p>
+
+ <div class="lq-table-wrap lq-reveal" data-lq-scores>
+ <table class="compare-table">
+ <thead><tr><th>Section</th><th>Score</th><th>Why it scored</th><th>Evidence</th></tr></thead>
+ <tbody>
+ <tr><td>Top Log Errors</td><td><div class="lq-scorebar"><span><i data-v="45"></i></span><b>45</b></div></td><td><span class="lq-chip">error keyword</span><span class="lq-chip">repeated ×20</span></td><td>promtail permission denied</td></tr>
+ <tr><td>Highest Disk Usage</td><td><div class="lq-scorebar"><span><i data-v="43"></i></span><b>43</b></div></td><td><span class="lq-chip">≥ 90% used</span></td><td><code>/dev/loop0</code> 100%</td></tr>
+ <tr><td>Server Summary</td><td><div class="lq-scorebar lo"><span><i data-v="8"></i></span><b>8</b></div></td><td><span class="lq-chip">context</span></td><td>CPU 0.6%, load 0.05, 693 MB free</td></tr>
+ <tr><td>Server Inventory</td><td><div class="lq-scorebar lo"><span><i data-v="8"></i></span><b>8</b></div></td><td><span class="lq-chip">context</span></td><td>RHEL 9.7, kernel 5.14.0-611.16.1</td></tr>
+ </tbody>
+ </table>
+ </div>
+
+ <p>Notice the disk row: it scores high, but it's a false positive (explained below). That's why scoring alone isn't enough. Every chunk has four reviewer controls: <strong>Include</strong>, <strong>Exclude</strong>, <strong>Important</strong> and <strong>Force to prompt</strong>, plus a free-text note. This is where engineering knowledge enters the loop. One click excludes the snap loop devices, and one note ("squashfs, always 100%") stops the model drawing a false disk conclusion.</p>
+
+ <figure class="post-cover lq-reveal">
+ <img src="../images/post/logql-evidence-intelligence.png" alt="LogQL-Interface Evidence Intelligence middle layer scoring chunks and preparing local LLM context" loading="lazy">
+ <figcaption><strong>Evidence Intelligence.</strong> Scored metric and log chunks with cluster counts, confidence, context size and reviewer controls.</figcaption>
+ </figure>
+
+ <figure class="post-cover lq-reveal">
+ <img src="../images/post/logql-event-families-risk.png" alt="LogQL-Interface analytics showing event families, operational risk, priority queue, and impact table" loading="lazy">
+ <figcaption><strong>Event families.</strong> Log evidence grouped into collector, memory/OOM, auth, SELinux, services, storage and kernel families, with a priority queue.</figcaption>
+ </figure>
+
+ <h2 id="packs">4. Build Task-Specific Prompt Packs</h2>
+
+ <p>The model is never asked to "analyse this server". Each report section gets its own <strong>prompt pack</strong> containing only the evidence relevant to that question, plus source counts so every claim traces back to a row. The disk question gets disk rows; the conclusion gets the top-ranked findings plus the earlier sections and reviewer notes.</p>
+
+ <section class="logql-chain-visual lq-card lq-reveal" data-lq-packs aria-labelledby="lq-packs-title">
+ <div class="logql-chain-head">
+ <div>
+ <span class="logql-chain-kicker">Prompt packs generated for loki</span>
+ <h3 class="logql-chain-title" id="lq-packs-title">Every pack fits a 4K window</h3>
+ <p class="logql-chain-intro">Characters of evidence per pack, with room left for the instructions and the answer.</p>
+ </div>
+ <button type="button" class="logql-chain-expand" aria-expanded="false" data-lq-expand>Full screen</button>
+ </div>
+ <div class="lq-body lq-packs">
+ <div class="lq-pack"><span>Server Status</span><div class="lq-pack-bar"><i data-v="9207"></i></div><span class="lq-pack-n">9,207<small>≈ 2.3K tok</small></span></div>
+ <div class="lq-pack"><span>Conclusion</span><div class="lq-pack-bar"><i data-v="9200"></i></div><span class="lq-pack-n">9,200<small>≈ 2.3K tok</small></span></div>
+ <div class="lq-pack"><span>Log Analysis</span><div class="lq-pack-bar"><i data-v="8566"></i></div><span class="lq-pack-n">8,566<small>≈ 2.1K tok</small></span></div>
+ <div class="lq-pack"><span>Disk Recommendations</span><div class="lq-pack-bar"><i data-v="1506"></i></div><span class="lq-pack-n">1,506<small>≈ 0.4K tok</small></span></div>
+ </div>
+ </section>
+
+ <p>This is <strong>not training</strong>. The model's weights never change. It is closer to retrieval-augmented generation (RAG), except the retrieval step is deterministic jq plus scoring rules instead of an embedding search, which makes it easy to audit:</p>
+
+ <div class="lq-table-wrap lq-reveal">
+ <table class="compare-table">
+ <thead><tr><th></th><th>Fine-tuning</th><th>Typical RAG</th><th>LogQL-Interface</th></tr></thead>
+ <tbody>
+ <tr><td>Changes model weights</td><td>Yes</td><td>No</td><td>No</td></tr>
+ <tr><td>Needs GPU training time</td><td>Yes</td><td>No</td><td>No</td></tr>
+ <tr><td>How evidence is chosen</td><td>n/a (baked in)</td><td>vector similarity</td><td>jq + scoring + reviewer</td></tr>
+ <tr><td>Claims traceable to a source row</td><td>No</td><td>Partly</td><td><strong>Yes</strong></td></tr>
+ <tr><td>Improves over time via</td><td>retraining</td><td>better index</td><td>saved queries and reviewer decisions</td></tr>
+ </tbody>
+ </table>
+ </div>
+
+ <h2 id="infer">5. Local Inference and Human Review</h2>
+
+ <p>The packs go to <code>granite3.1-dense:2b</code> on Ollama inside the private network: a 2.5B-parameter dense model built for summarisation and RAG-style tasks. The UI streams progress per host, then the output moves through <em>AI Analysis → AI Findings → Report Prompts → Report Preview</em> before export to DOCX or PDF. Nothing is final until a person has read it against the evidence beside it.</p>
+
+ <figure class="post-cover lq-reveal">
+ <img src="../images/post/logql-host-analyzer-ai-summary.png" alt="LogQL-Interface host analyzer showing selected host evidence and live AI summary progress" loading="lazy">
+ <figcaption><strong>Host analyzer.</strong> One node, its evidence sections, and a live local-LLM summary built only from the visible rows.</figcaption>
+ </figure>
+
+ <figure class="post-cover lq-reveal">
+ <img src="../images/post/logql-operational-dashboard.png" alt="LogQL-Interface operational dashboard showing critical nodes, resource pressure, log findings, and risk bands" loading="lazy">
+ <figcaption><strong>Operational dashboard.</strong> Node health, resource pressure, capacity exposure and risk bands, ready before any AI text is written.</figcaption>
+ </figure>
+
+ <h2>Worked Example: One Loki Server, End to End</h2>
+
+ <p>The chain below follows the real Loki report through every stage. It plays on its own; click any stage or use <em>Full screen</em> to read the output at each step.</p>
+
+ <section class="logql-chain-visual lq-reveal" data-chain-example="loki" aria-labelledby="logql-loki-chain-title">
  <div class="logql-chain-head">
  <div>
  <span class="logql-chain-kicker">Real example</span>
- <h3 class="logql-chain-title" id="logql-loki-chain-title">loki.ocp.kuwaitnet.lab report moving through the same chain</h3>
- <p class="logql-chain-intro">This is not fake AMQ/Loki sample text. These rows are shaped from the attached Loki JSON report and the saved Focused Log Review workflow: hostname, inventory, summary, disk, and real messages log evidence.</p>
+ <h3 class="logql-chain-title" id="logql-loki-chain-title">loki.ocp.kuwaitnet.lab, through the same chain</h3>
+ <p class="logql-chain-intro">Shaped from the real Loki JSON report and the saved Focused Log Review workflow: hostname, inventory, summary, disk and real <code>messages</code> evidence.</p>
  </div>
  <button type="button" class="logql-chain-expand" aria-expanded="false" data-chain-expand>Full screen</button>
  </div>
@@ -1069,108 +1130,73 @@ reports/2026-07-13/loki2_report.json</pre>
  </div>
  <div class="logql-chain-output">
  <span class="logql-chain-output-label">Output shape</span>
- <pre data-chain-output>files/logql-loki-report.json
-hostname: loki.ocp.kuwaitnet.lab
-date: 2026-03-09
-keys: hardware, network, performance, processes, services, storage, system, logs</pre>
+ <pre data-chain-output>files/logql-loki-report.json</pre>
  </div>
  </div>
 
  <div class="logql-chain-prompts" aria-label="Loki prompt examples">
- <div class="logql-chain-prompt-card">
- <strong>Server status</strong>
- <span>Uses the actual inventory and summary rows: RHEL 9.7, kernel 5.14.0, CPU 0.615333%, load 0.05.</span>
- </div>
- <div class="logql-chain-prompt-card">
- <strong>Disk review</strong>
- <span>Uses the workflow disk row: /dev/loop0 at 100%, then reviewer context marks it as snap loop noise.</span>
- </div>
- <div class="logql-chain-prompt-card">
- <strong>Log review</strong>
- <span>Uses 20 real Top Log Errors rows: promtail cannot open /var/log/messages because of permission denied.</span>
- </div>
+ <div class="logql-chain-prompt-card"><strong>Server status</strong><span>Inventory and summary rows: RHEL 9.7, kernel 5.14.0, CPU 0.615333%, load 0.05.</span></div>
+ <div class="logql-chain-prompt-card"><strong>Disk review</strong><span>The workflow disk row: <code>/dev/loop0</code> at 100%, which the reviewer marks as snap loop noise.</span></div>
+ <div class="logql-chain-prompt-card"><strong>Log review</strong><span>20 Top Log Errors rows: Promtail cannot open <code>/var/log/messages</code> (permission denied).</span></div>
  </div>
  </section>
 
- <p>This is why the chaining part matters. One jq query is only one lens. A workflow chains multiple lenses together, such as inventory, summary, disk, and log checks. Then Evidence Intelligence receives that combined workflow output and turns it into scored evidence, host chunks, and prompt-specific context.</p>
+ <p>Here is what a reviewer takes away, including what the model got right and what the evidence layer had to supply:</p>
 
- <p>First, the user uploads sensitive server data into the local application. The data can be a health-check JSON file, log bundle, or troubleshooting output.</p>
+ <div class="lq-table-wrap lq-reveal">
+ <table class="compare-table">
+ <thead><tr><th>Type</th><th>Finding</th><th>Action</th></tr></thead>
+ <tbody>
+ <tr><td><span class="lq-tag" style="--c: var(--lq-red)">Real issue</span></td><td>Promtail can't read <code>/var/log/messages</code>. It retried every 5 s for 38 hours, so Loki isn't receiving this host's syslog.</td><td>Grant read access (for example with an ACL). Check SELinux AVC denials, since the host is enforcing. Promtail has been end-of-life since 2 March 2026, so plan the move to Grafana Alloy.</td></tr>
+ <tr><td><span class="lq-tag" style="--c: var(--lq-amber)">Buried signal</span></td><td>8 failed SSH password logins (5 <code>ansible</code>, 3 <code>root</code>) from an internal host, 11:45–11:50, about 20 minutes before the first collector run.</td><td>Probably credential setup for the run, but confirm it, and review <code>PermitRootLogin</code>. The capped query never surfaced this.</td></tr>
+ <tr><td><span class="lq-tag" style="--c: var(--t3)">Noise</span></td><td>Twelve <code>/dev/loop*</code> mounts at 100%. Snap packages are read-only squashfs images, so they're always "full".</td><td>Exclude them. The real filesystems are healthy: <code>/</code> at 20%, <code>/boot</code> at 48%.</td></tr>
+ <tr><td><span class="lq-tag" style="--c: var(--lq-blue)">Self-noise</span></td><td>The collector's <code>sudo egrep</code> runs add 84 lines to <code>messages</code> and 71 to <code>secure</code>.</td><td>Make this a permanent exclude rule.</td></tr>
+ <tr><td><span class="lq-tag" style="--c: var(--ac)">Context</span></td><td>CPU 0.6%, load 0.05, about 0.6–0.7 GB of 1.6 GB RAM available.</td><td>RAM is tight for a Loki and Grafana box, but it isn't the incident.</td></tr>
+ </tbody>
+ </table>
+ </div>
 
- <p>Second, the application reads the data and extracts useful evidence. It does not send the full raw file to the model immediately.</p>
+ <h2>Limits and What's Next</h2>
 
- <p>Third, the middle layer filters and ranks the evidence. It decides what is likely important, what is repeated, what may be noise, and what should be preserved for traceability.</p>
-
- <p>Fourth, the application builds a smaller context package for the local LLM. The context should match the task. Disk questions should receive disk evidence. Security questions should receive login, audit, and SELinux evidence. Report questions should receive the top findings and supporting proof.</p>
-
- <p>Fifth, the local LLM reviews the prepared evidence and writes an explanation, recommendation, or summary.</p>
-
- <p>Sixth, the human reviews the output. If something is wrong, the user can mark evidence as important, exclude noise, or add a note.</p>
-
- <p>Finally, the application creates a report that is backed by the evidence.</p>
-
- <p>That is the whole idea in one line:</p>
-
- <blockquote>
- <p>private data stays local,<br>
- the middle layer prepares the evidence,<br>
- the local LLM explains it,<br>
- and the human approves the result.</p>
- </blockquote>
-
- <h2>What LogQL-Interface Proves</h2>
-
- <p>LogQL-Interface is still a draft.</p>
-
- <p>It needs better screens, cleaner workflows, stronger validation, better report templates, and more testing. I am not trying to present it as a finished product.</p>
-
- <p>But it proves something important:</p>
+ <ul>
+ <li><strong>The scores are heuristics.</strong> They are transparent and easy to tune, but a high score still needs a human. The loop device proved that.</li>
+ <li><strong>Cap after grouping, everywhere.</strong> Any query that truncates before grouping can hide the one line that matters.</li>
+ <li><strong>A 2B model still makes mistakes.</strong> It summarises grounded evidence well. It doesn't diagnose novel failures. Larger local models (8B and up) are a config change when hardware allows.</li>
+ <li><strong>Make noise rules first-class.</strong> Known false positives (snap loops, collector self-noise) should ship as reusable exclude rules, not one-off clicks.</li>
+ <li><strong>The name.</strong> I know. It has nothing to do with Grafana Loki's LogQL query language, which is awkward given the example above.</li>
+ </ul>
 
  <blockquote>
- <p>Small local LLMs can help with sensitive troubleshooting<br>
- if we do not ask them to read everything blindly.</p>
+ <p>In sensitive environments, AI for infrastructure shouldn't start with a chatbot. It should start with evidence. Get the evidence right, and even a small private model earns its place in the workflow.</p>
  </blockquote>
 
- <p>The application proves that the useful architecture is not only "connect to AI." The useful architecture is:</p>
+ <h2>Glossary</h2>
 
- <blockquote>
- <p>sensitive data<br>
- &rarr; evidence extraction<br>
- &rarr; intelligent filtering<br>
- &rarr; context matching<br>
- &rarr; local LLM review<br>
- &rarr; human-approved report</p>
- </blockquote>
+ <div class="lq-table-wrap">
+ <table class="compare-table">
+ <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+ <tbody>
+ <tr><td>Token</td><td>The unit a model reads; about 4 characters of English prose, fewer for number-heavy logs.</td></tr>
+ <tr><td>Context window</td><td>Maximum tokens (prompt + answer) the model can attend to in one request.</td></tr>
+ <tr><td><code>num_ctx</code></td><td>Ollama's runtime context size. Defaults to 4,096 on typical laptops; input beyond it is truncated.</td></tr>
+ <tr><td>KV cache</td><td>Per-token attention memory. It grows with context length, which is why bigger windows cost RAM/VRAM.</td></tr>
+ <tr><td>Grounding</td><td>Giving the model the evidence to answer from, so its claims can be checked against source rows.</td></tr>
+ <tr><td>Hallucination</td><td>A fluent but unsupported claim. It's most likely when evidence is missing, truncated or drowned in noise.</td></tr>
+ <tr><td>Log template</td><td>A log line with its variables masked, so repeated events collapse into one counted pattern.</td></tr>
+ <tr><td>Prompt pack</td><td>A task-specific evidence bundle for one report section, sized to fit the context window.</td></tr>
+ <tr><td>Trust boundary</td><td>The perimeter sensitive data must not cross; here, the local workspace and internal network.</td></tr>
+ </tbody>
+ </table>
+ </div>
 
- <p>That is the direction I want to continue improving.</p>
-
- <p>I am not a programmer by background, but I know the pain this is trying to solve. In real support work, the hard part is not always finding data. The hard part is turning sensitive, messy, technical data into something useful without exposing it and without wasting hours manually preparing it.</p>
-
- <p>This is why I see LogQL-Interface as more than a health-check report generator.</p>
-
- <p>It is a proof of a private AI workflow for infrastructure work.</p>
-
- <h2>The Bigger Point</h2>
-
- <p>For me, the bigger point is simple.</p>
-
- <p>AI in infrastructure should not start with a chatbot.</p>
-
- <p>It should start with evidence.</p>
-
- <p>Global AI is powerful, but sensitive data cannot always go there. Local AI is private, but it is often weaker. The bridge between those two realities is the middle layer.</p>
-
- <p>That middle layer filters, ranks, reduces, and prepares the data. It also gives non-technical users a simple interface so they do not need to understand prompt engineering or context windows.</p>
-
- <p>That is the real idea behind LogQL-Interface:</p>
-
- <blockquote>
- <p>private data<br>
- &rarr; intelligent middle layer<br>
- &rarr; small local secured LLM<br>
- &rarr; evidence-backed troubleshooting</p>
- </blockquote>
-
- <p>If this continues to evolve, I think tools like this can make local AI more useful for real operational work, especially in small environments where even a laptop-based local model can help review health checks, troubleshoot common issues, and prepare cleaner reports.</p>
+ <h3>References</h3>
+ <ul>
+ <li><a href="https://docs.ollama.com/faq" target="_blank" rel="noopener">Ollama FAQ: context window size and num_ctx</a></li>
+ <li><a href="https://www.ibm.com/new/announcements/ibm-granite-3-1-powerful-performance-long-context-and-more" target="_blank" rel="noopener">IBM: Granite 3.1 and its 128K context length</a></li>
+ <li><a href="https://arxiv.org/abs/2307.03172" target="_blank" rel="noopener">Liu et al., "Lost in the Middle: How Language Models Use Long Contexts"</a></li>
+ <li><a href="https://grafana.com/docs/loki/latest/send-data/promtail/" target="_blank" rel="noopener">Grafana: Promtail end-of-life notice</a> and <a href="https://grafana.com/docs/alloy/latest/set-up/migrate/from-promtail/" target="_blank" rel="noopener">migration to Alloy</a></li>
+ <li><a href="https://jqlang.org/manual/" target="_blank" rel="noopener">jq manual</a></li>
+ </ul>
 
  </div>
  </div>
@@ -1191,59 +1217,236 @@ keys: hardware, network, performance, processes, services, storage, system, logs
 
  <script>
  (function () {
-   var roots = Array.prototype.slice.call(document.querySelectorAll(".logql-chain-visual"));
-   if (!roots.length) return;
-
-   var defaultSteps = [
-     {
-       title: "Upload JSON",
-       change: "Sensitive health-check files enter the local workspace. At this point, no model has seen the raw files.",
-       output: "reports/2026-07-13/amq1_report.json\nreports/2026-07-13/amq2_report.json\nreports/2026-07-13/loki_report.json\nreports/2026-07-13/loki2_report.json"
-     },
-     {
-       title: "Select scope",
-       change: "The user decides which hosts are allowed into the run. It can be all servers or a smaller server group.",
-       output: "active scope: All servers\nselected files: 4\nor\nactive scope: AMQ group\nselected hosts: amq1, amq2"
-     },
-     {
-       title: "jq extraction",
-       change: "Saved jq queries pull only useful fields from the JSON. This is the first real filter before Evidence Intelligence.",
-       output: "loki  | Highest Disk Usage | /var/lib/... 100%\namq1  | Server Summary     | CPU 2% | RAM 1706 MB\namq1  | dmesg              | pci bridge window failed to assign"
-     },
-     {
-       title: "Workflow chain",
-       change: "This is the chaining part: separate jq checks become one repeatable review path. The workflow output becomes the input for Evidence Intelligence.",
-       output: "Focused Log Review\n1. Server Inventory\n2. Server Summary\n3. Highest Disk Usage\n4. Top Log Errors\n\ncombined output: 5 sections with data"
-     },
-     {
-       title: "Evidence rows",
-       change: "The middle layer reads workflow sections and categorizes each row as metric evidence, log evidence, or supporting evidence.",
-       output: "kind=metric | host=loki | section=Highest Disk Usage\nkind=metric | host=amq1 | section=Server Summary\nkind=log    | host=amq1 | log_type=dmesg"
-     },
-     {
-       title: "Score and clean",
-       change: "Rows are ranked by severity, repetition, affected hosts, source reliability, and noise penalties. Noisy collection lines are pushed down.",
-       output: "score 92 | disk 100% on loki\nscore 49 | repeated dmesg bridge warning\nscore low | Ansible collection noise"
-     },
-     {
-       title: "Host chunks",
-       change: "High-signal evidence is grouped per host. Metric chunks and log chunks are capped so the local LLM does not receive a huge dump.",
-       output: "host: loki\nmetric_chunks: disk, RAM, OS, kernel\nlog_chunks: repeated service or kernel patterns\n\nhost evidence score: highest chunk score"
-     },
-     {
-       title: "Prompt packs",
-       change: "The app builds different context for different prompts. Disk questions get disk evidence. Log questions get log evidence. Conclusion gets top risks and previous AI output.",
-       output: "Disk Recommendations -> disk evidence only\nLog Analysis          -> logs by host and log type\nConclusion            -> top risks + reviewer notes"
-     },
-     {
-       title: "Local LLM",
-       change: "The private model explains the prepared evidence. The reviewer can include, exclude, mark important, or force evidence into the prompt. This is context preparation, not model training.",
-       output: "prepared prompt context -> local LLM\nlocal summary -> human review\napproved evidence -> report preview / DOCX / PDF"
-     }
-   ];
-
+   "use strict";
    var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+   function $(s, r) { return (r || document).querySelector(s); }
+   function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+   function fmt(n, d) { return Number(n).toLocaleString("en-US", { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }); }
+   function onView(el, fn, threshold) {
+     if (!("IntersectionObserver" in window)) { fn(); return; }
+     var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { io.disconnect(); fn(); } }); }, { threshold: threshold || 0.25 });
+     io.observe(el);
+   }
+   function countUp(el, to, ms, dec, pre, suf) {
+     if (reduceMotion) { el.textContent = (pre || "") + fmt(to, dec) + (suf || ""); return; }
+     var t0 = null;
+     function tick(t) { if (!t0) t0 = t; var p = Math.min(1, (t - t0) / ms), e = 1 - Math.pow(1 - p, 3);
+       el.textContent = (pre || "") + fmt(to * e, dec) + (suf || ""); if (p < 1) requestAnimationFrame(tick); }
+     requestAnimationFrame(tick);
+   }
+   var NS = "http://www.w3.org/2000/svg";
+   function el(n, a, p) { var e = document.createElementNS(NS, n); for (var k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; }
 
+   /* ---------- scroll reveal ---------- */
+   $$(".lq-reveal").forEach(function (node) { onView(node, function () { node.classList.add("is-in"); node.dispatchEvent(new CustomEvent("lq-in")); }, 0.15); });
+   function whenIn(node, fn) { if (node.classList.contains("is-in")) fn(); else node.addEventListener("lq-in", fn, { once: true }); }
+
+   /* ---------- full screen for every card (same behaviour as the chain) ---------- */
+   function makeExpandable(root, button, hooks) {
+     var placeholder = null;
+     function open() {
+       if (root.classList.contains("is-expanded")) return;
+       placeholder = document.createComment("lq-placeholder");
+       root.parentNode.insertBefore(placeholder, root);
+       document.body.appendChild(root);
+       document.body.classList.add("logql-chain-open");
+       root.classList.add("is-expanded");
+       button.textContent = "Close"; button.setAttribute("aria-expanded", "true");
+       window.dispatchEvent(new Event("resize"));
+       if (hooks && hooks.open) hooks.open();
+     }
+     function close() {
+       if (!root.classList.contains("is-expanded")) return;
+       root.classList.remove("is-expanded");
+       document.body.classList.remove("logql-chain-open");
+       if (placeholder && placeholder.parentNode) { placeholder.parentNode.insertBefore(root, placeholder); placeholder.parentNode.removeChild(placeholder); placeholder = null; }
+       button.textContent = "Full screen"; button.setAttribute("aria-expanded", "false"); button.focus();
+       window.dispatchEvent(new Event("resize"));
+     }
+     button.addEventListener("click", function (e) { e.stopPropagation(); root.classList.contains("is-expanded") ? close() : open(); });
+     document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+     document.addEventListener("click", function (e) { if (root.classList.contains("is-expanded") && !root.contains(e.target)) close(); });
+     return { open: open, close: close };
+   }
+   $$(".lq-card").forEach(function (card) { var b = $("[data-lq-expand]", card); if (b) makeExpandable(card, b); });
+
+   /* ---------- stat counters ---------- */
+   $$("[data-lq-stats]").forEach(function (sec) {
+     whenIn(sec, function () { $$("[data-count]", sec).forEach(function (n) {
+       countUp(n, parseFloat(n.dataset.count), 1500, parseInt(n.dataset.decimals || "0", 10), n.dataset.prefix, n.dataset.suffix); }); });
+   });
+
+   /* ---------- token budget (log scale 10^2 .. 10^6.5) ---------- */
+   function lpos(v) { return Math.max(0, Math.min(100, (Math.log10(v) - 2) / 4.5 * 100)); }
+   $$("[data-lq-budget]").forEach(function (sec) {
+     var rows = $(".lq-budget-rows", sec), ticks = $(".lq-baxis-ticks", sec);
+     ticks.dataset.ticks.split(",").forEach(function (t) {
+       var s = document.createElement("span"), v = +t; s.style.left = lpos(v) + "%";
+       s.textContent = v >= 1e6 ? "1M" : v >= 1e3 ? (v / 1e3) + "K" : v; ticks.appendChild(s);
+     });
+     function placeMarker() {
+       var m = $(".lq-bmarker", sec), tr = $(".lq-btrack", sec).getBoundingClientRect(), rr = rows.getBoundingClientRect();
+       m.style.left = (tr.left - rr.left + tr.width * lpos(+m.dataset.v) / 100) + "px";
+     }
+     placeMarker(); window.addEventListener("resize", placeMarker);
+     whenIn(sec, function () {
+       $$(".lq-bfill", sec).forEach(function (f) {
+         var w = lpos(+f.dataset.v), val = f.parentNode.querySelector(".lq-bval"); f.style.width = w + "%";
+         if (w > 78) { val.classList.add("is-inside"); val.style.right = "calc(" + (100 - w) + "% + 8px)"; } else val.style.setProperty("--w", w + "%");
+       });
+     });
+   });
+
+   /* ---------- donut + 38h timeline ---------- */
+   $$("[data-lq-logmix]").forEach(function (sec) {
+     var C = 2 * Math.PI * 80, total = 27397;
+     whenIn(sec, function () {
+       $$("circle[data-seg]", sec).forEach(function (c, i) {
+         var len = Math.max(+c.dataset.seg / total * C, 1.5), off = +c.dataset.off / total * C;
+         c.style.strokeDashoffset = -off;
+         setTimeout(function () { c.setAttribute("stroke-dasharray", len + " " + (C - len)); }, reduceMotion ? 0 : 120 + i * 500);
+       });
+       countUp($("[data-donut-pct]", sec), 99.7, 1600, 1, "", "%");
+     });
+
+     var host = $("[data-lq-timeline]", sec);
+     var perHour = [722,720,720,720,720,720,720,720,720,720,720,720,726,720,720,720,720,720,720,720,720,720,720,720,720,720,720,720,720,720,720,720,720,720,720,720,720,668];
+     var events = [
+       { h: 11.75, c: "var(--lq-amber)", t: "SSH ×8", row: 0, a: "end" },
+       { h: 12.16, c: "var(--t3)", t: "collector run", row: 1, a: "start" },
+       { h: 14.13, c: "var(--lq-blue)", t: "Grafana ×3", row: 2, a: "start" },
+       { h: 35.79, c: "var(--t3)", t: "run", row: 1, a: "end" },
+       { h: 37.92, c: "var(--t3)", t: "run", row: 0, a: "end" }
+     ];
+     var drawn = false;
+     function render() {
+       var W = Math.max(300, host.clientWidth), H = 220, ml = 40, mr = 10, mt = 58, mb = 26;
+       var x = function (h) { return ml + h / 38 * (W - ml - mr); }, y = function (v) { return mt + (1 - v / 900) * (H - mt - mb); };
+       host.innerHTML = "";
+       var svg = el("svg", { viewBox: "0 0 " + W + " " + H, width: W, height: H, role: "img", "aria-label": "Promtail errors per hour stay flat at 720 for 38 hours; SSH failures at 11:45 on 8 March, Grafana errors at 14:08, collector runs at 12:09, 11:47 and 13:55." }, host);
+       var defs = el("defs", {}, svg), g = el("linearGradient", { id: "lqArea", x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
+       el("stop", { offset: "0", "stop-color": "#c9402f", "stop-opacity": ".22" }, g); el("stop", { offset: "1", "stop-color": "#c9402f", "stop-opacity": "0" }, g);
+       [0, 360, 720].forEach(function (v) { el("line", { x1: ml, x2: W - mr, y1: y(v), y2: y(v), class: "grid" }, svg); var t = el("text", { x: ml - 6, y: y(v) + 3.5, "text-anchor": "end" }, svg); t.textContent = v; });
+       [[0, "8 Mar 00:00"], [12, "12:00"], [24, "9 Mar 00:00"], [36, "12:00"]].forEach(function (p) { var t = el("text", { x: x(p[0]), y: H - 6, "text-anchor": p[0] === 0 ? "start" : "middle" }, svg); t.textContent = W < 420 && p[1].length > 6 ? p[1].slice(0, 5) : p[1]; });
+       var pts = perHour.map(function (v, i) { return [x(i + 0.5), y(v)]; });
+       var d = "M" + pts.map(function (p) { return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" L");
+       el("path", { d: d + " L" + pts[pts.length - 1][0] + "," + y(0) + " L" + pts[0][0] + "," + y(0) + " Z", class: "area" }, svg);
+       var line = el("path", { d: d, class: "line" }, svg);
+       var lab = el("text", { x: x(25), y: y(720) - 8, "text-anchor": "middle", style: "fill: var(--lq-red); font-weight: 700" }, svg); lab.textContent = W < 480 ? "720/h · one every 5 s" : "720 / hour = one error every 5 s";
+       events.forEach(function (ev, i) {
+         var gx = el("g", { class: "ev", style: "transition-delay:" + (1.1 + i * 0.18) + "s" }, svg), ex = x(ev.h);
+         el("line", { x1: ex, x2: ex, y1: 14 + ev.row * 14, y2: y(0), style: "stroke:" + ev.c }, gx);
+         el("circle", { cx: ex, cy: y(720), r: 4.5, style: "fill:" + ev.c }, gx);
+         var anchor = ev.a;
+         var tt = el("text", { x: ex + (anchor === "end" ? -4 : anchor === "start" ? 4 : 0), y: 10 + ev.row * 14, "text-anchor": anchor, style: "fill:" + ev.c }, gx); tt.textContent = ev.t;
+       });
+       if (!reduceMotion && !drawn) {
+         var L = line.getTotalLength(); line.style.strokeDasharray = L; line.style.strokeDashoffset = L;
+       }
+       if (drawn) host.classList.add("is-drawn");
+     }
+     render();
+     var lastW = host.clientWidth;
+     window.addEventListener("resize", function () { if (host.clientWidth !== lastW) { lastW = host.clientWidth; render(); } });
+     whenIn(sec, function () {
+       var line = $(".line", host);
+       if (!reduceMotion) { line.getBoundingClientRect(); line.style.transition = "stroke-dashoffset 1.8s cubic-bezier(.65,0,.35,1)"; line.style.strokeDashoffset = 0; }
+       drawn = true; setTimeout(function () { host.classList.add("is-drawn"); }, 50);
+     });
+   });
+
+   /* ---------- prompt pack + score bars ---------- */
+   $$("[data-lq-packs]").forEach(function (sec) {
+     var bars = $$(".lq-pack-bar i", sec), max = Math.max.apply(null, bars.map(function (b) { return +b.dataset.v; }));
+     whenIn(sec, function () { bars.forEach(function (b, i) { setTimeout(function () { b.style.width = (+b.dataset.v / max * 100) + "%"; }, i * 120); }); });
+   });
+   $$("[data-lq-scores]").forEach(function (sec) {
+     whenIn(sec, function () { $$(".lq-scorebar i", sec).forEach(function (b, i) { setTimeout(function () { b.style.width = b.dataset.v + "%"; }, i * 140); }); });
+   });
+
+   /* ---------- pattern collapse demo ---------- */
+   $$("[data-lq-collapse]").forEach(function (sec) {
+     var stage = $(".lq-collapse-stage", sec), cap = $("[data-collapse-caption]", sec), cnt = $("[data-tpl-count]", sec);
+     var btns = $$("[data-collapse-step]", sec), timers = [];
+     var lines = $$(".lq-line", sec), originals = lines.map(function (l) { return $$(".v", l).map(function (v) { return v.textContent; }); });
+     var masks = ["&lt;time&gt;", "&lt;pid&gt;", "&lt;ts&gt;"];
+     var captions = {
+       raw: "Raw lines differ only in their timestamp, PID and nanosecond <code>ts</code>.",
+       mark: "Variable tokens are detected: clock time, process ID and the Promtail timestamp.",
+       mask: "Each variable is replaced by a placeholder. Every line now reads exactly the same.",
+       group: "Identical lines collapse into one template with a count. 27,397 lines become 11 patterns."
+     };
+     function show(step) {
+       stage.className = "lq-collapse-stage" + (step === "raw" ? "" : " s-mark") + (step === "mask" || step === "group" ? " s-mask" : "") + (step === "group" ? " s-group" : "");
+       lines.forEach(function (l, i) { $$(".v", l).forEach(function (v, j) {
+         if (step === "mask" || step === "group") v.innerHTML = i === lines.length - 1 ? "&lt;n&gt;" : masks[j]; else v.textContent = originals[i][j]; }); });
+       btns.forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.collapseStep === step ? "true" : "false"); });
+       cap.innerHTML = captions[step];
+       if (step === "group") countUp(cnt, 27310, 1200, 0, "×"); else cnt.textContent = "×0";
+     }
+     function autoplay() { timers.forEach(clearTimeout); timers = [];
+       ["raw", "mark", "mask", "group"].forEach(function (s, i) { timers.push(setTimeout(function () { show(s); }, reduceMotion ? 0 : i * 1700)); }); }
+     btns.forEach(function (b) { b.addEventListener("click", function () { timers.forEach(clearTimeout); show(b.dataset.collapseStep); }); });
+     show("raw");
+     onView(stage, autoplay, 0.6);
+   });
+
+   /* ---------- architecture SVG (4x2 desktop, 2x4 narrow) ---------- */
+   var NODES = [
+     { t: "Servers", m: "Ansible collect", id: "collect" },
+     { t: "JSON reports", m: "6.1 MB / host", id: "collect" },
+     { t: "jq workflows", m: "24 rows", id: "extract", core: 1 },
+     { t: "Evidence Intel.", m: "17 chunks", id: "evidence", core: 1 },
+     { t: "Prompt packs", m: "1.5–9.2K chars", id: "packs", core: 1 },
+     { t: "Local LLM", m: "Ollama · 2.5B", id: "infer", ai: 1 },
+     { t: "Reviewer", m: "approve / exclude", id: "infer" },
+     { t: "Report", m: "DOCX · PDF", id: "infer" }
+   ];
+   function buildArch(host) {
+     var narrow = host.clientWidth < 600, W, H, pos, path, nw = 140, nh = 60;
+     if (!narrow) {
+       W = 720; H = 330; var xs = [95, 275, 455, 635];
+       pos = [[0, 0], [1, 0], [2, 0], [3, 0], [3, 1], [2, 1], [1, 1], [0, 1]].map(function (p) { return [xs[p[0]], p[1] ? 200 : 80]; });
+       path = "M95,80 H635 V200 H95";
+     } else {
+       W = 360; H = 560; var xm = [92, 268], ys = [70, 180, 290, 400]; nw = 150;
+       pos = [[0, 0], [1, 0], [1, 1], [0, 1], [0, 2], [1, 2], [1, 3], [0, 3]].map(function (p) { return [xm[p[0]], ys[p[1]]]; });
+       path = "M92,70 H268 V180 H92 V290 H268 V400 H92";
+     }
+     host.innerHTML = "";
+     var svg = el("svg", { viewBox: "0 0 " + W + " " + H, class: "lq-arch-svg", role: "img", "aria-label": "Pipeline: servers, JSON reports, jq workflows, Evidence Intelligence, prompt packs, local LLM, reviewer, report; all inside the local trust boundary; public LLM API blocked." }, host);
+     var fenceB = narrow ? 450 : 255;
+     el("rect", { x: 6, y: 18, width: W - 12, height: fenceB - 6, rx: 16, class: "fence" }, svg);
+     var fl = el("text", { x: 20, y: 12, class: "fence-label" }, svg);
+     fl.textContent = narrow ? "TRUST BOUNDARY · LOCAL ONLY" : "TRUST BOUNDARY · LOCAL WORKSPACE + INTERNAL NETWORK";
+     el("path", { d: path, class: "wire" }, svg);
+     NODES.forEach(function (n, i) {
+       var a = el("a", { href: "#" + n.id }, svg), x0 = pos[i][0] - nw / 2, y0 = pos[i][1] - nh / 2;
+       el("rect", { x: x0, y: y0, width: nw, height: nh, rx: 11, class: "n-box" + (n.ai ? " is-ai" : n.core ? " is-core" : "") }, a);
+       el("text", { x: x0 + 11, y: y0 + 16, class: "n-step" }, a).textContent = String(i + 1).padStart(2, "0");
+       el("text", { x: x0 + 11, y: y0 + 35, class: "n-title" }, a).textContent = n.t;
+       el("text", { x: x0 + 11, y: y0 + 51, class: "n-meta" }, a).textContent = n.m;
+     });
+     var llm = pos[5], cy = H - 34, cx = narrow ? W / 2 : llm[0];
+     var bd = narrow ? ("M" + (llm[0] + nw / 2) + "," + llm[1] + " H" + (W - 2) + " V" + (fenceB + 14) + " H" + cx + " V" + (cy - 14)) : ("M" + llm[0] + "," + (llm[1] + nh / 2) + " V" + (cy - 14));
+     el("path", { d: bd, class: "blocked" }, svg);
+     el("rect", { x: cx - 78, y: cy - 14, width: 156, height: 30, rx: 15, class: "cloud" }, svg);
+     el("text", { x: cx, y: cy + 5, "text-anchor": "middle", class: "cloud-t" }, svg).textContent = "✕  Public LLM API";
+     if (!reduceMotion) {
+       for (var k = 0; k < 4; k++) {
+         var c = el("circle", { r: k === 0 ? 6 : 4, class: k === 0 ? "pkt-big" : "pkt" }, svg);
+         el("animateMotion", { dur: "7s", repeatCount: "indefinite", begin: (k * 1.75) + "s", path: path }, c);
+         if (k === 0) el("animate", { attributeName: "r", values: "8;8;3;3", keyTimes: "0;0.4;0.6;1", dur: "7s", repeatCount: "indefinite" }, c);
+       }
+     }
+   }
+   $$("[data-lq-arch]").forEach(function (host) {
+     var last = null;
+     function render() { var n = host.clientWidth < 600; if (n !== last) { last = n; buildArch(host); } }
+     render(); window.addEventListener("resize", render);
+   });
+
+   /* ---------- the original animated chain (Loki data) ---------- */
    var lokiSteps = [
      {
        title: "Raw JSON",
@@ -1292,132 +1495,36 @@ keys: hardware, network, performance, processes, services, storage, system, logs
      }
    ];
 
-   roots.forEach(function (root) {
-     var steps = root.getAttribute("data-chain-example") === "loki" ? lokiSteps : defaultSteps;
-     var buttons = Array.prototype.slice.call(root.querySelectorAll("[data-chain-step]"));
-     var expandButton = root.querySelector("[data-chain-expand]");
-     var title = root.querySelector("[data-chain-title]");
-     var change = root.querySelector("[data-chain-change]");
-     var output = root.querySelector("[data-chain-output]");
-     var index = 0;
-     var timer = null;
-     var animationTimer = null;
-     var placeholder = null;
-
-     function setStep(nextIndex) {
-       index = nextIndex;
-       var progress = steps.length > 1 ? (index / (steps.length - 1)) * 100 : 0;
-       root.style.setProperty("--chain-progress", progress + "%");
-       buttons.forEach(function (button, buttonIndex) {
-         var active = buttonIndex === index;
-         button.classList.toggle("is-active", active);
-         button.setAttribute("aria-pressed", active ? "true" : "false");
-       });
-       title.textContent = steps[index].title;
-       change.textContent = steps[index].change;
-       output.textContent = steps[index].output;
-       if (!reduceMotion) {
-         root.classList.remove("is-changing");
-         void root.offsetWidth;
-         root.classList.add("is-changing");
-         window.clearTimeout(animationTimer);
-         animationTimer = window.setTimeout(function () {
-           root.classList.remove("is-changing");
-         }, 420);
-       }
+   $$("[data-chain-example]").forEach(function (root) {
+     var steps = lokiSteps;
+     var buttons = $$("[data-chain-step]", root);
+     var expandButton = $("[data-chain-expand]", root);
+     var title = $("[data-chain-title]", root), change = $("[data-chain-change]", root), output = $("[data-chain-output]", root);
+     var index = 0, timer = null, animationTimer = null, inView = false;
+     function setStep(i) {
+       index = i;
+       root.style.setProperty("--chain-progress", (steps.length > 1 ? index / (steps.length - 1) * 100 : 0) + "%");
+       buttons.forEach(function (b, j) { var a = j === index; b.classList.toggle("is-active", a); b.setAttribute("aria-pressed", a ? "true" : "false"); });
+       title.textContent = steps[index].title; change.textContent = steps[index].change; output.textContent = steps[index].output;
+       if (!reduceMotion) { root.classList.remove("is-changing"); void root.offsetWidth; root.classList.add("is-changing");
+         clearTimeout(animationTimer); animationTimer = setTimeout(function () { root.classList.remove("is-changing"); }, 420); }
      }
-
-     function stopAutoPlay() {
-       if (timer) {
-         window.clearInterval(timer);
-         timer = null;
-       }
-     }
-
-     function startAutoPlay() {
-       if (reduceMotion || timer) return;
-       timer = window.setInterval(function () {
-         setStep((index + 1) % steps.length);
-       }, 3600);
-     }
-
-     function openFullScreen() {
-       if (root.classList.contains("is-expanded")) return;
-       placeholder = document.createComment("logql-chain-placeholder");
-       root.parentNode.insertBefore(placeholder, root);
-       document.body.appendChild(root);
-       document.body.classList.add("logql-chain-open");
-       root.classList.add("is-expanded");
-       if (expandButton) {
-         expandButton.textContent = "Close";
-         expandButton.setAttribute("aria-expanded", "true");
-       }
-       startAutoPlay();
-     }
-
-     function closeFullScreen() {
-       if (!root.classList.contains("is-expanded")) return;
-       root.classList.remove("is-expanded");
-       document.body.classList.remove("logql-chain-open");
-       if (placeholder && placeholder.parentNode) {
-         placeholder.parentNode.insertBefore(root, placeholder);
-         placeholder.parentNode.removeChild(placeholder);
-         placeholder = null;
-       }
-       if (expandButton) {
-         expandButton.textContent = "Full screen";
-         expandButton.setAttribute("aria-expanded", "false");
-         expandButton.focus();
-       }
-     }
-
-     buttons.forEach(function (button) {
-       button.addEventListener("click", function (event) {
-         stopAutoPlay();
-         setStep(Number(button.getAttribute("data-chain-step")));
-         if (!root.classList.contains("is-expanded")) {
-           openFullScreen();
-         }
-         event.stopPropagation();
-       });
-     });
-
-     if (expandButton) {
-       expandButton.addEventListener("click", function (event) {
-         event.stopPropagation();
-         if (root.classList.contains("is-expanded")) {
-           closeFullScreen();
-         } else {
-           openFullScreen();
-         }
-       });
-     }
-
-     root.addEventListener("click", function () {
-       openFullScreen();
-     });
-     document.addEventListener("keydown", function (event) {
-       if (event.key === "Escape") {
-         closeFullScreen();
-       }
-     });
-     document.addEventListener("click", function (event) {
-       if (root.classList.contains("is-expanded") && !root.contains(event.target)) {
-         closeFullScreen();
-       }
-     });
-     root.addEventListener("mouseenter", function () {
-       if (!root.classList.contains("is-expanded")) {
-         stopAutoPlay();
-       }
-     });
-     root.addEventListener("mouseleave", startAutoPlay);
-     root.addEventListener("focusin", stopAutoPlay);
+     function stop() { if (timer) { clearInterval(timer); timer = null; } }
+     function start() { if (reduceMotion || timer || !inView) return; timer = setInterval(function () { setStep((index + 1) % steps.length); }, 3600); }
+     var ctl = makeExpandable(root, expandButton, { open: function () { inView = true; start(); } });
+     buttons.forEach(function (b) { b.addEventListener("click", function (e) { stop(); setStep(+b.dataset.chainStep); ctl.open(); e.stopPropagation(); }); });
+     root.addEventListener("click", function (e) { if (!e.target.closest("button")) ctl.open(); });
+     root.addEventListener("mouseenter", function () { if (!root.classList.contains("is-expanded")) stop(); });
+     root.addEventListener("mouseleave", start);
+     root.addEventListener("focusin", stop);
+     if ("IntersectionObserver" in window) {
+       new IntersectionObserver(function (es) { es.forEach(function (e) { inView = e.isIntersecting; inView ? start() : stop(); }); }, { threshold: 0.3 }).observe(root);
+     } else { inView = true; start(); }
      setStep(0);
-     startAutoPlay();
    });
- }());
+ })();
  </script>
  <script src="../js/site-settings.js" defer></script>
+ <script src="../js/code-block-expand.js" defer></script>
 </body>
 </html>
