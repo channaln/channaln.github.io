@@ -44,8 +44,10 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/devicon.min.css">
   <link rel="stylesheet" href="css/minimal.css">
   <link rel="stylesheet" href="css/glass.css">
+  <link rel="stylesheet" href="css/liquid-glass.css">
 </head>
-<body class="page-root experience-page">
+<body class="page-root experience-page lg">
+  <div class="lg-scene" aria-hidden="true"><span class="lg-blob b1"></span><span class="lg-blob b2"></span><span class="lg-blob b3"></span><span class="lg-blob b4"></span></div>
 
   <header class="header">
     <div class="container">
@@ -308,6 +310,14 @@
               </div>
             </div>
 
+            <div class="cert-card cert-new">
+              <span class="cert-dot active"></span>
+              <div>
+                <p class="cert-name">Red Hat Certified Specialist in OpenShift Virtualization <span class="cert-flag">NEW</span></p>
+                <p class="cert-meta">EX316 · Passed Nov 2026 · ID 240-097-733</p>
+              </div>
+            </div>
+
             <div class="cert-card">
               <span class="cert-dot active"></span>
               <div>
@@ -352,5 +362,6 @@
     }, { threshold: 0.05 });
     document.querySelectorAll('.fade-in').forEach(function(el) { io.observe(el); });
   </script>
+<script src="js/liquid-glass.js" defer></script>
 </body>
 </html>

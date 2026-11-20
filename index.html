@@ -31,7 +31,7 @@
       "https://www.linkedin.com/in/channas",
       "https://github.com/channaln"
     ],
-    "knowsAbout": ["Red Hat OpenShift", "Ansible Automation Platform", "Kubernetes", "Linux", "JBoss EAP", "Apache Tomcat", "Prometheus", "Grafana"]
+    "knowsAbout": ["Red Hat OpenShift", "OpenShift Virtualization", "Ansible Automation Platform", "Kubernetes", "Linux", "JBoss EAP", "Apache Tomcat", "Prometheus", "Grafana"]
   }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,8 +39,17 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@300;400;450;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;0,700;1,500;1,700&family=Source+Sans+3:ital,wght@0,300..900;1,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/minimal.css">
   <link rel="stylesheet" href="css/glass.css">
+  <link rel="stylesheet" href="css/liquid-glass.css">
 </head>
-<body class="page-root page-home">
+<body class="page-root page-home lg">
+
+  <!-- coloured liquid the glass sits on -->
+  <div class="lg-scene" aria-hidden="true">
+    <span class="lg-blob b1"></span>
+    <span class="lg-blob b2"></span>
+    <span class="lg-blob b3"></span>
+    <span class="lg-blob b4"></span>
+  </div>
 
   <header class="header">
     <div class="container">
@@ -58,74 +67,116 @@
   <main class="page-main">
 
     <section class="hero">
-      <div class="container glass-panel hero-glass">
-        <img class="hero-photo" src="images/profile.jpg" alt="Channa Sandaruwan" width="120" height="120" loading="eager" decoding="async">
-        <div class="hero-text">
-          <h1>Channa Sandaruwan</h1>
-          <p class="hero-sub">
-            Grab a coffee and come wander through the thoughts, lessons, and little moments that have stayed with me along the way.
-          </p>
-        </div>
-      </div>
       <div class="container">
-        <div class="hero-actions">
-          <a href="experience.html" class="btn btn-outline">View experience</a>
-          <a href="blog_list.html" class="btn btn-outline">Read the blog</a>
+        <div class="lg-stack lg-intro">
+          <div class="lg-sheet s2" aria-hidden="true"></div>
+          <div class="lg-sheet s1" aria-hidden="true"></div>
+          <div class="glass-panel hero-glass lg-main" data-lg-tilt>
+            <div class="lg-photo-wrap">
+              <img class="hero-photo" src="images/profile.jpg" alt="Channa Sandaruwan" width="124" height="124" loading="eager" decoding="async">
+              <span class="lg-status" title="Online"></span>
+            </div>
+            <div class="hero-text">
+              <h1>Channa Sandaruwan</h1>
+              <span class="lg-role">Systems Engineer · OpenShift · Ansible · Kuwait</span>
+              <p class="hero-sub">
+                Grab a coffee and come wander through the thoughts, lessons, and little moments that have stayed with me along the way.
+              </p>
+            </div>
+            <div class="hero-actions">
+              <a href="blog_list.html" class="btn lg-btn-solid">Read the blog</a>
+              <a href="experience.html" class="btn lg-btn-glass">View experience</a>
+            </div>
+          </div>
         </div>
+        <a href="#latest" class="lg-scroll" aria-label="Scroll to latest writing"></a>
       </div>
     </section>
 
-    <section class="section section--latest-writing" style="padding-top: 48px; padding-bottom: 72px;">
+    <section class="section section--latest-writing" id="latest" style="padding-bottom: 72px;">
       <div class="container container--align-left">
-        <div class="glass-panel hero-glass home-feed">
+        <div class="glass-panel hero-glass home-feed lg-main lg-reveal">
           <p class="sec-label home-feed-label">Latest Writing</p>
+          <h2 class="lg-feed-heading">Notes from the field</h2>
           <ul class="home-feed-list">
-            <li>
+            <li class="lg-reveal" style="--d:.05s">
               <a class="home-feed-item" href="blog/making-small-local-llms-useful-for-sensitive-troubleshooting.html">
-                <span class="home-feed-item-title">Making Small Local LLMs Useful for Sensitive Troubleshooting</span>
-                <span class="home-feed-item-meta">Jul 2026 · 8 min read</span>
+                <span class="lg-thumb"><img src="images/post/making-small-local-llms-sensitive-troubleshooting-og.png" alt="" loading="lazy"></span>
+                <span class="lg-feed-text">
+                  <span class="home-feed-item-title">Making Small Local LLMs Useful for Sensitive Troubleshooting</span>
+                  <span class="home-feed-item-meta">Jul 2026 · 8 min read</span>
+                </span>
+                <span class="lg-arrow" aria-hidden="true">→</span>
               </a>
             </li>
-            <li>
+            <li class="lg-reveal" style="--d:.1s">
               <a class="home-feed-item" href="blog/apache-feature-atlas.html">
-                <span class="home-feed-item-title">Apache Feature Atlas: A Practical Map of HTTP Server Capabilities</span>
-                <span class="home-feed-item-meta">Jun 2026 · 3 min read</span>
+                <span class="lg-thumb"><img src="images/post/apache-feature-atlas-og.png" alt="" loading="lazy"></span>
+                <span class="lg-feed-text">
+                  <span class="home-feed-item-title">Apache Feature Atlas: A Practical Map of HTTP Server Capabilities</span>
+                  <span class="home-feed-item-meta">Jun 2026 · 3 min read</span>
+                </span>
+                <span class="lg-arrow" aria-hidden="true">→</span>
               </a>
             </li>
-            <li>
+            <li class="lg-reveal" style="--d:.15s">
               <a class="home-feed-item" href="blog/how-i-track-small-weaknesses-at-work.html">
-                <span class="home-feed-item-title">How to Use a Weakness Tracker to Improve Productivity at Work</span>
-                <span class="home-feed-item-meta">May 2026 · 7 min read</span>
+                <span class="lg-thumb"><img src="images/post/using-weakness-tracking-as-a-technical-growth-system-og.png" alt="" loading="lazy"></span>
+                <span class="lg-feed-text">
+                  <span class="home-feed-item-title">How to Use a Weakness Tracker to Improve Productivity at Work</span>
+                  <span class="home-feed-item-meta">May 2026 · 7 min read</span>
+                </span>
+                <span class="lg-arrow" aria-hidden="true">→</span>
               </a>
             </li>
-            <li>
+            <li class="lg-reveal" style="--d:.2s">
               <a class="home-feed-item" href="blog/acs-scanner-v4-db-odf-csi-infra-node.html">
-                <span class="home-feed-item-title">When OpenShift Storage Placement Breaks ACS Scanner V4 DB</span>
-                <span class="home-feed-item-meta">Apr 2026 · 7 min read</span>
+                <span class="lg-thumb"><img src="images/post/acs-scanner-v4-db-odf-csi-infra-node-og.png" alt="" loading="lazy"></span>
+                <span class="lg-feed-text">
+                  <span class="home-feed-item-title">When OpenShift Storage Placement Breaks ACS Scanner V4 DB</span>
+                  <span class="home-feed-item-meta">Apr 2026 · 7 min read</span>
+                </span>
+                <span class="lg-arrow" aria-hidden="true">→</span>
               </a>
             </li>
-            <li>
+            <li class="lg-reveal" style="--d:.05s">
               <a class="home-feed-item" href="blog/cluster_vs_proxy.html">
-                <span class="home-feed-item-title">mod_proxy_balancer vs mod_cluster: Which One Should You Use?</span>
-                <span class="home-feed-item-meta">Oct 2023 · 5 min read</span>
+                <span class="lg-thumb"><img src="images/post/cluster-vs-proxy-og.png" alt="" loading="lazy"></span>
+                <span class="lg-feed-text">
+                  <span class="home-feed-item-title">mod_proxy_balancer vs mod_cluster: Which One Should You Use?</span>
+                  <span class="home-feed-item-meta">Oct 2023 · 5 min read</span>
+                </span>
+                <span class="lg-arrow" aria-hidden="true">→</span>
               </a>
             </li>
-            <li>
+            <li class="lg-reveal" style="--d:.1s">
               <a class="home-feed-item" href="blog/tomcat_upgrade.html">
-                <span class="home-feed-item-title">Upgrading Apache Tomcat: A Practical Guide</span>
-                <span class="home-feed-item-meta">Oct 2023 · 7 min read</span>
+                <span class="lg-thumb"><img src="images/post/tomcat-upgrade-og.png" alt="" loading="lazy"></span>
+                <span class="lg-feed-text">
+                  <span class="home-feed-item-title">Upgrading Apache Tomcat: A Practical Guide</span>
+                  <span class="home-feed-item-meta">Oct 2023 · 7 min read</span>
+                </span>
+                <span class="lg-arrow" aria-hidden="true">→</span>
               </a>
             </li>
-            <li>
+            <li class="lg-reveal" style="--d:.15s">
               <a class="home-feed-item" href="blog/jboss_domain_elytron.html">
-                <span class="home-feed-item-title">Elytron in JBoss Domain Mode: Security Realm Configuration</span>
-                <span class="home-feed-item-meta">Oct 2023 · 5 min read</span>
+                <span class="lg-thumb"><img src="images/post/jboss-domain-elytron-og.png" alt="" loading="lazy"></span>
+                <span class="lg-feed-text">
+                  <span class="home-feed-item-title">Elytron in JBoss Domain Mode: Security Realm Configuration</span>
+                  <span class="home-feed-item-meta">Oct 2023 · 5 min read</span>
+                </span>
+                <span class="lg-arrow" aria-hidden="true">→</span>
               </a>
             </li>
-            <li>
+            <li class="lg-reveal" style="--d:.2s">
               <a class="home-feed-item" href="blog/elytrone_deep.html">
-                <span class="home-feed-item-title">Elytron Security Realm: What It Is and Why It Matters</span>
-                <span class="home-feed-item-meta">Oct 2023 · 6 min read</span>
+                <span class="lg-thumb"><img src="images/post/elytron-security-realm-og.png" alt="" loading="lazy"></span>
+                <span class="lg-feed-text">
+                  <span class="home-feed-item-title">Elytron Security Realm: What It Is and Why It Matters</span>
+                  <span class="home-feed-item-meta">Oct 2023 · 6 min read</span>
+                </span>
+                <span class="lg-arrow" aria-hidden="true">→</span>
               </a>
             </li>
           </ul>
@@ -151,5 +202,6 @@
   </footer>
 
   <script src="js/site-settings.js" defer></script>
+  <script src="js/liquid-glass.js" defer></script>
 </body>
 </html>
