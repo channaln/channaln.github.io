@@ -680,3 +680,92 @@ html[data-theme="dark"] .lg-progress { background: linear-gradient(90deg, #63636
   .lg-reveal { opacity: 1; transform: none; transition: none; }
   .lg .hero-glass.lg-main { transform: none !important; }
 }
+
+/* =============================================================================
+   9. Calm mode — easier on the eyes
+   Readable text contrast, steadier glass, no moving glare, no glass-in-glass.
+   ============================================================================= */
+
+/* Text: clear, comfortable contrast (Apple-style neutrals) */
+body.lg {
+  --t1: #1d1d1f;
+  --t2: #424245;
+  --t3: #6e6e73;
+  --bd: rgba(0, 0, 0, 0.08);
+  --lg-fill: rgba(255, 255, 255, 0.72);
+  --lg-fill-strong: rgba(255, 255, 255, 0.8);
+  --lg-rim: rgba(255, 255, 255, 0.95);
+  --lg-rim-soft: rgba(255, 255, 255, 0.5);
+  --lg-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 32px -8px rgba(0, 0, 0, 0.1);
+  --lg-shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.05), 0 18px 40px -10px rgba(0, 0, 0, 0.14);
+  --lg-inner: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  background: linear-gradient(180deg, #f5f5f7 0%, #ececef 100%) fixed;
+}
+html[data-theme="dark"] body.lg {
+  --t1: #f5f5f7;
+  --t2: #c7c7cc;
+  --t3: #98989d;
+  --bd: rgba(255, 255, 255, 0.1);
+  --lg-fill: rgba(28, 28, 30, 0.74);
+  --lg-fill-strong: rgba(36, 36, 38, 0.82);
+  --lg-rim: rgba(255, 255, 255, 0.16);
+  --lg-rim-soft: rgba(255, 255, 255, 0.05);
+  --lg-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 16px 40px -10px rgba(0, 0, 0, 0.6);
+  --lg-shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.45), 0 22px 50px -12px rgba(0, 0, 0, 0.7);
+  --lg-inner: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, #0d0d0f 0%, #151517 100%) fixed;
+}
+
+/* Background: still, soft and quiet — no drifting shapes, no grain, no old sheen */
+body.lg::before, body.lg::after { display: none; }
+.lg-blob { animation: none !important; opacity: 0.35; filter: blur(110px); }
+html[data-theme="dark"] .lg-blob { opacity: 0.35; }
+.lg-blob.b3, .lg-blob.b4 { display: none; }
+.lg-scene::after { display: none; }
+
+/* Glass: steadier frosted panel, gentle top highlight only */
+.lg .glass-panel,
+.lg .lg-glass {
+  background: var(--lg-fill);
+  backdrop-filter: blur(30px) saturate(140%);
+  -webkit-backdrop-filter: blur(30px) saturate(140%);
+}
+.lg .glass-panel::after,
+.lg .lg-glass::after { display: none; }
+.lg .hero-glass.lg-main { transform: none !important; }
+.lg-sheet { background: var(--lg-fill); box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.12); }
+
+/* Experience: one glass card with clean sections inside (no glass-in-glass) */
+body.lg .exp-inner-block,
+html[data-theme="dark"] body.lg .exp-inner-block {
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 32px 0 8px;
+  margin-top: 8px;
+  border-top: 1px solid var(--bd);
+}
+
+body.lg.experience-page .page-head::after { display: none; }
+
+/* Small tiles: solid enough to read on, softer hover */
+body.lg .cert-card,
+body.lg .blog-list li,
+body.lg .home-feed-item,
+body.lg .chip { background: rgba(255, 255, 255, 0.7); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), inset 0 0 0 1px rgba(0, 0, 0, 0.05); }
+html[data-theme="dark"] body.lg .cert-card,
+html[data-theme="dark"] body.lg .blog-list li,
+html[data-theme="dark"] body.lg .home-feed-item,
+html[data-theme="dark"] body.lg .chip { background: rgba(255, 255, 255, 0.05); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07); }
+body.lg .cert-card:hover,
+body.lg .blog-list li:hover,
+body.lg .home-feed-item:hover,
+body.lg .chip:hover { transform: translateY(-1px); background: #fff; box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.16), inset 0 0 0 1px rgba(0, 0, 0, 0.06); }
+html[data-theme="dark"] body.lg .cert-card:hover,
+html[data-theme="dark"] body.lg .blog-list li:hover,
+html[data-theme="dark"] body.lg .home-feed-item:hover,
+html[data-theme="dark"] body.lg .chip:hover { background: rgba(255, 255, 255, 0.09); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12); }
+
+/* Long-form reading: steady text colour, roomy lines */
+body.lg .post-content { color: #2c2c2e; line-height: 1.85; }
+html[data-theme="dark"] body.lg .post-content { color: #d1d1d6; }

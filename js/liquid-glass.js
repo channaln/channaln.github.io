@@ -16,7 +16,7 @@
 
   // Slight 3D tilt on the main hero card
   var tilt = document.querySelector("[data-lg-tilt]");
-  if (tilt && fine && !reduce) {
+  if (tilt && fine && !reduce && false) { // tilt disabled for a calmer read
     var stack = tilt.parentElement;
     stack.addEventListener("pointermove", function (e) {
       var r = stack.getBoundingClientRect();
